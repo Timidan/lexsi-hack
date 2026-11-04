@@ -1,1 +1,48 @@
 === notebook log for sft-v2, started 2026-11-04 22:28:27 UTC ===
+live notebook log -> GitHub 'results' branch: runs/sft-v2/notebook_log.txt
+...................
+----------------------------------------------------------------------
+Ran 19 tests in 0.252s
+
+OK
+{"prompt_style": "compact", "train": 2080, "val": 104, "test": 416, "human": 0}
+torch 2.11.0+cu130 | transformers 5.22.1 | GPUs: 2
+$ /usr/bin/python3 -m torch.distributed.run --standalone --nproc_per_node=2 scripts/train.py --model CohereLabs/tiny-aya-global --out outputs/sft-v2 --epochs 1.0 --lr 0.0002 --grad-accum 16 --lora-r 16 --lora-alpha 32 --max-len 4096 --time-budget-h 8.0
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+train examples: 2080 (dropped 0 > 4096 tokens) | tokens median 1471, max 1736 | trained tokens 181,291 (5.9% of all) | prompt style: compact | GPUs: 2
+
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/290 [00:03<17:59,  3.74s/it]
+Loading weights:   0%|          | 1/290 [00:03<18:04,  3.75s/it]
+Loading weights:  45%|████▌     | 131/290 [00:03<00:03, 47.72it/s]
+Loading weights:  45%|████▌     | 131/290 [00:03<00:03, 45.62it/s]
+Loading weights:  56%|█████▌    | 162/290 [00:04<00:02, 49.16it/s]
+Loading weights:  63%|██████▎   | 182/290 [00:04<00:02, 47.82it/s]
+Loading weights:  68%|██████▊   | 196/290 [00:05<00:01, 48.31it/s]
+Loading weights:  69%|██████▉   | 200/290 [00:05<00:01, 48.35it/s]
+Loading weights:  71%|███████▏  | 207/290 [00:05<00:01, 49.45it/s]
+Loading weights:  74%|███████▍  | 216/290 [00:05<00:01, 49.93it/s]
+Loading weights:  77%|███████▋  | 224/290 [00:05<00:01, 49.61it/s]
+Loading weights:  80%|███████▉  | 231/290 [00:05<00:01, 49.52it/s]
+Loading weights:  82%|████████▏ | 238/290 [00:06<00:01, 46.71it/s]
+Loading weights:  83%|████████▎ | 240/290 [00:06<00:01, 47.92it/s]
+Loading weights:  84%|████████▍ | 245/290 [00:06<00:00, 49.00it/s]
+Loading weights:  87%|████████▋ | 251/290 [00:06<00:00, 48.08it/s]
+Loading weights:  89%|████████▉ | 259/290 [00:06<00:00, 53.80it/s]
+Loading weights:  91%|█████████▏| 265/290 [00:06<00:00, 53.26it/s]
+Loading weights:  92%|█████████▏| 266/290 [00:06<00:00, 49.47it/s]
+Loading weights:  93%|█████████▎| 271/290 [00:06<00:00, 53.39it/s]
+Loading weights:  96%|█████████▌| 277/290 [00:06<00:00, 44.78it/s]
+Loading weights:  98%|█████████▊| 284/290 [00:06<00:00, 48.44it/s]
+Loading weights: 100%|██████████| 290/290 [00:06<00:00, 41.61it/s]
+
+Loading weights:  98%|█████████▊| 285/290 [00:06<00:00, 49.05it/s]
+Loading weights: 100%|██████████| 290/290 [00:06<00:00, 41.53it/s]
+attention implementation: sdpa
+trainable params: 30,228,480 || all params: 3,379,456,000 || trainable%: 0.8945
+initial loss 1.887 | steps 130 | effective batch 16 (8 per GPU x 2) | dtype torch.float16
+live progress -> GitHub 'results' branch
