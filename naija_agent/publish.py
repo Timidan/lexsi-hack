@@ -22,11 +22,11 @@ BRANCH = "results"
 
 
 def _in_notebook_gpu_service() -> bool:
-    if os.environ.get("KAGGLE_KERNEL_RUN_TYPE") or os.environ.get("KAGGLE_URL_BASE"):
-        return True
-    if os.environ.get("COLAB_RELEASE_TAG") or os.environ.get("COLAB_GPU"):
-        return True
-    return False
+    """True inside a Kaggle or Colab notebook (or a process it started, such as torchrun workers)."""
+    kaggle = (os.environ.get("KAGGLE_KERNEL_RUN_TYPE") or os.environ.get("KAGGLE_URL_BASE")
+              or os.environ.get("KAGGLE_USER_SECRETS_TOKEN") or os.path.isdir("/kaggle/working"))
+    colab = os.environ.get("COLAB_RELEASE_TAG") or os.environ.get("COLAB_GPU") or os.path.isdir("/content/sample_data")
+    return bool(kaggle or colab)
 
 
 def publishing_wanted() -> bool:
