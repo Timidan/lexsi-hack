@@ -74,3 +74,9 @@ step 115/130 loss 0.0051 grad_norm 0.09 lr 6.50e-06 | 701 tok/s | eta 8 min
 step 120/130 loss 0.0014 grad_norm 0.05 lr 2.91e-06 | 703 tok/s | eta 6 min
   saved adapter at step 120 | val loss 0.0030797552385942815
 step 125/130 loss 0.0030 grad_norm 0.10 lr 7.29e-07 | 692 tok/s | eta 3 min
+step 130/130 loss 0.0011 grad_norm 0.02 lr 0.00e+00 | 694 tok/s | eta 0 min
+  saved adapter at step 130 | val loss 0.003038164632856094
+/usr/local/lib/python3.13/dist-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  return func(*args, **kwargs)
+trained in 75 min on 2 GPU(s) | val loss: [1.9158, 0.0529, 0.0058, 0.0031, 0.003]
+evaluating ['fine-tuned', 'untrained'] in parallel, one GPU each
