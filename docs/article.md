@@ -162,7 +162,8 @@ prompt and both of Kaggle's GPUs. **[v2]**
   messier; the native-speaker test set is our check on that. **[human test]**
 - The wallet is simulated: one user, no network errors, no fraud signals, no multi-turn negotiation.
 - Small talk and replies are template-like, because the training replies are.
-- Yoruba and Pidgin text was drafted with model help; review by a native speaker is in progress. **[review]**
+- Yoruba and Pidgin text was drafted with model help. The Yoruba sentences added for v2 were checked by a
+  native speaker; review of the rest is in progress. **[review]**
 
 ## Reproduce it
 
