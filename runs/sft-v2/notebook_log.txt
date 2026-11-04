@@ -60,3 +60,5 @@ step 50/130 loss 0.0093 grad_norm 0.17 lr 1.35e-04 | 698 tok/s | eta 45 min
 step 55/130 loss 0.0101 grad_norm 1.13 lr 1.24e-04 | 700 tok/s | eta 42 min
 step 60/130 loss 0.0067 grad_norm 0.21 lr 1.12e-04 | 703 tok/s | eta 39 min
 step 65/130 loss 0.0244 grad_norm 0.66 lr 1.00e-04 | 703 tok/s | eta 36 min
+step 70/130 loss 0.0100 grad_norm 0.57 lr 8.79e-05 | 706 tok/s | eta 33 min
+step 75/130 loss 0.0045 grad_norm 0.15 lr 7.61e-05 | 708 tok/s | eta 31 min
