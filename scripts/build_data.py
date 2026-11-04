@@ -20,7 +20,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from naija_agent import generate, gold_conversation  # noqa: E402
+from naija_agent.human import load_human_tasks  # noqa: E402
 from naija_agent.prompting import prompt_style  # noqa: E402
+
+HUMAN_REQUESTS = Path(__file__).resolve().parents[1] / "human_eval" / "requests.txt"
 
 
 def write_jsonl(path: Path, rows) -> int:
@@ -49,13 +52,16 @@ def main() -> None:
 
     write_jsonl(out / "tasks_train.jsonl", (t.to_dict() for t in train))
     write_jsonl(out / "tasks_test.jsonl", (t.to_dict() for t in test))
+    human = load_human_tasks(HUMAN_REQUESTS) if HUMAN_REQUESTS.exists() else []
+    if human:  # requests written by a native speaker (human_eval/requests.txt): evaluation only
+        write_jsonl(out / "tasks_human.jsonl", (t.to_dict() for t in human))
     for name, tasks in (("sft_train", train), ("sft_val", val)):
         write_jsonl(out / f"{name}.jsonl", (
             {"id": t.id, "category": t.category, "lang": t.lang, "messages": gold_conversation(t)} for t in tasks))
 
     stats = {
         "prompt_style": prompt_style(),
-        "train": len(train), "val": len(val), "test": len(test),
+        "train": len(train), "val": len(val), "test": len(test), "human": len(human),
         "train_by_category": Counter(t.category for t in train),
         "train_by_lang": Counter(t.lang for t in train),
         "test_by_category": Counter(t.category for t in test),

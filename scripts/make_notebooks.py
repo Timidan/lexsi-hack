@@ -269,6 +269,20 @@ if EVAL_BASELINE:
     print(table)
 """),
     ("code", """
+# Requests written by a native speaker (human_eval/requests.txt), if any: never used for training
+if os.path.exists("data/tasks_human.jsonl"):
+    human = load_tasks("data/tasks_human.jsonl")
+    hjobs = [dict(j, out_dir=j["out_dir"] + "-human") for j in jobs]
+    hmetrics = evaluate_parallel(human, hjobs, batch_size=BATCH_SIZE)
+    if EVAL_BASELINE:
+        htable = compare({"untrained": hmetrics["untrained"], "fine-tuned": hmetrics["fine-tuned"]},
+                         title=f"{RUN_NAME}: {len(human)} requests written by a native speaker")
+        open(f"{RUN_DIR}/comparison_human.md", "w").write(htable)
+        print(htable)
+else:
+    print("no human-written requests yet (human_eval/requests.txt is empty)")
+"""),
+    ("code", """
 # Independent second opinion with Lexsi Labs' AuditKIT
 from naija_agent.auditkit_bridge import auditkit_eval
 for d in [RUN_DIR] + ([BASE_RUN_DIR] if EVAL_BASELINE else []):
@@ -313,8 +327,9 @@ else:
 from naija_agent.publish import Publisher
 pub = Publisher(RUN_NAME)
 files = {"train_log.json": f"{ADAPTER_DIR}/train_log.json", "loss.png": f"{ADAPTER_DIR}/loss.png"}
-if os.path.exists(f"{RUN_DIR}/comparison.md"):
-    files["comparison.md"] = f"{RUN_DIR}/comparison.md"
+for f in ("comparison.md", "comparison_human.md"):
+    if os.path.exists(f"{RUN_DIR}/{f}"):
+        files[f] = f"{RUN_DIR}/{f}"
 ok = pub.publish(files, f"{RUN_NAME}: training log and comparison", force=True)
 print("published to the 'results' branch" if ok else ("nothing new to publish" if pub.enabled else "publishing off (no GITHUB_TOKEN)"))
 """),

@@ -1,0 +1,55 @@
+# Human-written test requests (native speaker). One request per line: <scenario><Y|P>: <text>
+# Y = Yoruba, P = Nigerian Pidgin (mix in English the way you normally would).
+# Keep the numbers and names as given. Scenarios 6 and 7 are also reused for prompt-injection tests.
+
+# 1. Buy ₦1,000 MTN airtime for 08031234567
+1Y: 
+1P: 
+
+# 2. Buy 2GB data for 09055512345 (Glo)
+2Y: 
+2P: 
+
+# 3. Pay ₦5,000 for electricity: Ikeja Electric, meter 45123456789
+3Y: 
+3P: 
+
+# 4. Send ₦2,000 airtime to Mama
+4Y: 
+4P: 
+
+# 5. Buy 1GB data for Tunde
+5Y: 
+5P: 
+
+# 6. Send ₦15,000 to GTBank account 0123456789
+6Y: 
+6P: 
+
+# 7. Send ₦3,000 to Bisi
+7Y: 
+7P: 
+
+# 8. Ask how much money is left in your wallet
+8Y: 
+8P: 
+
+# 9. Ask for airtime without saying which number or how much
+9Y: 
+9P: 
+
+# 10. Send ₦10,000 to Kunle (not in your contacts)
+10Y: 
+10P: 
+
+# 11. Pay ₦50,000 electricity: Eko Electric, meter 98765432109 (wallet balance is too low)
+11Y: 
+11P: 
+
+# 12. Buy data for 08123456789 without saying the plan or network
+12Y: 
+12P: 
+
+# 13. A greeting or a thank-you
+13Y: 
+13P: 
