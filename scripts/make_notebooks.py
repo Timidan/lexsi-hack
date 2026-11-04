@@ -27,7 +27,7 @@ def nb(cells):
 SETUP_HELP = """
 **One-time Kaggle setup**
 1. Settings → **Accelerator: GPU T4 x2** (or P100) and **Internet: on** (needs a verified phone number).
-2. Add-ons → **Secrets**: `HF_TOKEN` (Hugging Face *read* token; accept the Tiny Aya license first) and, while the repo is private, `GITHUB_TOKEN` (fine-grained, read-only on `Timidan/lexsi-hack`). Tick both for this notebook.
+2. Add-ons → **Secrets**: `HF_TOKEN` (Hugging Face *read* token; accept the Tiny Aya license first) Optional: `GITHUB_TOKEN` (fine-grained, **Contents: Read and write** on `Timidan/lexsi-hack`) so the notebook pushes its results to the `results` branch. Tick them for this notebook.
 3. **Save Version → Save & Run All** runs it in the background; results appear in the **Output** tab.
 
 On Colab: Runtime → T4 GPU, add the same names under 🔑 Secrets, then Run all (keep the tab open).
@@ -106,6 +106,34 @@ from naija_agent.auditkit_bridge import auditkit_eval
 print(auditkit_eval(tasks, RUN_DIR).summary())
 """)
 
+PUSH_CELL = ("code", """
+# Publish this run's results to the `results` branch (needs GITHUB_TOKEN with Contents: Read and write).
+# Model weights are not pushed, only metrics, scores, trajectories and the training log.
+import shutil, tempfile
+if GITHUB_TOKEN:
+    dst = tempfile.mkdtemp()
+    push_url = f"https://x-access-token:{GITHUB_TOKEN}@github.com/{REPO}.git"
+    def git(*args, cwd=dst):
+        return subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True)
+    if git("clone", "-q", "--depth", "1", "-b", "results", push_url, dst, cwd=".").returncode != 0:
+        git("init", "-q"); git("checkout", "-q", "-b", "results"); git("remote", "add", "origin", push_url)
+    target = os.path.join(dst, "runs", os.path.basename(RUN_DIR))
+    shutil.rmtree(target, ignore_errors=True)
+    shutil.copytree(RUN_DIR, target)
+    for extra in ("train_log.json", "loss.png"):
+        src = os.path.join(globals().get("ADAPTER_DIR", ""), extra)
+        if os.path.exists(src):
+            shutil.copy(src, target)
+    git("add", "-A")
+    git("-c", "user.name=kaggle-runner", "-c", "user.email=kaggle-runner@users.noreply.github.com",
+        "commit", "-q", "-m", f"results: {os.path.basename(RUN_DIR)}")
+    r = git("push", "-q", "origin", "results")
+    print("pushed results to branch 'results'" if r.returncode == 0
+          else "push failed (token needs write access?): " + r.stderr.replace(GITHUB_TOKEN, "***"))
+else:
+    print("No GITHUB_TOKEN: results stay in this notebook's Output tab")
+""")
+
 
 baseline = nb([
     ("markdown", """
@@ -154,6 +182,7 @@ metrics = evaluate(tasks, policy, RUN_DIR, batch_size=BATCH_SIZE,
 """),
     AUDITKIT_CELL,
     FAILURES_CELL,
+    PUSH_CELL,
 ])
 
 train = nb([
@@ -244,6 +273,7 @@ if HUB_REPO and HF_WRITE_TOKEN:
 else:
     print("Skipping upload. The adapter is in the Output tab under lexsi-hack/" + ADAPTER_DIR)
 """),
+    PUSH_CELL,
 ])
 
 for name, book in (("01_setup_and_baseline.ipynb", baseline), ("02_train_and_eval.ipynb", train)):

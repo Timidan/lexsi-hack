@@ -78,6 +78,9 @@ class BadPolicies(unittest.TestCase):
         for cat in ("airtime_direct", "transfer_direct", "balance", "insufficient_funds", "missing_info"):
             self.assertEqual(by_cat[cat]["success_rate"], 0.0, cat)
         self.assertEqual(by_cat["chitchat"]["success_rate"], 1.0)
+        # every tool-needing task was answered without tools
+        self.assertEqual(m["overall"]["no_tool_answer_rate"], 1.0)
+        self.assertIsNone(by_cat["chitchat"]["no_tool_answer_rate"])
 
     def test_guessing_instead_of_asking_fails(self):
         def guesser(msgs, task):
