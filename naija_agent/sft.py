@@ -85,6 +85,9 @@ def train_lora(model_id: str, train_path: str, out_dir: str, *, val_path: str | 
                log_every: int = 5, save_every: int = 40, seed: int = 0, load_in_4bit: bool = False,
                time_budget_s: float | None = None) -> dict:
     """Train a LoRA adapter and save it to out_dir. Returns the training log."""
+    from .compat import remove_old_torchao
+
+    remove_old_torchao()
     import torch
     from peft import LoraConfig, get_peft_model
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig

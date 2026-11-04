@@ -28,8 +28,13 @@ class HFPolicy:
                 load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=self.dtype)
         self.model = AutoModelForCausalLM.from_pretrained(model_id, **kwargs)
         if adapter:
+            from .compat import remove_old_torchao
+
+            remove_old_torchao()
             from peft import PeftModel
             self.model = PeftModel.from_pretrained(self.model, adapter)
+            if not load_in_4bit:
+                self.model = self.model.merge_and_unload()   # same outputs, faster generation
         self.model.eval()
         self.max_new_tokens = max_new_tokens
 

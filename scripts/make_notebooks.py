@@ -66,6 +66,8 @@ print(subprocess.run(["git", "log", "--oneline", "-1"], capture_output=True, tex
     ("code", """
 # Tiny Aya (cohere2 architecture) is verified with transformers 5.x (same floor AgentTune uses).
 !pip install -q -U "transformers>=5.17,<6" accelerate peft bitsandbytes auditkit
+# Kaggle ships torchao 0.10, which recent PEFT refuses to load next to; we don't use it
+!pip uninstall -y -q torchao
 """),
     ("code", """
 from huggingface_hub import login
