@@ -184,7 +184,7 @@ TIME_BUDGET_H = 8.0        # stop training early (and still evaluate) well befor
 EVAL_LIMIT = None          # None = all 416 test tasks
 EVAL_BASELINE = True       # also score the untrained model with the same prompt (before/after table)
 BATCH_SIZE = 8
-HUB_REPO = None            # e.g. "your-hf-username/oya-tiny-aya-lora" (needs HF_WRITE_TOKEN)
+HUB_REPO = "auto"          # upload adapter (private) to {hf user}/oya-tiny-aya-{RUN_NAME}; needs HF_WRITE_TOKEN
 
 MODEL_ID = "CohereLabs/tiny-aya-global"
 REPO = "Timidan/lexsi-hack"
@@ -282,18 +282,31 @@ policy = HFPolicy(MODEL_ID, adapter=ADAPTER_DIR)
 """ + SAMPLES_CELL[1]),
     FAILURES_CELL,
     ("code", """
-# Optional: upload the adapter (+ eval results) to a private Hugging Face repo
+# Upload the adapter (+ eval results) to a PRIVATE Hugging Face repo (made public at submission time).
+# Notebook 03 takes it from there to build the demo.
 HF_WRITE_TOKEN = secret("HF_WRITE_TOKEN")
 if HUB_REPO and HF_WRITE_TOKEN:
     import shutil
     from huggingface_hub import HfApi
-    shutil.copytree(RUN_DIR, f"{ADAPTER_DIR}/eval", dirs_exist_ok=True)
     api = HfApi(token=HF_WRITE_TOKEN)
-    api.create_repo(HUB_REPO, private=True, exist_ok=True)
-    api.upload_folder(folder_path=ADAPTER_DIR, repo_id=HUB_REPO, commit_message=f"{RUN_NAME}")
-    print("uploaded to https://huggingface.co/" + HUB_REPO)
+    hub_repo = f"{api.whoami()['name']}/oya-tiny-aya-{RUN_NAME}" if HUB_REPO == "auto" else HUB_REPO
+    shutil.copytree(RUN_DIR, f"{ADAPTER_DIR}/eval", dirs_exist_ok=True)
+    card = "\\n".join([
+        "---", f"base_model: {MODEL_ID}", "library_name: peft", "license: cc-by-nc-4.0",
+        "tags: [lora, tool-calling, agents, yoruba, nigerian-pidgin, aya, lexsi-hackathon]", "---",
+        f"# Oya LoRA adapter ({RUN_NAME})", "",
+        f"LoRA adapter for {MODEL_ID}: a tool-calling wallet agent for English, Nigerian Pidgin and Yoruba",
+        "(airtime, data, electricity, transfers), trained to ask when details are missing, refuse to overspend",
+        "and ignore instructions planted in tool results.", "",
+        f"Prompt style: `{PROMPT_STYLE}`. Evaluation on the held-out test tasks: `eval/`. Code: https://github.com/{REPO}", "",
+        "Built with Tiny Aya by Cohere Labs (CC-BY-NC 4.0; Cohere Labs Acceptable Use Policy applies)."])
+    open(f"{ADAPTER_DIR}/README.md", "w").write(card + "\\n")
+    api.create_repo(hub_repo, private=True, exist_ok=True)
+    api.upload_folder(folder_path=ADAPTER_DIR, repo_id=hub_repo, commit_message=RUN_NAME,
+                      ignore_patterns=["progress.json"])
+    print("uploaded to https://huggingface.co/" + hub_repo)
 else:
-    print("Skipping upload. The adapter is in the Output tab under lexsi-hack/" + ADAPTER_DIR)
+    print("Skipping upload (no HF_WRITE_TOKEN secret). The adapter is in the Output tab under lexsi-hack/" + ADAPTER_DIR)
 """),
     ("code", """
 # Publish the training log, loss curve and comparison table (eval results were published by evaluate())
@@ -307,7 +320,155 @@ print("published to the 'results' branch" if ok else ("nothing new to publish" i
 """),
 ])
 
-for name, book in (("01_setup_and_baseline.ipynb", baseline), ("02_train_and_eval.ipynb", train)):
+RUN_HELPER = """
+import subprocess, sys
+def run(cmd, check=True):
+    print("$", cmd, flush=True)
+    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
+    for line in p.stdout:
+        print(line, end="", flush=True)
+    rc = p.wait()
+    if check and rc != 0:
+        raise RuntimeError(f"command failed ({rc}): {cmd}")
+    return rc
+"""
+
+publish = nb([
+    ("markdown", """
+# 03 · Export to GGUF and publish the demo Space
+
+Takes the adapter that notebook 02 uploaded to Hugging Face, merges it into Tiny Aya, converts it to a 4-bit
+GGUF that runs on a free CPU, checks that the quantized model still solves held-out tasks, then publishes:
+- the GGUF model repo, and
+- the **Hugging Face Space demo**, with the before/after replay data from the repo's `results` branch.
+
+Both are **private** by default (`PRIVATE = True`); flip them to public at submission time.
+
+Needs Kaggle secrets `HF_TOKEN` (read) and `HF_WRITE_TOKEN` (write), and Internet on. No GPU needed:
+choose **None** as accelerator to save GPU quota. About 30 to 45 minutes.
+"""),
+    ("code", """
+# ---- settings ----
+RUN_NAME = "sft-v2"              # the trained adapter to publish
+PROMPT_STYLE = "compact"         # must match how RUN_NAME was trained
+BASELINE_RUN = f"baseline-{PROMPT_STYLE}"
+QUANT = "Q4_K_M"                 # 4-bit; falls back to Q8_0 if the quantizer cannot be built
+PRIVATE = True                   # keep the model and the Space private until submission
+ADAPTER_REPO = "auto"            # {hf user}/oya-tiny-aya-{RUN_NAME}, uploaded by notebook 02
+GGUF_REPO = "auto"               # {hf user}/oya-tiny-aya-gguf
+SPACE_REPO = "auto"              # {hf user}/oya
+
+MODEL_ID = "CohereLabs/tiny-aya-global"
+REPO = "Timidan/lexsi-hack"
+BRANCH = "main"
+WORK = "/tmp/oya"
+
+import os
+os.environ["OYA_PROMPT"] = PROMPT_STYLE
+os.makedirs(WORK, exist_ok=True)
+"""),
+    SETUP_CELLS[1],
+    ("code", RUN_HELPER + """
+run("pip install -q -U huggingface_hub safetensors")
+from huggingface_hub import HfApi, login, snapshot_download
+HF_WRITE_TOKEN = secret("HF_WRITE_TOKEN")
+assert HF_WRITE_TOKEN, "Add a HF_WRITE_TOKEN secret (Hugging Face token with write access)"
+login(token=HF_TOKEN)
+api = HfApi(token=HF_WRITE_TOKEN)
+user = api.whoami()["name"]
+ADAPTER_REPO = f"{user}/oya-tiny-aya-{RUN_NAME}" if ADAPTER_REPO == "auto" else ADAPTER_REPO
+GGUF_REPO = f"{user}/oya-tiny-aya-gguf" if GGUF_REPO == "auto" else GGUF_REPO
+SPACE_REPO = f"{user}/oya" if SPACE_REPO == "auto" else SPACE_REPO
+print("adapter:", ADAPTER_REPO, "| gguf:", GGUF_REPO, "| space:", SPACE_REPO)
+"""),
+    ("markdown", "## 1. Merge the adapter into the base weights"),
+    ("code", """
+base_dir = snapshot_download(MODEL_ID, token=HF_TOKEN)
+adapter_dir = snapshot_download(ADAPTER_REPO, token=HF_WRITE_TOKEN)
+run(f"{sys.executable} scripts/merge_lora.py --base {base_dir} --adapter {adapter_dir} --out {WORK}/merged")
+"""),
+    ("markdown", "## 2. Convert to GGUF and quantize (llama.cpp, in its own environment)"),
+    ("code", """
+run(f"rm -rf {WORK}/llama.cpp && git clone -q --depth 1 https://github.com/ggml-org/llama.cpp {WORK}/llama.cpp")
+# the converter pins its own torch/transformers versions, so it gets a separate virtual environment
+run(f"{sys.executable} -m venv {WORK}/conv && "
+    f"{WORK}/conv/bin/pip install -q -r {WORK}/llama.cpp/requirements/requirements-convert_hf_to_gguf.txt")
+run(f"{WORK}/conv/bin/python {WORK}/llama.cpp/convert_hf_to_gguf.py {WORK}/merged "
+    f"--outfile {WORK}/oya-f16.gguf --outtype f16")
+
+GGUF_PATH = f"{WORK}/oya-tiny-aya-{RUN_NAME}-{QUANT}.gguf"
+built = run(f"cmake -S {WORK}/llama.cpp -B {WORK}/llama.cpp/build -DGGML_CUDA=OFF -DLLAMA_CURL=OFF "
+            f"-DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF > /dev/null && "
+            f"cmake --build {WORK}/llama.cpp/build --target llama-quantize -j{os.cpu_count()} > /dev/null", check=False)
+if built == 0:
+    run(f"{WORK}/llama.cpp/build/bin/llama-quantize {WORK}/oya-f16.gguf {GGUF_PATH} {QUANT}")
+else:
+    print("could not build llama-quantize; using 8-bit instead")
+    QUANT = "Q8_0"
+    GGUF_PATH = f"{WORK}/oya-tiny-aya-{RUN_NAME}-Q8_0.gguf"
+    run(f"{WORK}/conv/bin/python {WORK}/llama.cpp/convert_hf_to_gguf.py {WORK}/merged "
+        f"--outfile {GGUF_PATH} --outtype q8_0")
+print(GGUF_PATH, f"{os.path.getsize(GGUF_PATH) / 1e9:.2f} GB")
+"""),
+    ("markdown", "## 3. Smoke test: the quantized model must still solve held-out tasks"),
+    ("code", """
+run("pip install -q llama-cpp-python==0.3.36 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu")
+sys.path.insert(0, ".")
+from naija_agent.evaluate import evaluate
+from naija_agent.llama_backend import LlamaChat
+from naija_agent.tasks import CATEGORIES, generate
+
+chat = LlamaChat(model_path=GGUF_PATH)
+# one held-out task per category in English and Yoruba, scored exactly like the full evaluation
+test = generate("test", 1, seed=2026)
+pick = [t for t in test if t.lang in ("en", "yo")][: 2 * len(CATEGORIES)]
+m = evaluate(pick, chat, f"{WORK}/gguf-smoke", batch_size=1, publish=False)
+print(f"GGUF smoke test: {m['overall']['success_rate']:.0%} of {len(pick)} tasks | chat mode: {chat.mode}")
+"""),
+    ("markdown", "## 4. Publish the GGUF model and the Space"),
+    ("code", """
+api.create_repo(GGUF_REPO, private=PRIVATE, exist_ok=True)
+card = "\\n".join([
+    "---", f"base_model: {MODEL_ID}", "license: cc-by-nc-4.0",
+    "tags: [gguf, llama.cpp, tool-calling, agents, yoruba, nigerian-pidgin, aya, lexsi-hackathon]", "---",
+    f"# Oya (Tiny Aya wallet agent), GGUF {QUANT}", "",
+    f"{MODEL_ID} fine-tuned with LoRA ({RUN_NAME}) for tool calling in English, Nigerian Pidgin and Yoruba,",
+    "merged and quantized with llama.cpp for CPU inference.",
+    f"Prompt format: `{PROMPT_STYLE}` style from https://github.com/{REPO} (`naija_agent/prompting.py`).",
+    f"Demo: https://huggingface.co/spaces/{SPACE_REPO}", "",
+    "Built with Tiny Aya by Cohere Labs (CC-BY-NC 4.0; Cohere Labs Acceptable Use Policy applies)."])
+api.upload_file(path_or_fileobj=card.encode(), path_in_repo="README.md", repo_id=GGUF_REPO)
+api.upload_file(path_or_fileobj=GGUF_PATH, path_in_repo=os.path.basename(GGUF_PATH), repo_id=GGUF_REPO)
+print("model: https://huggingface.co/" + GGUF_REPO)
+"""),
+    ("code", """
+import shutil
+SPACE_DIR = f"{WORK}/space"
+shutil.rmtree(SPACE_DIR, ignore_errors=True)
+shutil.copytree("space", SPACE_DIR)
+shutil.copytree("naija_agent", f"{SPACE_DIR}/naija_agent", ignore=shutil.ignore_patterns("__pycache__"))
+run(f"rm -rf {WORK}/results && git clone -q --depth 1 -b results https://github.com/{REPO}.git {WORK}/results")
+for name, run_name in (("fine-tuned", RUN_NAME), ("untrained", BASELINE_RUN)):
+    os.makedirs(f"{SPACE_DIR}/data/{name}", exist_ok=True)
+    for f in ("trajectories.jsonl", "scores.jsonl", "metrics.json"):
+        shutil.copy(f"{WORK}/results/runs/{run_name}/{f}", f"{SPACE_DIR}/data/{name}/{f}")
+for f in ("comparison.md", "loss.png"):
+    if os.path.exists(f"{WORK}/results/runs/{RUN_NAME}/{f}"):
+        shutil.copy(f"{WORK}/results/runs/{RUN_NAME}/{f}", f"{SPACE_DIR}/data/{f}")
+
+api.create_repo(SPACE_REPO, repo_type="space", space_sdk="gradio", private=PRIVATE, exist_ok=True)
+api.add_space_variable(SPACE_REPO, "OYA_GGUF_REPO", GGUF_REPO)
+api.add_space_variable(SPACE_REPO, "OYA_GGUF_FILE", os.path.basename(GGUF_PATH))
+api.add_space_variable(SPACE_REPO, "OYA_PROMPT", PROMPT_STYLE)
+if PRIVATE:   # a private Space needs a read token to download the private GGUF
+    api.add_space_secret(SPACE_REPO, "HF_TOKEN", HF_TOKEN)
+api.upload_folder(folder_path=SPACE_DIR, repo_id=SPACE_REPO, repo_type="space", commit_message=f"demo: {RUN_NAME}")
+print("Space: https://huggingface.co/spaces/" + SPACE_REPO, "(the first build takes a few minutes)")
+"""),
+])
+
+for name, book in (("01_setup_and_baseline.ipynb", baseline), ("02_train_and_eval.ipynb", train),
+                   ("03_publish_demo.ipynb", publish)):
     path = ROOT / "notebooks" / name
     path.write_text(json.dumps(book, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     print("wrote", path.relative_to(ROOT))
