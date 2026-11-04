@@ -80,17 +80,21 @@ Rows marked **test** are held out from training and used only for evaluation.
 | `airtime_contact.pcm.0` | Pidgin | train | Abeg send {amount} airtime give {contact}. |
 | `airtime_contact.pcm.1` | Pidgin | train | Buy {amount} card for {contact} abeg. |
 | `airtime_contact.pcm.2` | Pidgin | train | Make you recharge {contact} line with {amount}. |
-| `airtime_contact.pcm.3` | Pidgin | test | {contact} say im no get credit, abeg send am {amount}. |
+| `airtime_contact.pcm.3` | Pidgin | train | Abeg dash {contact} {amount} card. |
+| `airtime_contact.pcm.4` | Pidgin | test | {contact} say im no get credit, abeg send am {amount}. |
 | `airtime_contact.yo.0` | Yoruba | train | Ẹ bá mi fi airtime {amount} ránṣẹ́ sí {contact}. |
 | `airtime_contact.yo.1` | Yoruba | train | Ra káàdì {amount} fún {contact}. |
-| `airtime_contact.yo.2` | Yoruba | test | {contact} ò ní káàdì, fi {amount} ránṣẹ́ sí i. |
+| `airtime_contact.yo.2` | Yoruba | train | Fún {contact} ní káàdì {amount}. |
+| `airtime_contact.yo.3` | Yoruba | test | {contact} ò ní káàdì, fi {amount} ránṣẹ́ sí i. |
 | `airtime_contact.yo_en.0` | Yoruba-English mix | train | Jọ̀ọ́ send {amount} airtime sí {contact}. |
 | `airtime_contact.yo_en.1` | Yoruba-English mix | train | Buy {amount} card fún {contact} abeg. |
-| `airtime_contact.yo_en.2` | Yoruba-English mix | test | Ẹ bá mi recharge line {contact} with {amount}. |
+| `airtime_contact.yo_en.2` | Yoruba-English mix | train | Give {contact} {amount} airtime jọ̀ọ́. |
+| `airtime_contact.yo_en.3` | Yoruba-English mix | test | Ẹ bá mi recharge line {contact} with {amount}. |
 | `airtime_contact.en.0` | English | train | Send {amount} airtime to {contact}. |
 | `airtime_contact.en.1` | English | train | Buy {amount} recharge card for {contact}. |
 | `airtime_contact.en.2` | English | train | Top up {contact}'s line with {amount}. |
-| `airtime_contact.en.3` | English | test | Please get {amount} airtime for {contact}. |
+| `airtime_contact.en.3` | English | train | Give {contact} {amount} airtime. |
+| `airtime_contact.en.4` | English | test | Please get {amount} airtime for {contact}. |
 
 ### data_contact
 
@@ -134,16 +138,28 @@ Rows marked **test** are held out from training and used only for evaluation.
 |---|---|---|---|
 | `transfer_contact.pcm.0` | Pidgin | train | Abeg send {amount} give {contact}. |
 | `transfer_contact.pcm.1` | Pidgin | train | Transfer {amount} to {contact} account. |
-| `transfer_contact.pcm.2` | Pidgin | test | {contact} need {amount}, abeg send am. |
+| `transfer_contact.pcm.2` | Pidgin | train | Abeg dash {contact} {amount}. |
+| `transfer_contact.pcm.3` | Pidgin | train | I owe {contact} {amount}, abeg settle am. |
+| `transfer_contact.pcm.4` | Pidgin | train | Give {contact} {amount} make e use am for transport. |
+| `transfer_contact.pcm.5` | Pidgin | test | {contact} need {amount}, abeg send am. |
 | `transfer_contact.yo.0` | Yoruba | train | Fi {amount} ránṣẹ́ sí {contact}. |
 | `transfer_contact.yo.1` | Yoruba | train | Bá mi san {amount} sí àkáǹtì {contact}. |
-| `transfer_contact.yo.2` | Yoruba | test | {contact} nílò {amount}, jọ̀ọ́ fi ránṣẹ́ sí i. |
+| `transfer_contact.yo.2` | Yoruba | train | Fún {contact} ní {amount}. |
+| `transfer_contact.yo.3` | Yoruba | train | Mo jẹ {contact} ní {amount}, bá mi san án. |
+| `transfer_contact.yo.4` | Yoruba | train | Bá mi fún {contact} ní owó {amount}. |
+| `transfer_contact.yo.5` | Yoruba | test | {contact} nílò {amount}, jọ̀ọ́ fi ránṣẹ́ sí i. |
 | `transfer_contact.yo_en.0` | Yoruba-English mix | train | Jọ̀ọ́ send {amount} sí {contact}. |
 | `transfer_contact.yo_en.1` | Yoruba-English mix | train | Transfer {amount} fún {contact} abeg. |
-| `transfer_contact.yo_en.2` | Yoruba-English mix | test | Ẹ bá mi send {amount} to {contact} account. |
+| `transfer_contact.yo_en.2` | Yoruba-English mix | train | Give {contact} {amount} jọ̀ọ́, owó transport ni. |
+| `transfer_contact.yo_en.3` | Yoruba-English mix | train | Mo jẹ {contact} ní {amount}, settle am for me. |
+| `transfer_contact.yo_en.4` | Yoruba-English mix | train | Dash {contact} {amount} fún mi. |
+| `transfer_contact.yo_en.5` | Yoruba-English mix | test | Ẹ bá mi send {amount} to {contact} account. |
 | `transfer_contact.en.0` | English | train | Send {amount} to {contact}. |
 | `transfer_contact.en.1` | English | train | Transfer {amount} to {contact}'s account. |
-| `transfer_contact.en.2` | English | test | Please pay {contact} {amount}. |
+| `transfer_contact.en.2` | English | train | Give {contact} {amount}. |
+| `transfer_contact.en.3` | English | train | I owe {contact} {amount}, settle it for me. |
+| `transfer_contact.en.4` | English | train | Lend {contact} {amount} for me. |
+| `transfer_contact.en.5` | English | test | Please pay {contact} {amount}. |
 
 ### balance
 
@@ -174,23 +190,36 @@ Rows marked **test** are held out from training and used only for evaluation.
 | `missing_info.pcm.3` | Pidgin | train | Abeg send money give {contact}. |
 | `missing_info.pcm.4` | Pidgin | train | Abeg buy light of {amount}. |
 | `missing_info.pcm.5` | Pidgin | test | Abeg load data for {phone}. |
+| `missing_info.pcm.6` | Pidgin | train | Load {amount} credit for me. |
+| `missing_info.pcm.7` | Pidgin | train | Abeg dash {contact} small money. |
+| `missing_info.pcm.8` | Pidgin | train | Abeg I need airtime. |
 | `missing_info.yo.0` | Yoruba | train | Bá mi ra káàdì. |
 | `missing_info.yo.1` | Yoruba | train | Mo fẹ́ ra airtime. |
 | `missing_info.yo.2` | Yoruba | test | Ra káàdì {amount}. |
 | `missing_info.yo.3` | Yoruba | train | Fi owó ránṣẹ́ sí {contact}. |
 | `missing_info.yo.4` | Yoruba | train | Bá mi san owó iná {amount}. |
 | `missing_info.yo.5` | Yoruba | train | Ra data fún {phone}. |
+| `missing_info.yo.6` | Yoruba | train | Mo fẹ́ káàdì {amount}. |
+| `missing_info.yo.7` | Yoruba | train | Bá mi ra airtime {amount}. |
+| `missing_info.yo.8` | Yoruba | train | Fún {contact} ní owó díẹ̀. |
+| `missing_info.yo.9` | Yoruba | train | Iná mi ti tán, bá mi ra iná {amount}. |
 | `missing_info.yo_en.0` | Yoruba-English mix | train | Jọ̀ọ́ buy airtime for me. |
 | `missing_info.yo_en.1` | Yoruba-English mix | train | Buy {amount} card fún mi. |
 | `missing_info.yo_en.2` | Yoruba-English mix | train | Send owó sí {contact}. |
 | `missing_info.yo_en.3` | Yoruba-English mix | test | Jọ̀ọ́ pay {amount} for light. |
 | `missing_info.yo_en.4` | Yoruba-English mix | train | Load data fún {phone} jọ̀ọ́. |
+| `missing_info.yo_en.5` | Yoruba-English mix | train | Load {amount} airtime fún mi. |
+| `missing_info.yo_en.6` | Yoruba-English mix | train | Give {contact} owó. |
+| `missing_info.yo_en.7` | Yoruba-English mix | train | Mo need airtime jọ̀ọ́. |
 | `missing_info.en.0` | English | train | Buy airtime for me. |
 | `missing_info.en.1` | English | train | I need a recharge card. |
 | `missing_info.en.2` | English | train | Buy {amount} airtime. |
 | `missing_info.en.3` | English | test | Send money to {contact}. |
 | `missing_info.en.4` | English | train | Pay {amount} for my light. |
 | `missing_info.en.5` | English | train | Buy data for {phone}. |
+| `missing_info.en.6` | English | train | Get me {amount} recharge. |
+| `missing_info.en.7` | English | train | Give {contact} some money. |
+| `missing_info.en.8` | English | train | Subscribe {phone} to data. |
 
 ### chitchat
 

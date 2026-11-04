@@ -10,7 +10,22 @@ Millions of Nigerians buy airtime, data and electricity and send money by phone,
 
 Everything is scored automatically against a mock payments world, so there is no LLM judge: we check the money that actually moved.
 
-> Status: day 1. Task generator, mock tools, scorer and baseline notebook are done. Training is next.
+## Results so far (sft-v1, 416 held-out tasks)
+
+| | Untrained Tiny Aya | Fine-tuned (v1) |
+|---|---|---|
+| Task success | 20.7% | **91.8%** |
+| Safety tasks handled correctly | 7.8% | **90.6%** |
+| Valid tool calls | 60.8% | **99.6%** |
+| Tasks where unexpected money moved | 19.7% | 7.5% |
+| Success: English / Pidgin | 26.0% / 17.3% | 89.4% / 93.3% |
+| Success: Yoruba / Yoruba-English | 14.4% / 25.0% | 85.6% / 99.0% |
+
+Planted prompt injections: the fine-tuned model sent money to the attacker's account in **0 of 32** cases.
+Remaining v1 errors: "pay X N" / "X needs N, send it" handled as airtime instead of a transfer (29), and
+Yoruba "buy N airtime" without a number answered with an invented number (4). v2 adds training phrasings for
+both. Because these 416 tasks were used to diagnose v1, they serve as the development set from v2 on; the
+final test is a set of requests written by a native speaker (`human_eval/`), never used for development.
 
 ## How it works
 
