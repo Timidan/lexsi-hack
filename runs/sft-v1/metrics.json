@@ -1,0 +1,237 @@
+{
+  "overall": {
+    "n": 416,
+    "success_rate": 0.9182692307692307,
+    "valid_call_rate": 0.9962962962962963,
+    "tool_f1": 0.9477564102564102,
+    "avg_calls": 1.2980769230769231,
+    "avg_extra_calls": 0.009615384615384616,
+    "unexpected_payment_rate": 0.07451923076923077,
+    "parse_error_rate": 0.002403846153846154,
+    "no_tool_answer_rate": 0.0
+  },
+  "safety": {
+    "n": 128,
+    "success_rate": 0.90625,
+    "valid_call_rate": 0.9931506849315068,
+    "tool_f1": 0.928125,
+    "avg_calls": 1.140625,
+    "avg_extra_calls": 0.03125,
+    "unexpected_payment_rate": 0.0859375,
+    "parse_error_rate": 0.0078125,
+    "no_tool_answer_rate": 0.0
+  },
+  "by_lang": {
+    "en": {
+      "n": 104,
+      "success_rate": 0.8942307692307693,
+      "valid_call_rate": 0.9924242424242424,
+      "tool_f1": 0.9391025641025641,
+      "avg_calls": 1.2692307692307692,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.09615384615384616,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "pcm": {
+      "n": 104,
+      "success_rate": 0.9326923076923077,
+      "valid_call_rate": 1.0,
+      "tool_f1": 0.9596153846153845,
+      "avg_calls": 1.2788461538461537,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.0673076923076923,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "yo": {
+      "n": 104,
+      "success_rate": 0.8557692307692307,
+      "valid_call_rate": 0.9925925925925926,
+      "tool_f1": 0.8942307692307693,
+      "avg_calls": 1.2980769230769231,
+      "avg_extra_calls": 0.038461538461538464,
+      "unexpected_payment_rate": 0.1346153846153846,
+      "parse_error_rate": 0.009615384615384616,
+      "no_tool_answer_rate": 0.0
+    },
+    "yo_en": {
+      "n": 104,
+      "success_rate": 0.9903846153846154,
+      "valid_call_rate": 1.0,
+      "tool_f1": 0.9980769230769231,
+      "avg_calls": 1.3461538461538463,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    }
+  },
+  "by_category": {
+    "airtime_contact": {
+      "n": 32,
+      "success_rate": 1.0,
+      "valid_call_rate": 1.0,
+      "tool_f1": 1.0,
+      "avg_calls": 2.0,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "airtime_direct": {
+      "n": 32,
+      "success_rate": 1.0,
+      "valid_call_rate": 1.0,
+      "tool_f1": 1.0,
+      "avg_calls": 1.0,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "balance": {
+      "n": 32,
+      "success_rate": 1.0,
+      "valid_call_rate": 1.0,
+      "tool_f1": 1.0,
+      "avg_calls": 1.0,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "chitchat": {
+      "n": 32,
+      "success_rate": 1.0,
+      "valid_call_rate": null,
+      "tool_f1": 1.0,
+      "avg_calls": 0.0,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": null
+    },
+    "data_contact": {
+      "n": 32,
+      "success_rate": 0.96875,
+      "valid_call_rate": 0.9841269841269841,
+      "tool_f1": 0.9895833333333334,
+      "avg_calls": 1.96875,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "data_direct": {
+      "n": 32,
+      "success_rate": 1.0,
+      "valid_call_rate": 1.0,
+      "tool_f1": 1.0,
+      "avg_calls": 1.0,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "electricity": {
+      "n": 32,
+      "success_rate": 1.0,
+      "valid_call_rate": 1.0,
+      "tool_f1": 1.0,
+      "avg_calls": 1.0,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "injection": {
+      "n": 32,
+      "success_rate": 0.75,
+      "valid_call_rate": 0.9852941176470589,
+      "tool_f1": 0.8375,
+      "avg_calls": 2.125,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.21875,
+      "parse_error_rate": 0.03125,
+      "no_tool_answer_rate": 0.0
+    },
+    "insufficient_funds": {
+      "n": 32,
+      "success_rate": 1.0,
+      "valid_call_rate": 1.0,
+      "tool_f1": 1.0,
+      "avg_calls": 1.3125,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "missing_info": {
+      "n": 32,
+      "success_rate": 0.875,
+      "valid_call_rate": 1.0,
+      "tool_f1": 0.875,
+      "avg_calls": 0.125,
+      "avg_extra_calls": 0.125,
+      "unexpected_payment_rate": 0.125,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": null
+    },
+    "transfer_contact": {
+      "n": 32,
+      "success_rate": 0.34375,
+      "valid_call_rate": 1.0,
+      "tool_f1": 0.61875,
+      "avg_calls": 2.34375,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.625,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "transfer_direct": {
+      "n": 32,
+      "success_rate": 1.0,
+      "valid_call_rate": 1.0,
+      "tool_f1": 1.0,
+      "avg_calls": 2.0,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "unknown_contact": {
+      "n": 32,
+      "success_rate": 1.0,
+      "valid_call_rate": 1.0,
+      "tool_f1": 1.0,
+      "avg_calls": 1.0,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    }
+  },
+  "config": {
+    "model": "CohereLabs/tiny-aya-global",
+    "adapter": "outputs/sft-v1",
+    "train": {
+      "model_id": "CohereLabs/tiny-aya-global",
+      "max_len": 4096,
+      "epochs": 1.0,
+      "lr": 0.0002,
+      "grad_accum": 16,
+      "lora_r": 16,
+      "lora_alpha": 32,
+      "lora_dropout": 0.05,
+      "warmup_steps": 8,
+      "seed": 0,
+      "load_in_4bit": false,
+      "dtype": "torch.float16",
+      "train_examples": 2080,
+      "total_steps": 130
+    },
+    "n_tasks": 416,
+    "seconds": 4251.7
+  }
+}
