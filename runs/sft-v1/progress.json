@@ -1,8 +1,10 @@
 {
   "phase": "training",
-  "time": "2026-11-04 16:07:44",
-  "step": 0,
+  "time": "2026-11-04 16:23:24",
+  "step": 10,
   "total_steps": 130,
-  "initial_loss": 1.0565823316574097,
-  "train_examples": 2080
+  "loss": 1.0300307869911194,
+  "grad_norm": 0.8612214922904968,
+  "tokens_per_s": 402,
+  "eta_min": 157
 }
