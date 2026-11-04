@@ -10,6 +10,7 @@ rollouts produce, and our logs can be read by AuditKIT.
 from __future__ import annotations
 
 import json
+import os
 import re
 
 from .world import TOOL_SCHEMAS
@@ -38,9 +39,29 @@ TOOLS_FALLBACK_PROMPT = (
 TOOL_RESULT_FORMAT = "Tool result for {name}: {content}\nUse this result to answer the original question."
 
 
-def system_message(tools: list[dict] | None = None) -> str:
+PROMPT_STYLES = ("full", "compact")
+
+
+def prompt_style() -> str:
+    """'full' (default): tool schemas as indented JSON, exactly as AgentTune renders them.
+    'compact': same schemas, minified and without the {"type": "function"} wrapper,
+    about 40% fewer characters (faster training and CPU inference). Set with OYA_PROMPT."""
+    style = os.environ.get("OYA_PROMPT", "full")
+    if style not in PROMPT_STYLES:
+        raise ValueError(f"OYA_PROMPT must be one of {PROMPT_STYLES}, got {style!r}")
+    return style
+
+
+def system_message(tools: list[dict] | None = None, style: str | None = None) -> str:
     tools = TOOL_SCHEMAS if tools is None else tools
-    return SYSTEM_PROMPT + "\n\n" + TOOLS_FALLBACK_PROMPT.format(tools=json.dumps(tools, indent=2))
+    style = style or prompt_style()
+    if style == "compact":
+        slim = [{"name": t["function"]["name"], "description": t["function"]["description"],
+                 "parameters": t["function"]["parameters"]} for t in tools]
+        rendered = json.dumps(slim, separators=(",", ":"), ensure_ascii=False)
+    else:
+        rendered = json.dumps(tools, indent=2)
+    return SYSTEM_PROMPT + "\n\n" + TOOLS_FALLBACK_PROMPT.format(tools=rendered)
 
 
 def format_call_turn(calls: list[dict]) -> str:

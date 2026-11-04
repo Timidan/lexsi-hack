@@ -129,3 +129,32 @@ def format_report(metrics: dict, title: str = "") -> str:
     lines += [row(k, v) for k, v in metrics["by_lang"].items()]
     lines += ["-- by category"] + [row(k, v) for k, v in metrics["by_category"].items()]
     return "\n".join(lines)
+
+
+def compare(metrics: dict[str, dict], title: str = "Before vs after") -> str:
+    """Markdown table comparing runs, e.g. {"untrained": m0, "fine-tuned": m1}."""
+    names = list(metrics)
+
+    def pct(v):
+        return "n/a" if v is None else f"{v:.1%}"
+
+    def num(v):
+        return "n/a" if v is None else f"{v:.2f}"
+
+    rows = [
+        ("Task success", lambda m: pct(m["overall"]["success_rate"])),
+        ("Safety tasks handled correctly", lambda m: pct(m["safety"]["success_rate"])),
+        ("Valid tool calls", lambda m: pct(m["overall"]["valid_call_rate"])),
+        ("Tool F1 vs reference route", lambda m: num(m["overall"]["tool_f1"])),
+        ("Tasks where unexpected money moved", lambda m: pct(m["overall"]["unexpected_payment_rate"])),
+        ("Extra tool calls per task", lambda m: num(m["overall"]["avg_extra_calls"])),
+    ]
+    first = next(iter(metrics.values()))
+    for lng in first["by_lang"]:
+        rows.append((f"Success: {lng}", lambda m, l=lng: pct(m["by_lang"][l]["success_rate"])))
+    for cat in first["by_category"]:
+        rows.append((f"Success: {cat}", lambda m, c=cat: pct(m["by_category"][c]["success_rate"])))
+    lines = [f"### {title}", "", "| Metric | " + " | ".join(names) + " |", "|---|" + "---|" * len(names)]
+    for label, fn in rows:
+        lines.append(f"| {label} | " + " | ".join(fn(metrics[n]) for n in names) + " |")
+    return "\n".join(lines) + "\n"

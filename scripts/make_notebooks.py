@@ -108,34 +108,6 @@ from naija_agent.auditkit_bridge import auditkit_eval
 print(auditkit_eval(tasks, RUN_DIR).summary())
 """)
 
-PUSH_CELL = ("code", """
-# Publish this run's results to the `results` branch (needs GITHUB_TOKEN with Contents: Read and write).
-# Model weights are not pushed, only metrics, scores, trajectories and the training log.
-import shutil, tempfile
-if GITHUB_TOKEN:
-    dst = tempfile.mkdtemp()
-    push_url = f"https://x-access-token:{GITHUB_TOKEN}@github.com/{REPO}.git"
-    def git(*args, cwd=dst):
-        return subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True)
-    if git("clone", "-q", "--depth", "1", "-b", "results", push_url, dst, cwd=".").returncode != 0:
-        git("init", "-q"); git("checkout", "-q", "-b", "results"); git("remote", "add", "origin", push_url)
-    target = os.path.join(dst, "runs", os.path.basename(RUN_DIR))
-    shutil.rmtree(target, ignore_errors=True)
-    shutil.copytree(RUN_DIR, target)
-    for extra in ("train_log.json", "loss.png"):
-        src = os.path.join(globals().get("ADAPTER_DIR", ""), extra)
-        if os.path.exists(src):
-            shutil.copy(src, target)
-    git("add", "-A")
-    git("-c", "user.name=kaggle-runner", "-c", "user.email=kaggle-runner@users.noreply.github.com",
-        "commit", "-q", "-m", f"results: {os.path.basename(RUN_DIR)}")
-    r = git("push", "-q", "origin", "results")
-    print("pushed results to branch 'results'" if r.returncode == 0
-          else "push failed (token needs write access?): " + r.stderr.replace(GITHUB_TOKEN, "***"))
-else:
-    print("No GITHUB_TOKEN: results stay in this notebook's Output tab")
-""")
-
 
 baseline = nb([
     ("markdown", """
@@ -184,55 +156,83 @@ metrics = evaluate(tasks, policy, RUN_DIR, batch_size=BATCH_SIZE,
 """),
     AUDITKIT_CELL,
     FAILURES_CELL,
-    PUSH_CELL,
 ])
 
 train = nb([
     ("markdown", """
-# 02 · Fine-tune Tiny Aya (LoRA) and re-evaluate
+# 02 · Fine-tune Tiny Aya (LoRA) and compare before vs after
 
-Trains a LoRA adapter on the reference conversations (assistant turns only), then scores the tuned model on the **same 416 held-out test tasks** as notebook 01, so the numbers compare directly.
+1. Builds the training chats and trains a LoRA adapter on the assistant turns only, using **both GPUs** when the notebook has two (falls back to one GPU automatically if that fails).
+2. Scores the **fine-tuned** and the **untrained** model on the same 416 held-out test tasks, at the same time, one model per GPU, and prints a before/after table.
+3. Publishes live progress and all results to the repo's `results` branch (needs a `GITHUB_TOKEN` secret with write access).
 
-Roughly 1.5 to 3 hours on one T4 for one epoch; the log prints an ETA. The adapter is saved every 40 steps, so a timeout still leaves a usable checkpoint.
+About 1 to 1.5 hours on Kaggle's T4 x2 with the compact prompt.
 """ + SETUP_HELP + """
-Optional: a `HF_WRITE_TOKEN` secret (Hugging Face *write* token) uploads the adapter and logs to a private Hugging Face repo at the end.
+Optional: a `HF_WRITE_TOKEN` secret (Hugging Face *write* token) uploads the adapter to a private Hugging Face repo at the end.
 """),
     ("code", """
 # ---- settings ----
-RUN_NAME = "sft-v1"
-TRAIN_PER_CELL = 40      # training chats per (category, language): 40 -> 2,080 chats
+RUN_NAME = "sft-v2"
+PROMPT_STYLE = "compact"   # "compact" = 40% shorter prompt (faster); "full" = the prompt sft-v1 used
+TRAIN_PER_CELL = 40        # training chats per (category, language): 40 -> 2,080 chats
 EPOCHS = 1.0
 LR = 2e-4
-GRAD_ACCUM = 16          # effective batch size
+GRAD_ACCUM = 16            # effective batch size (split across GPUs)
 LORA_R, LORA_ALPHA = 16, 32
 MAX_LEN = 4096
-TIME_BUDGET_H = 8.5      # stop training early (and still evaluate) before Kaggle's 12 h limit
-EVAL_LIMIT = None        # None = all 416 test tasks
+TIME_BUDGET_H = 8.0        # stop training early (and still evaluate) well before Kaggle's 12 h limit
+EVAL_LIMIT = None          # None = all 416 test tasks
+EVAL_BASELINE = True       # also score the untrained model with the same prompt (before/after table)
 BATCH_SIZE = 8
-HUB_REPO = None          # e.g. "your-hf-username/oya-tiny-aya-lora" (needs HF_WRITE_TOKEN)
+HUB_REPO = None            # e.g. "your-hf-username/oya-tiny-aya-lora" (needs HF_WRITE_TOKEN)
 
 MODEL_ID = "CohereLabs/tiny-aya-global"
 REPO = "Timidan/lexsi-hack"
 BRANCH = "main"
 ADAPTER_DIR = f"outputs/{RUN_NAME}"
 RUN_DIR = f"runs/{RUN_NAME}"
+BASE_RUN_DIR = f"runs/baseline-{PROMPT_STYLE}"
 
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["OYA_PROMPT"] = PROMPT_STYLE            # used by data building, training and evaluation
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+os.environ["PYTHONUNBUFFERED"] = "1"
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 """),
     *SETUP_CELLS,
-    ("markdown", "## Train"),
+    ("markdown", "## Train (both GPUs if available)"),
     ("code", """
-import sys, torch, transformers
+import json, sys, torch, transformers
 sys.path.insert(0, ".")
-print("torch", torch.__version__, "| transformers", transformers.__version__)
-from naija_agent.sft import train_lora
+print("torch", torch.__version__, "| transformers", transformers.__version__, "| GPUs:", torch.cuda.device_count())
 
-log = train_lora(MODEL_ID, "data/sft_train.jsonl", ADAPTER_DIR, val_path="data/sft_val.jsonl",
-                 max_len=MAX_LEN, epochs=EPOCHS, lr=LR, grad_accum=GRAD_ACCUM,
-                 lora_r=LORA_R, lora_alpha=LORA_ALPHA, time_budget_s=TIME_BUDGET_H * 3600)
-print(f"trained in {log['seconds'] / 60:.0f} min | val loss: {[v['loss'] for v in log['val']]}")
+from huggingface_hub import snapshot_download
+snapshot_download(MODEL_ID)                     # download once, before the GPU workers start
+if GITHUB_TOKEN:
+    os.environ["GITHUB_TOKEN"] = GITHUB_TOKEN   # lets the training workers publish live progress
+
+def run(cmd):
+    print("$", cmd, flush=True)
+    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
+    for line in p.stdout:
+        print(line, end="", flush=True)
+    return p.wait()
+
+NGPU = torch.cuda.device_count()
+args = (f"--model {MODEL_ID} --out {ADAPTER_DIR} --epochs {EPOCHS} --lr {LR} --grad-accum {GRAD_ACCUM} "
+        f"--lora-r {LORA_R} --lora-alpha {LORA_ALPHA} --max-len {MAX_LEN} --time-budget-h {TIME_BUDGET_H}")
+rc = 1
+if NGPU >= 2:
+    rc = run(f"{sys.executable} -m torch.distributed.run --standalone --nproc_per_node={NGPU} scripts/train.py {args}")
+    if rc != 0:
+        print(f"\\n*** {NGPU}-GPU training failed (exit code {rc}); retrying on one GPU ***\\n", flush=True)
+if rc != 0:
+    rc = run(f"CUDA_VISIBLE_DEVICES=0 {sys.executable} scripts/train.py {args}")
+assert rc == 0, "training failed: see the log above"
+
+log = json.load(open(f"{ADAPTER_DIR}/train_log.json"))
+print(f"trained in {log['seconds'] / 60:.0f} min on {log['config']['gpus']} GPU(s) | val loss:",
+      [round(v["loss"], 4) for v in log["val"] if v["loss"] is not None])
 """),
     ("code", """
 import matplotlib.pyplot as plt
@@ -244,25 +244,45 @@ plt.plot([v["step"] for v in vals], [v["loss"] for v in vals], "o-", label="val"
 plt.xlabel("step"); plt.ylabel("loss (assistant tokens)"); plt.legend(); plt.title(RUN_NAME)
 plt.tight_layout(); plt.savefig(f"{ADAPTER_DIR}/loss.png", dpi=150); plt.show()
 """),
-    ("markdown", "## Evaluate the tuned model on the held-out test set"),
+    ("markdown", "## Score fine-tuned vs untrained on the same held-out test set"),
     ("code", """
 import gc
 gc.collect(); torch.cuda.empty_cache()
-
+from naija_agent.evaluate import evaluate_parallel, load_tasks
 from naija_agent.hf_policy import HFPolicy
-from naija_agent.runner import initial_messages
-from naija_agent.evaluate import evaluate, load_tasks
+from naija_agent.scoring import compare
 
-policy = HFPolicy(MODEL_ID, adapter=ADAPTER_DIR, max_new_tokens=256)
 tasks = load_tasks("data/tasks_test.jsonl", EVAL_LIMIT)
-metrics = evaluate(tasks, policy, RUN_DIR, batch_size=BATCH_SIZE,
-                   config={"model": MODEL_ID, "adapter": ADAPTER_DIR, "train": log["config"]})
+jobs = [{"name": "fine-tuned", "out_dir": RUN_DIR,
+         "make_policy": lambda d: HFPolicy(MODEL_ID, adapter=ADAPTER_DIR, device=d),
+         "config": {"model": MODEL_ID, "adapter": ADAPTER_DIR, "train": log["config"]}}]
+if EVAL_BASELINE:
+    jobs.append({"name": "untrained", "out_dir": BASE_RUN_DIR,
+                 "make_policy": lambda d: HFPolicy(MODEL_ID, device=d),
+                 "config": {"model": MODEL_ID, "adapter": None}})
+metrics = evaluate_parallel(tasks, jobs, batch_size=BATCH_SIZE)
+
+if EVAL_BASELINE:
+    table = compare({"untrained": metrics["untrained"], "fine-tuned": metrics["fine-tuned"]},
+                    title=f"{RUN_NAME}: before vs after ({len(tasks)} held-out test tasks, {PROMPT_STYLE} prompt)")
+    open(f"{RUN_DIR}/comparison.md", "w").write(table)
+    print(table)
 """),
-    AUDITKIT_CELL,
-    SAMPLES_CELL,
+    ("code", """
+# Independent second opinion with Lexsi Labs' AuditKIT
+from naija_agent.auditkit_bridge import auditkit_eval
+for d in [RUN_DIR] + ([BASE_RUN_DIR] if EVAL_BASELINE else []):
+    print(f"== AuditKIT: {d} ==")
+    print(auditkit_eval(tasks, d).summary(), "\\n")
+"""),
+    ("code", """
+# The five sample requests, answered by the fine-tuned model
+from naija_agent.runner import initial_messages
+policy = HFPolicy(MODEL_ID, adapter=ADAPTER_DIR)
+""" + SAMPLES_CELL[1]),
     FAILURES_CELL,
     ("code", """
-# Optional: upload adapter + logs to a private Hugging Face repo
+# Optional: upload the adapter (+ eval results) to a private Hugging Face repo
 HF_WRITE_TOKEN = secret("HF_WRITE_TOKEN")
 if HUB_REPO and HF_WRITE_TOKEN:
     import shutil
@@ -275,7 +295,16 @@ if HUB_REPO and HF_WRITE_TOKEN:
 else:
     print("Skipping upload. The adapter is in the Output tab under lexsi-hack/" + ADAPTER_DIR)
 """),
-    PUSH_CELL,
+    ("code", """
+# Publish the training log, loss curve and comparison table (eval results were published by evaluate())
+from naija_agent.publish import Publisher
+pub = Publisher(RUN_NAME)
+files = {"train_log.json": f"{ADAPTER_DIR}/train_log.json", "loss.png": f"{ADAPTER_DIR}/loss.png"}
+if os.path.exists(f"{RUN_DIR}/comparison.md"):
+    files["comparison.md"] = f"{RUN_DIR}/comparison.md"
+ok = pub.publish(files, f"{RUN_NAME}: training log and comparison", force=True)
+print("published to the 'results' branch" if ok else ("nothing new to publish" if pub.enabled else "publishing off (no GITHUB_TOKEN)"))
+"""),
 ])
 
 for name, book in (("01_setup_and_baseline.ipynb", baseline), ("02_train_and_eval.ipynb", train)):

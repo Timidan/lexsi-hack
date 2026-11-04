@@ -116,6 +116,26 @@ class BadPolicies(unittest.TestCase):
         self.assertIn("lookup_account", ep.calls[0].result["error"])
 
 
+class PromptStyles(unittest.TestCase):
+    def test_compact_has_same_tools_and_is_shorter(self):
+        import json as _json, os
+        from naija_agent.prompting import system_message
+        from naija_agent.world import TOOL_NAMES
+        full, compact = system_message(style="full"), system_message(style="compact")
+        self.assertLess(len(compact), 0.7 * len(full))
+        start = compact.index("[{")
+        tools, _ = _json.JSONDecoder().raw_decode(compact[start:])
+        self.assertEqual([t["name"] for t in tools], TOOL_NAMES)
+        os.environ["OYA_PROMPT"] = "compact"
+        try:
+            self.assertEqual(system_message(), compact)
+            # gold policy still scores 100% under the compact prompt
+            scores, m = _run_all(TEST[:60], gold_policy)
+            self.assertEqual(m["overall"]["success_rate"], 1.0)
+        finally:
+            del os.environ["OYA_PROMPT"]
+
+
 class Parser(unittest.TestCase):
     def test_formats(self):
         self.assertEqual(parse_tool_calls('[{"tool_name": "check_balance", "parameters": {}}]'),

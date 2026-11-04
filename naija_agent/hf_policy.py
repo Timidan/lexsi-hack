@@ -11,7 +11,7 @@ DEFAULT_MODEL = "CohereLabs/tiny-aya-global"
 
 class HFPolicy:
     def __init__(self, model_id: str = DEFAULT_MODEL, adapter: str | None = None,
-                 load_in_4bit: bool = False, max_new_tokens: int = 256):
+                 load_in_4bit: bool = False, max_new_tokens: int = 256, device: str | None = None):
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
@@ -22,7 +22,9 @@ class HFPolicy:
         self.tok.padding_side = "left"
         if self.tok.pad_token is None:
             self.tok.pad_token = self.tok.eos_token
-        kwargs = {"device_map": "auto", "dtype": self.dtype}
+        # one whole model per GPU (default: the first GPU); "auto" would split it across GPUs and run slower
+        device_map = {"": device} if device else ({"": 0} if torch.cuda.is_available() else "cpu")
+        kwargs = {"device_map": device_map, "dtype": self.dtype}
         if load_in_4bit:
             kwargs["quantization_config"] = BitsAndBytesConfig(
                 load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=self.dtype)

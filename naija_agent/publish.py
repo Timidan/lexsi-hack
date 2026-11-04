@@ -2,9 +2,10 @@
 
 Kaggle and Colab logs are not reachable from outside, so runs push small
 files (progress.json, train_log.json, metrics, trajectories) to GitHub as they
-go. Enabled automatically when a GITHUB_TOKEN with write access is available
-(Kaggle secret, Colab secret or environment variable). Set OYA_PUBLISH=0 to
-turn it off. Model weights are never pushed.
+go. On by default only inside Kaggle or Colab notebooks, when a GITHUB_TOKEN
+with write access is available there. Anywhere else (a laptop, CI, a dev
+container) it is off unless OYA_PUBLISH=1; OYA_PUBLISH=0 turns it off
+everywhere. Model weights are never pushed.
 """
 
 from __future__ import annotations
@@ -18,6 +19,21 @@ from pathlib import Path
 
 REPO = os.environ.get("OYA_REPO", "Timidan/lexsi-hack")
 BRANCH = "results"
+
+
+def _in_notebook_gpu_service() -> bool:
+    if os.environ.get("KAGGLE_KERNEL_RUN_TYPE") or os.environ.get("KAGGLE_URL_BASE"):
+        return True
+    if os.environ.get("COLAB_RELEASE_TAG") or os.environ.get("COLAB_GPU"):
+        return True
+    return False
+
+
+def publishing_wanted() -> bool:
+    flag = os.environ.get("OYA_PUBLISH")
+    if flag == "0":
+        return False
+    return flag == "1" or _in_notebook_gpu_service()
 
 
 def _secret(name: str) -> str | None:
@@ -42,7 +58,7 @@ class Publisher:
         self.name = name
         self.min_interval = min_interval
         self.last = 0.0
-        self.token = None if os.environ.get("OYA_PUBLISH") == "0" else (token or _secret("GITHUB_TOKEN"))
+        self.token = (token or _secret("GITHUB_TOKEN")) if publishing_wanted() else None
         self.dir: str | None = None
         self.error: str | None = None
 

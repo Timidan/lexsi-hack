@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 import random
 import time
 from pathlib import Path
@@ -84,7 +85,13 @@ def train_lora(model_id: str, train_path: str, out_dir: str, *, val_path: str | 
                lora_r: int = 16, lora_alpha: int = 32, lora_dropout: float = 0.05, warmup_steps: int = 8,
                log_every: int = 5, save_every: int = 40, seed: int = 0, load_in_4bit: bool = False,
                time_budget_s: float | None = None) -> dict:
-    """Train a LoRA adapter and save it to out_dir. Returns the training log."""
+    """Train a LoRA adapter and save it to out_dir. Returns the training log.
+
+    Runs on one GPU, or on several when launched with torchrun (one process per
+    GPU): each process trains on its own share of every batch, the LoRA
+    gradients are summed across GPUs before each optimizer step, and only
+    process 0 prints, saves and publishes. Results match single-GPU training
+    with the same effective batch size (grad_accum)."""
     from .compat import remove_old_torchao
 
     remove_old_torchao()
@@ -92,18 +99,39 @@ def train_lora(model_id: str, train_path: str, out_dir: str, *, val_path: str | 
     from peft import LoraConfig, get_peft_model
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
+    from .prompting import prompt_style
     from .publish import Publisher
+
+    world = int(os.environ.get("WORLD_SIZE", "1"))
+    rank = int(os.environ.get("RANK", "0"))
+    local = int(os.environ.get("LOCAL_RANK", "0"))
+    distributed = world > 1
+    if distributed:
+        import torch.distributed as dist
+        from datetime import timedelta
+
+        torch.cuda.set_device(local)
+        dist.init_process_group("nccl", timeout=timedelta(minutes=60))
+        if grad_accum % world:
+            raise ValueError(f"grad_accum ({grad_accum}) must be divisible by the number of GPUs ({world})")
+    main = rank == 0
+
+    def say(*args, **kw):
+        if main:
+            print(*args, **kw, flush=True)
 
     random.seed(seed)
     torch.manual_seed(seed)
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    pub = Publisher(out.name)
+    pub = Publisher(out.name) if main else None
     progress_path = out / "progress.json"
 
     def report(force: bool = False, **status) -> None:
+        if not main:
+            return
         progress_path.write_text(json.dumps({"phase": "training", "time": time.strftime("%Y-%m-%d %H:%M:%S"),
-                                             **status}, indent=2))
+                                             "gpus": world, **status}, indent=2))
         files = {"progress.json": progress_path}
         if (out / "train_log.json").exists():
             files["train_log.json"] = out / "train_log.json"
@@ -114,18 +142,19 @@ def train_lora(model_id: str, train_path: str, out_dir: str, *, val_path: str | 
     val = load_examples(tok, val_path, max_len)[0] if val_path else []
     lens = sorted(len(e["input_ids"]) for e in train)
     n_lab = sum(sum(t != -100 for t in e["labels"]) for e in train)
-    print(f"train examples: {len(train)} (dropped {dropped} > {max_len} tokens) | "
-          f"tokens median {lens[len(lens) // 2]}, max {lens[-1]} | trained tokens {n_lab:,} "
-          f"({n_lab / sum(lens):.1%} of all)")
+    say(f"train examples: {len(train)} (dropped {dropped} > {max_len} tokens) | "
+        f"tokens median {lens[len(lens) // 2]}, max {lens[-1]} | trained tokens {n_lab:,} "
+        f"({n_lab / sum(lens):.1%} of all) | prompt style: {prompt_style()} | GPUs: {world}")
 
     bf16 = torch.cuda.is_bf16_supported(including_emulation=False)
     dtype = torch.bfloat16 if bf16 else torch.float16
-    kwargs = {"dtype": dtype, "device_map": {"": 0}}
+    kwargs = {"dtype": dtype, "device_map": {"": local}}
     if load_in_4bit:
         kwargs["quantization_config"] = BitsAndBytesConfig(
             load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=dtype)
     model = AutoModelForCausalLM.from_pretrained(model_id, **kwargs)
     model.config.use_cache = False
+    say("attention implementation:", getattr(model.config, "_attn_implementation", "?"))
     if load_in_4bit:
         from peft import prepare_model_for_kbit_training
         model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)
@@ -134,29 +163,41 @@ def train_lora(model_id: str, train_path: str, out_dir: str, *, val_path: str | 
         model.enable_input_require_grads()
     model = get_peft_model(model, LoraConfig(r=lora_r, lora_alpha=lora_alpha, lora_dropout=lora_dropout,
                                              target_modules="all-linear", task_type="CAUSAL_LM"))
-    model.print_trainable_parameters()
+    if main:
+        model.print_trainable_parameters()
     params = [p for p in model.parameters() if p.requires_grad]
     for p in params:                       # LoRA weights in fp32 so the fp16 grad scaler can work
         p.data = p.data.float()
+    if distributed:                        # start every GPU from identical LoRA weights
+        for p in params:
+            dist.broadcast(p.data, src=0)
 
     total_steps = max(1, math.ceil(len(train) * epochs / grad_accum))
     opt = torch.optim.AdamW(params, lr=lr, weight_decay=0.0)
     sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda s: min(1.0, (s + 1) / warmup_steps) *
                                               0.5 * (1 + math.cos(math.pi * min(s, total_steps) / total_steps)))
     scaler = torch.amp.GradScaler("cuda", enabled=(dtype == torch.float16))
-    dev = torch.device("cuda:0")
+    dev = torch.device(f"cuda:{local}")
 
     def to_t(ex):
         return (torch.tensor(ex["input_ids"], device=dev), torch.tensor(ex["labels"], device=dev))
+
+    def all_sum(values: list[float]) -> list[float]:
+        if not distributed:
+            return values
+        t = torch.tensor(values, device=dev, dtype=torch.float64)
+        dist.all_reduce(t)
+        return t.tolist()
 
     def val_loss():
         if not val:
             return None
         model.eval()
         with torch.no_grad(), torch.autocast("cuda", dtype=dtype):
-            losses = [_assistant_loss(model, *to_t(ex)).item() for ex in val]
+            losses = [_assistant_loss(model, *to_t(ex)).item() for ex in val[rank::world]]
         model.train()
-        return sum(losses) / len(losses)
+        total, count = all_sum([sum(losses), len(losses)])
+        return total / max(count, 1)
 
     # sanity check before spending GPU time: the loss must be finite
     model.train()
@@ -164,23 +205,28 @@ def train_lora(model_id: str, train_path: str, out_dir: str, *, val_path: str | 
         first = _assistant_loss(model, *to_t(train[0])).item()
     if not math.isfinite(first):
         raise RuntimeError(f"initial loss is {first}; try load_in_4bit=True or a bf16 GPU")
-    print(f"initial loss {first:.3f} | steps {total_steps} | effective batch {grad_accum} | dtype {dtype}")
+    say(f"initial loss {first:.3f} | steps {total_steps} | effective batch {grad_accum} "
+        f"({grad_accum // world} per GPU x {world}) | dtype {dtype}")
     report(force=True, step=0, total_steps=total_steps, initial_loss=first, train_examples=len(train))
-    print("live progress -> GitHub 'results' branch" if pub.enabled else "live progress publishing off (no GITHUB_TOKEN)")
+    if main:
+        say("live progress -> GitHub 'results' branch" if pub.enabled else "live progress publishing off (no GITHUB_TOKEN)")
 
     config = {"model_id": model_id, "max_len": max_len, "epochs": epochs, "lr": lr, "grad_accum": grad_accum,
               "lora_r": lora_r, "lora_alpha": lora_alpha, "lora_dropout": lora_dropout,
               "warmup_steps": warmup_steps, "seed": seed, "load_in_4bit": load_in_4bit, "dtype": str(dtype),
-              "train_examples": len(train), "total_steps": total_steps}
+              "train_examples": len(train), "total_steps": total_steps, "gpus": world,
+              "prompt_style": prompt_style()}
     log = {"config": config, "steps": [], "val": []}
     log["val"].append({"step": 0, "loss": val_loss()})
 
+    # same shuffled order on every GPU (same seed); each GPU takes every world-th example
     order: list[int] = []
     while len(order) < total_steps * grad_accum:
         idx = list(range(len(train)))
         random.shuffle(idx)
         order += idx
-    order = order[: total_steps * grad_accum]
+    order = order[: total_steps * grad_accum][rank::world]
+    accum_here = grad_accum // world
 
     t0, tokens, run_loss = time.time(), 0, 0.0
     opt.zero_grad(set_to_none=True)
@@ -191,9 +237,18 @@ def train_lora(model_id: str, train_path: str, out_dir: str, *, val_path: str | 
         scaler.scale(loss).backward()
         run_loss += loss.item()
         tokens += ids.numel()
-        if (i + 1) % grad_accum:
+        if (i + 1) % accum_here:
             continue
-        step = (i + 1) // grad_accum
+        step = (i + 1) // accum_here
+        if distributed:                    # sum the (scaled) LoRA gradients across GPUs
+            grads = [p.grad for p in params if p.grad is not None]
+            flat = torch.cat([g.reshape(-1) for g in grads])
+            dist.all_reduce(flat)
+            offset = 0
+            for g in grads:
+                n = g.numel()
+                g.copy_(flat[offset:offset + n].view_as(g))
+                offset += n
         scaler.unscale_(opt)
         gnorm = torch.nn.utils.clip_grad_norm_(params, 1.0).item()
         scaler.step(opt)
@@ -201,29 +256,39 @@ def train_lora(model_id: str, train_path: str, out_dir: str, *, val_path: str | 
         sched.step()
         opt.zero_grad(set_to_none=True)
         elapsed = time.time() - t0
-        log["steps"].append({"step": step, "loss": run_loss, "grad_norm": gnorm, "lr": sched.get_last_lr()[0],
+        step_loss, all_tokens = all_sum([run_loss, float(tokens)])
+        run_loss = 0.0
+        log["steps"].append({"step": step, "loss": step_loss, "grad_norm": gnorm, "lr": sched.get_last_lr()[0],
                              "elapsed_s": round(elapsed, 1)})
         if step % log_every == 0 or step == total_steps:
             eta = elapsed / step * (total_steps - step)
-            print(f"step {step}/{total_steps} loss {run_loss:.4f} grad_norm {gnorm:.2f} "
-                  f"lr {sched.get_last_lr()[0]:.2e} | {tokens / elapsed:.0f} tok/s | eta {eta / 60:.0f} min", flush=True)
-            report(step=step, total_steps=total_steps, loss=run_loss, grad_norm=gnorm,
-                   tokens_per_s=round(tokens / elapsed), eta_min=round(eta / 60))
-        run_loss = 0.0
+            say(f"step {step}/{total_steps} loss {step_loss:.4f} grad_norm {gnorm:.2f} "
+                f"lr {sched.get_last_lr()[0]:.2e} | {all_tokens / elapsed:.0f} tok/s | eta {eta / 60:.0f} min")
+            report(step=step, total_steps=total_steps, loss=step_loss, grad_norm=gnorm,
+                   tokens_per_s=round(all_tokens / elapsed), eta_min=round(eta / 60))
         if step % save_every == 0 or step == total_steps:
-            model.save_pretrained(out)
+            if main:
+                model.save_pretrained(out)
             log["val"].append({"step": step, "loss": val_loss()})
-            print(f"  saved adapter at step {step} | val loss {log['val'][-1]['loss']}", flush=True)
-            (out / "train_log.json").write_text(json.dumps(log, indent=2))
-        if time_budget_s and elapsed > time_budget_s:
-            print(f"time budget reached at step {step}; stopping early")
-            model.save_pretrained(out)
+            say(f"  saved adapter at step {step} | val loss {log['val'][-1]['loss']}")
+            if main:
+                (out / "train_log.json").write_text(json.dumps(log, indent=2))
+        # every GPU must agree on stopping, or the next gradient sum would hang
+        over = 1.0 if (time_budget_s and elapsed > time_budget_s) else 0.0
+        if all_sum([over])[0] > 0:
+            say(f"time budget reached at step {step}; stopping early")
+            if main:
+                model.save_pretrained(out)
             log["stopped_early_at"] = step
             break
 
     log["seconds"] = round(time.time() - t0, 1)
-    (out / "train_log.json").write_text(json.dumps(log, indent=2))
-    tok.save_pretrained(out)
+    if main:
+        (out / "train_log.json").write_text(json.dumps(log, indent=2))
+        tok.save_pretrained(out)
     report(force=True, step=log["steps"][-1]["step"] if log["steps"] else 0, total_steps=total_steps,
            done=True, minutes=round(log["seconds"] / 60), val=log["val"])
+    if distributed:
+        dist.barrier()
+        dist.destroy_process_group()
     return log

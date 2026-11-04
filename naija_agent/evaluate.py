@@ -6,6 +6,7 @@ import json
 import time
 from pathlib import Path
 
+from .prompting import prompt_style
 from .runner import BatchPolicy, run_episodes, to_agenttune_record
 from .scoring import aggregate, format_report, score_episode
 from .tasks import Task
@@ -43,7 +44,8 @@ def evaluate(tasks: list[Task], policy: BatchPolicy, out_dir: str | Path, batch_
     episodes = run_episodes(tasks, policy, batch_size=batch_size, progress=progress)
     scores = [score_episode(t, e) for t, e in zip(tasks, episodes)]
     metrics = aggregate(tasks, scores)
-    metrics["config"] = {**(config or {}), "n_tasks": len(tasks), "seconds": round(time.time() - t0, 1)}
+    metrics["config"] = {**(config or {}), "prompt_style": prompt_style(), "n_tasks": len(tasks),
+                         "seconds": round(time.time() - t0, 1)}
 
     with open(out / "trajectories.jsonl", "w", encoding="utf-8") as f:
         for t, e, s in zip(tasks, episodes, scores):
@@ -60,3 +62,59 @@ def evaluate(tasks: list[Task], policy: BatchPolicy, out_dir: str | Path, batch_
     if pub and pub.publish({".": out}, f"{out.name}: evaluation results", force=True):
         print(f"results pushed to the 'results' branch under runs/{out.name}/")
     return metrics
+
+
+def evaluate_parallel(tasks: list[Task], jobs: list[dict], batch_size: int = 8) -> dict[str, dict]:
+    """Evaluate several models on the same tasks, one model per GPU at the same time.
+
+    jobs: [{"name", "make_policy": callable(device) -> BatchPolicy, "out_dir", "config"}].
+    Models are loaded one after another (loading in parallel threads is not safe),
+    then evaluated in parallel threads. With fewer GPUs than jobs, everything runs
+    one job at a time on the first GPU. Returns {name: metrics}."""
+    import gc
+    import threading
+
+    try:
+        import torch
+        n_gpu = torch.cuda.device_count()
+    except ImportError:
+        torch, n_gpu = None, 0
+
+    def free() -> None:
+        gc.collect()
+        if torch is not None and n_gpu:
+            torch.cuda.empty_cache()
+
+    results: dict[str, dict] = {}
+    if n_gpu >= len(jobs) > 1:
+        print(f"evaluating {[j['name'] for j in jobs]} in parallel, one GPU each", flush=True)
+        policies = [j["make_policy"](f"cuda:{i}") for i, j in enumerate(jobs)]
+        errors: dict[str, BaseException] = {}
+
+        def run(i: int) -> None:
+            j = jobs[i]
+            try:
+                results[j["name"]] = evaluate(tasks, policies[i], j["out_dir"], batch_size=batch_size,
+                                              config=j.get("config"), verbose=(i == 0))
+            except BaseException as e:  # reported after all jobs finish
+                errors[j["name"]] = e
+
+        threads = [threading.Thread(target=run, args=(i,)) for i in range(len(jobs))]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+        del policies
+        free()
+        for j in jobs[1:]:
+            if j["name"] in results:
+                print((Path(j["out_dir"]) / "report.txt").read_text(), flush=True)
+        if errors:
+            raise RuntimeError(f"evaluation failed for {list(errors)}: {errors}")
+        return results
+    for j in jobs:
+        policy = j["make_policy"]("cuda:0" if n_gpu else None)
+        results[j["name"]] = evaluate(tasks, policy, j["out_dir"], batch_size=batch_size, config=j.get("config"))
+        del policy
+        free()
+    return results
