@@ -1,0 +1,49 @@
+# Oya: a Tiny Aya wallet agent for English, Nigerian Pidgin and Yoruba
+
+Entry for the **Lexsi Labs AI Safety & Alignment Hackathon**, Track 3: **Agentic Fine-tuning**.
+
+Millions of Nigerians buy airtime, data and electricity and send money by phone, and many of them type in Pidgin, Yoruba, or a mix with English. Small open models rarely handle tool calls well in those languages. **Oya** fine-tunes Cohere's **Tiny Aya** (3.35B) to:
+
+- **pick the right tool and fill in the arguments correctly** from Pidgin, Yoruba and code-mixed requests ("Jọ̀ọ́ send 3k airtime sí Bisi"),
+- **call tools in the right order** (find the contact, verify the account, then pay),
+- **stay safe with money**: ask instead of guessing missing details, refuse to overspend, and ignore instructions planted inside tool results (prompt injection).
+
+Everything is scored automatically against a mock payments world, so there is no LLM judge: we check the money that actually moved.
+
+> Status: day 1. Task generator, mock tools, scorer and baseline notebook are done. Training is next.
+
+## How it works
+
+| Piece | File |
+|---|---|
+| Mock wallet world: 7 tools (`check_balance`, `find_contact`, `buy_airtime`, `buy_data`, `pay_electricity`, `lookup_account`, `send_money`) with deterministic state | `naija_agent/world.py` |
+| Request and reply templates in `en`, `pcm`, `yo`, `yo_en` | `naija_agent/lang.py` |
+| Task generator: 13 categories × 4 languages, train/test split **by template** so test phrasings are never seen in training | `naija_agent/tasks.py` |
+| Prompt format: identical to AgentTune's Tiny Aya tool fallback, so data and logs plug into Lexsi's toolkits | `naija_agent/prompting.py` |
+| Episode runner (batched) and AgentTune-format trajectory logs | `naija_agent/runner.py` |
+| Scorer: verified final state plus behaviour checks | `naija_agent/scoring.py` |
+| Second-opinion scoring with Lexsi's **AuditKIT** | `naija_agent/auditkit_bridge.py` |
+
+**Task categories.** Everyday tasks: airtime, data, electricity, transfers, by number or by saved contact, balance checks, small talk. Safety tasks: `insufficient_funds` (must not overspend), `missing_info` (must ask, not guess), `unknown_contact` (must ask for the number), `injection` (tool output contains a planted instruction to send extra money; must ignore it).
+
+**Metrics** (before vs after fine-tuning, overall and per language):
+1. **Task success**: the right payments happened (and nothing else), or the agent correctly asked or refused.
+2. **Valid tool-call rate**: calls that parse, name a real tool and pass the argument schema.
+3. **Tool F1** against the reference route, and **extra calls** per task (efficiency).
+4. **Safety success** on the four safety categories, and the **unexpected payment rate**.
+
+## Run it
+
+```bash
+python -m unittest discover -s tests          # CPU, no dependencies
+python scripts/build_data.py                  # writes data/ (tasks + SFT chats)
+python scripts/eval.py --policy gold --out runs/gold --auditkit   # sanity check: 100%
+```
+
+GPU (free Kaggle T4): open `notebooks/01_setup_and_baseline.ipynb` on Kaggle and follow the first cell.
+
+## Notes
+
+- Prices, providers and accounts are a simulation, not live tariffs or real accounts.
+- The Yoruba and Pidgin text is a first draft pending native-speaker review: see `docs/language_review.md`.
+- Built with [AgentTune](https://github.com/Lexsi-Labs/AgentTune) and [AuditKIT](https://github.com/Lexsi-Labs/AuditKIT) by Lexsi Labs, and [Tiny Aya](https://huggingface.co/CohereLabs/tiny-aya-global) by Cohere Labs (CC-BY-NC).

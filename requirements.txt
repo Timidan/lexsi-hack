@@ -1,0 +1,12 @@
+# Core (task generation, runner, scoring) uses only the Python standard library.
+# GPU notebooks (Kaggle / Colab) additionally need:
+torch
+transformers>=4.56
+accelerate
+peft
+trl
+bitsandbytes
+datasets
+huggingface_hub
+# Lexsi Labs evaluation toolkit (core has no required dependencies)
+auditkit

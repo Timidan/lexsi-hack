@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+# generated (rebuild with: python scripts/build_data.py)
+data/
+runs/
+outputs/
+*.safetensors
+.ipynb_checkpoints/
+.env
