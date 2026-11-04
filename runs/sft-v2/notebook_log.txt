@@ -62,3 +62,5 @@ step 60/130 loss 0.0067 grad_norm 0.21 lr 1.12e-04 | 703 tok/s | eta 39 min
 step 65/130 loss 0.0244 grad_norm 0.66 lr 1.00e-04 | 703 tok/s | eta 36 min
 step 70/130 loss 0.0100 grad_norm 0.57 lr 8.79e-05 | 706 tok/s | eta 33 min
 step 75/130 loss 0.0045 grad_norm 0.15 lr 7.61e-05 | 708 tok/s | eta 31 min
+step 80/130 loss 0.0131 grad_norm 0.23 lr 6.45e-05 | 709 tok/s | eta 28 min
+  saved adapter at step 80 | val loss 0.005778737953593149
