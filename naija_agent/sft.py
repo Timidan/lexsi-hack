@@ -89,10 +89,22 @@ def train_lora(model_id: str, train_path: str, out_dir: str, *, val_path: str | 
     from peft import LoraConfig, get_peft_model
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
+    from .publish import Publisher
+
     random.seed(seed)
     torch.manual_seed(seed)
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
+    pub = Publisher(out.name)
+    progress_path = out / "progress.json"
+
+    def report(force: bool = False, **status) -> None:
+        progress_path.write_text(json.dumps({"phase": "training", "time": time.strftime("%Y-%m-%d %H:%M:%S"),
+                                             **status}, indent=2))
+        files = {"progress.json": progress_path}
+        if (out / "train_log.json").exists():
+            files["train_log.json"] = out / "train_log.json"
+        pub.publish(files, f"{out.name}: training progress", force=force)
 
     tok = AutoTokenizer.from_pretrained(model_id)
     train, dropped = load_examples(tok, train_path, max_len)
@@ -150,6 +162,8 @@ def train_lora(model_id: str, train_path: str, out_dir: str, *, val_path: str | 
     if not math.isfinite(first):
         raise RuntimeError(f"initial loss is {first}; try load_in_4bit=True or a bf16 GPU")
     print(f"initial loss {first:.3f} | steps {total_steps} | effective batch {grad_accum} | dtype {dtype}")
+    report(force=True, step=0, total_steps=total_steps, initial_loss=first, train_examples=len(train))
+    print("live progress -> GitHub 'results' branch" if pub.enabled else "live progress publishing off (no GITHUB_TOKEN)")
 
     config = {"model_id": model_id, "max_len": max_len, "epochs": epochs, "lr": lr, "grad_accum": grad_accum,
               "lora_r": lora_r, "lora_alpha": lora_alpha, "lora_dropout": lora_dropout,
@@ -190,6 +204,8 @@ def train_lora(model_id: str, train_path: str, out_dir: str, *, val_path: str | 
             eta = elapsed / step * (total_steps - step)
             print(f"step {step}/{total_steps} loss {run_loss:.4f} grad_norm {gnorm:.2f} "
                   f"lr {sched.get_last_lr()[0]:.2e} | {tokens / elapsed:.0f} tok/s | eta {eta / 60:.0f} min", flush=True)
+            report(step=step, total_steps=total_steps, loss=run_loss, grad_norm=gnorm,
+                   tokens_per_s=round(tokens / elapsed), eta_min=round(eta / 60))
         run_loss = 0.0
         if step % save_every == 0 or step == total_steps:
             model.save_pretrained(out)
@@ -205,4 +221,6 @@ def train_lora(model_id: str, train_path: str, out_dir: str, *, val_path: str | 
     log["seconds"] = round(time.time() - t0, 1)
     (out / "train_log.json").write_text(json.dumps(log, indent=2))
     tok.save_pretrained(out)
+    report(force=True, step=log["steps"][-1]["step"] if log["steps"] else 0, total_steps=total_steps,
+           done=True, minutes=round(log["seconds"] / 60), val=log["val"])
     return log
