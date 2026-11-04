@@ -40,6 +40,8 @@ print(sys.version)
 print(subprocess.run(["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv"], capture_output=True, text=True).stdout)
 """),
     ("code", """
+import os, subprocess, sys
+
 # Secrets come from Kaggle (Add-ons -> Secrets), Colab (key icon) or environment variables.
 def secret(name):
     try:
@@ -62,6 +64,11 @@ r = subprocess.run(["git", "clone", "-q", "--depth", "1", "-b", BRANCH, url, "le
 print("clone ok" if r.returncode == 0 else "clone FAILED: " + r.stderr.replace(GITHUB_TOKEN or "<none>", "***"))
 os.chdir("lexsi-hack")
 print(subprocess.run(["git", "log", "--oneline", "-1"], capture_output=True, text=True).stdout)
+
+# mirror this notebook's output (and any cell error) to the repo's `results` branch
+sys.path.insert(0, ".")
+from naija_agent.notebook_log import start_live_log
+start_live_log(LOG_NAME)
 """),
     ("code", """
 # Tiny Aya (cohere2 architecture) is verified with transformers 5.x (same floor AgentTune uses).
@@ -124,6 +131,7 @@ REPO = "Timidan/lexsi-hack"
 BRANCH = "main"
 TRAIN_PER_CELL = 40
 RUN_DIR = "runs/baseline"
+LOG_NAME = "baseline-full"
 
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"   # one GPU is enough for a 3.35B model
@@ -192,6 +200,7 @@ BRANCH = "main"
 ADAPTER_DIR = f"outputs/{RUN_NAME}"
 RUN_DIR = f"runs/{RUN_NAME}"
 BASE_RUN_DIR = f"runs/baseline-{PROMPT_STYLE}"
+LOG_NAME = RUN_NAME
 
 import os
 os.environ["OYA_PROMPT"] = PROMPT_STYLE            # used by data building, training and evaluation
@@ -377,6 +386,7 @@ MODEL_ID = "CohereLabs/tiny-aya-global"
 REPO = "Timidan/lexsi-hack"
 BRANCH = "main"
 WORK = "/tmp/oya"
+LOG_NAME = f"publish-{RUN_NAME}"
 
 import os
 os.environ["OYA_PROMPT"] = PROMPT_STYLE
