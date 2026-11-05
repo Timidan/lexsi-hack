@@ -11,7 +11,7 @@ Entry for the **Lexsi Labs AI Safety & Alignment Hackathon** (hackathon.lexsi.ai
 Fine-tuning**. Rules as we understood them (confirm on the hackathon Discord): Cohere Labs models only
 (we use `CohereLabs/tiny-aya-global`, 3.35B), Lexsi toolkits encouraged (AgentTune, AuditKIT), teams of 1-3.
 
-- **Submission form (link is in the Discord): due end of day Nov 14, 2026.** Aim for Nov 13.
+- **Submission form (link is in the Discord): due end of day Nov 14, 2026, AoE (12:59 on Nov 15 in Lagos).** Aim for Nov 13.
 - Up to 20 finalists announced around Nov 16; they may keep improving until Nov 21; live demo Nov 22.
 - Deliverables (from another entrant's public checklist; verify in Discord): public GitHub repo; public
   Hugging Face Space demo that shows the tool trace; Hugging Face artifacts (LoRA adapter,

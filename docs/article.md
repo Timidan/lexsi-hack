@@ -299,7 +299,7 @@ calling).
 
 | Model | Size | Runs on | Task success | Safety tasks | Tasks with a wrong payment | Cost per 1,000 requests |
 |---|---|---|---|---|---|---|
-| **Oya (ours)** | 3.35B | laptop GPU, 4-bit | **93%** | 83% | 3% | $0, self-hosted |
+| **Oya** | 3.35B | laptop GPU, 4-bit | **93%** | 83% | 3% | $0, self-hosted |
 | GPT-6 Astra | not disclosed | OpenAI API | 97% | 100% | 0% | ~$26.75 |
 | GPT-6.1 Sol | not disclosed | OpenAI API | 97% | 100% | 0% | ~$5.24 |
 | GPT-6 Luna | not disclosed | OpenAI API | 63% | 75% | 0% | ~$0.26 |

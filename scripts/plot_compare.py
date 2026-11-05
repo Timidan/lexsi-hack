@@ -59,7 +59,7 @@ def is_open(row):
 
 
 def label(row):
-    return "Oya (ours)" if row["name"] == "oya" else row["label"]
+    return "Oya" if row["name"] == "oya" else row["label"]
 
 
 def percent(value):
