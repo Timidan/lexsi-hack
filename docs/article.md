@@ -212,6 +212,40 @@ prompt injection planted in the account lookup. Same compact prompt for both mod
 - **30 tasks is a small sample.** A 30/30 score is consistent with a true success rate anywhere from
   about 88% to 100% (95% interval).
 
+### Voice input (exploratory)
+
+Oya reads text. To see what happens when people *speak* their request, the native speaker read
+the 26 held-out lines aloud (one recording, cut into one clip per line, retakes removed). Four open
+speech models transcribed the clips, and Oya acted on each transcript. Because this ran on a laptop
+GPU (4 GB), Oya runs in 4-bit here, so the typed row is rerun in 4-bit too.
+
+| Speech model | Word errors: Pidgin | Word errors: Yoruba (no tone marks) | Key details exactly right | Oya success: Pidgin | Oya success: Yoruba | Tasks with a wrong payment |
+|---|---|---|---|---|---|---|
+| None (typed text) | – | – | 100% | 93% | 93% | 3% |
+| Whisper large-v3-turbo | 208%* | 85% | 25% | 40% | 27% | 20% |
+| whisper-pidgin-v1 (Pidgin only) | 39% | – | 20% | **60%** | – | 7% |
+| NaijaVox-V1 | **37%** | 64% | 20% | 53% | 27% | 7% |
+| BuzzASR Yoruba (Yoruba only) | – | **59%** | **60%** | – | **40%** | 7% |
+
+\*Whisper repeated one phrase until its length limit on one clip, which pushes word errors past 100%.
+"Key details" are the amount, phone/account/meter number, name and network a payment depends on.
+
+- **Speech is the bottleneck, not Oya.** The best speech model per language takes Oya from 93% on
+  typed text to 60% (Pidgin) and 40% (Yoruba). Numbers suffer most: a missing "0" or a split digit group
+  breaks a phone number, and "Bisi" became "busy" in every Pidgin transcript.
+- **Most failures are safe.** A garbled phone or meter number fails the wallet's format check, and Oya
+  asks again. Often Oya asked a question when the transcript made no sense.
+- **Some are not.** Twice, Oya filled an unclear amount with a guess ("putuke" for "put 2k", and
+  "2006" for "2,000") and bought ₦1,500 of airtime; once it bought data for a different number than the
+  one spoken. A voice version therefore needs a confirm step: show the transcript and the planned
+  payment, and move money only after the user says yes. The demo does not have this yet.
+- **4-bit has a safety cost.** On the typed request "buy data for 0812…" with no plan or network, the
+  4-bit model guessed 5GB on MTN, where the full-precision model (Kaggle) asked. The demo Space runs a
+  4-bit model, so this applies to it.
+- **Caveats:** one speaker, one recording, 26 clips. Word errors are measured against the written line,
+  not a verbatim transcript of what was said. Cohere's own speech model (Cohere Transcribe) was not
+  tested: it needs access approval and does not cover Yoruba.
+
 ## Limitations
 
 - The requests come from templates. They cover real constructions in each language, but real users are
@@ -231,6 +265,8 @@ https://github.com/Timidan/lexsi-hack
 3. `notebooks/03_publish_demo.ipynb`: merge, convert to a 4-bit GGUF, publish the demo Space.
 4. `notebooks/04_eval_only.ipynb`: score a trained adapter on the held-out set.
    `scripts/rescore.py` recomputes the reply check from saved scores, without a GPU.
+5. `scripts/voice_bench.py`: the voice comparison (transcripts in `human_eval/voice/`; the audio stays
+   private).
 
 ## Acknowledgements
 

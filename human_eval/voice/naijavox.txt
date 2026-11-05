@@ -1,0 +1,28 @@
+# naijavox (Axiveri/NaijaVox-V1), greedy decoding
+# seconds_per_clip: 0.85 (RTX 3050 laptop GPU, fp16)
+1Y: shey ely bamil fi recharge 1000 naira so ri o ito 31234567 line mtne
+2Y: eba mi ṣe suskripshion 2gb fún numba yi 090 555 12345 ngloni
+3Y: units in na le ti fetan ebamira ti 5000 nera si mita 45123456789 ikeja electric ni
+4Y: mama n pè mi pè káàdì ti tan lórí fọ́ùnù rẹ bá mi n fi 2006
+5Y: elba mera data 1gb getode le lo atap
+6Y: ebami transfer 15,000 naira loci gt bank account numba rna o123456789
+7Y: bí sí lóyàmílówó ẹbàmì san 3000 nẹ̀ràpadà fún un
+8Y: ṣe owóṣi wà nínú walletì mí ìlólókùn gàn
+9Y: ẹbàmì se ríṣàj jọ̀wọ́
+10Y: ẹbàmì sàn 10000 naira fún kún lé ọwọ́ iṣẹ́ tó ṣe fò mi ní i
+11Y: mufel ryanair 50,000 fú oṣù yí eco electric meter 98765 for 3-109
+12Y: ejo wey efi data sí orí o it's 1 2 3 4 5 6 7 8 9
+13Y: ẹkù iṣẹ́ o olú ápù
+1P: abeck put 1000 naira mtn credit for dis numba 3 1 2 3 4 5 6 7
+2P: dis glow line 0950512345 need data abec subscribe am 2 gigabyte
+3P: neba unis don almost finish for house so i beg buy 5k light kejia electric meter 4 5 1 2 3 4 5 6 7 8 9
+4P: mama say she no get credit for call me abeg put 2k for a line
+5P: abec sub 1 gigabyte for today him data don cut
+6P: abec do transfer all 15k go dis gt bank account 0123456789
+7P: abell transfer 3k give busy na for di asho ebi
+8P: abec show me how much you remember from my wallet i wan plan
+9P: credit don finish until i get me
+10P: kuli wey fix my car back pay am 10,000 naira
+11P: abec pay 50k light bill eco electric meter numba na 987654232109
+12P: i beg dis numba 8 1 2 3 4 5 6 7, you need data
+13P: alpha you dey alright

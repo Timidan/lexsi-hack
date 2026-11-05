@@ -1,0 +1,28 @@
+# whisper-turbo (openai/whisper-large-v3-turbo), greedy decoding
+# seconds_per_clip: 0.78 (RTX 3050 laptop GPU, fp16)
+1Y: Shei e li bami fi recharge 1000 arazori oito 312-34567. Lai e nem tiyeni.
+2Y: Eba Mishi subscription 2GB phone number 09055512345 ngloony
+3Y: Units i nòi li ti fẹt tòi eba me ra ti 5000 nè ra si i mita a 45123456789 i ke jà elèètrick ni.
+4Y: Maman kwen mi kwen kaditif tan lori ifo nore ba mi fi 2000 ne'as si.
+5Y: Eba Miradata wang gyerba'it ki tudi li lo watsap.
+6Y: Eba Mi Transfer R15,000 Rha Lossi GT Bank Account Number Rhenu O 123456789
+7Y: Bisi lo yami lo wo eba 11003 tazon nera pa da fon.
+8Y: Shé Owoshiwa ni nou tole... ni nou wole timi. E loloku ghan...
+9Y: Eba Mishé Rishaj Jowo
+10Y: Eba mi santa tanzan ər a foun koun lé. O wè i xẹt o xè foun min ni.
+11Y: Mou fè ráina 50,000 fwo shuyi eko-elektrik meta 987654321 09
+12Y: HOFIDATA C-O-U-H-1-2-3-4-5-6-7-8-9-5
+13Y: I'm a little bit.
+1P: Abec, put 1009 MTN credits for this number.
+2P: This Glowline 09055512345 needs data and BX subscribe ARM 2GB.
+3P: Nepal units done almost finished for also a berg-5k light, it catch a electric meter 45123456789
+4P: Mama says she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows she knows
+5P: I beg sub 1GB for today in that I don't cut.
+6P: Abek do transfer of 15k, go to this GT bank account, 0123456789.
+7P: I bet transfer three key give busy, now for the ashore be.
+8P: Abek, show me how much you remember from my one letter, one plan.
+9P: Crady don't finish, I beg at me.
+10P: Coolie we fix my car back pay I'm 10,000 Nera.
+11P: ABEC P50K, light bill, ecoelectric, meter number 987654232109.
+12P: I beg this number always 1234567898 data.
+13P: Afa, you do alright.

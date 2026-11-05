@@ -1,0 +1,15 @@
+# buzzasr-yoruba (BuzzASR/yoruba), decoding: {'no_repeat_ngram_size': 3, 'repetition_penalty': 1.2}
+# seconds_per_clip: 0.91 (RTX 3050 laptop GPU, fp16)
+1Y: seeli ami fi richarge 100 arasori iho 31234567 lai nemti e ni
+2Y: ẹ̀bá mi ṣe sọsíkípṣọ́n 2gb fún ọ́màì yìí 09055512345 glóní
+3Y: units iná ilé tí fẹ́ tán ìbáraẹni ra ti 5,000 ìnira sí mita 45123456789 ìkẹjà electric ni
+4Y: ma n pe mi pe kaadi ti tan lori foonu re ba mi fi 2009 and se
+5Y: ẹ̀bá miradáta wọ́n gba ìgbà tí kí tó dé lé ló wà tàp
+6Y: bẹ́mí tranfers 15,000 ní í à lọ cgt bank. Account number rẹ̀ ni 0123456789
+7Y: bí sí ló yámìlówó ẹ̀bá min san 3,000nerapada fún un
+8Y: ṣe owósiwà nínú wọ́n lẹ̀timi èlòkó gan
+9Y: ẹ̀bá mi se riṣàjọwọ́
+10Y: ẹ̀bá mi san 10,000 ẹ̀ràn fúnkúnlé owó iṣẹ́ tó ṣe fò mi ní
+11Y: mufẹ ra ina 50,000 fun osu yieko electric meta 98765432109
+12Y: ẹ̀jọ̀wọ́ ẹfídátà sí orí 08123456789
+13Y: fun mi. eku ise oluabo

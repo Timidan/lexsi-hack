@@ -53,6 +53,13 @@ Prompt format = AgentTune's Tiny Aya tool fallback (`naija_agent/prompting.py`).
 - v2's per-task files (scores/trajectories) never reached GitHub (a publisher bug, since fixed); only
   `runs/sft-v2/comparison.md` did. The files are in the v2 Kaggle run's output if needed.
 
+- **Voice (exploratory, 2026-11-05):** the user read the 26 held-out lines aloud; four speech models
+  transcribed them and Oya (4-bit, on the user's laptop GPU) acted on each transcript. Results and
+  findings: "Voice input" in `docs/article.md`; code `scripts/voice_bench.py`; transcripts
+  `human_eval/voice/`. The audio and its 26 clips are private and stay off git (local only, under
+  `~/.cache/oya-voice/`). Not built yet: voice input in the Space, and the confirm-before-paying step
+  the results call for. Cohere Transcribe is untested (gated; the user has not accepted its terms).
+
 ## Where things run: Kaggle (free GPUs) + GitHub as the log
 
 The user's Kaggle account is phone-verified (GPU + internet unlocked). Kaggle secrets already set up on
