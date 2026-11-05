@@ -44,6 +44,22 @@ class HFPolicy:
         return self.tok.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
     def __call__(self, batch: list[list[dict]], tasks=None) -> list[str]:
+        """Generate one reply per conversation. If a batch does not fit in GPU
+        memory, it is split in half and retried (down to single conversations)."""
+        import torch
+
+        try:
+            return self._generate(batch)
+        except torch.cuda.OutOfMemoryError:
+            if len(batch) == 1:
+                raise
+            torch.cuda.empty_cache()
+            mid = len(batch) // 2
+            print(f"GPU out of memory with {len(batch)} conversations; retrying as {mid} + {len(batch) - mid}",
+                  flush=True)
+            return self(batch[:mid]) + self(batch[mid:])
+
+    def _generate(self, batch: list[list[dict]]) -> list[str]:
         import torch
 
         texts = [self.render(m) for m in batch]

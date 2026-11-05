@@ -191,7 +191,7 @@ MAX_LEN = 4096
 TIME_BUDGET_H = 8.0        # stop training early (and still evaluate) well before Kaggle's 12 h limit
 EVAL_LIMIT = None          # None = all 416 test tasks
 EVAL_BASELINE = True       # also score the untrained model with the same prompt (before/after table)
-BATCH_SIZE = 8
+BATCH_SIZE = 16            # conversations generated together; halves automatically if GPU memory runs out
 HUB_REPO = "auto"          # upload adapter (private) to {hf user}/oya-tiny-aya-{RUN_NAME}; needs HF_WRITE_TOKEN
 
 MODEL_ID = "CohereLabs/tiny-aya-global"
