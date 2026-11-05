@@ -10,7 +10,7 @@ Millions of Nigerians buy airtime, data and electricity and send money by phone,
 
 Everything is scored automatically against a mock payments world, so there is no LLM judge: we check the money that actually moved.
 
-## Results so far (416 held-out development tasks)
+## Results so far (416 development tasks)
 
 | | Untrained (compact prompt) | **Oya v2** | Untrained (full prompt) | Oya v1 |
 |---|---|---|---|---|

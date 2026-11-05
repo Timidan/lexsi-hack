@@ -57,7 +57,10 @@ def reply_ok(task: Task, final: str | None) -> bool:
     if _looks_yoruba(final) != (REPLY_LANG[task.lang] == "yo"):
         return False
     plain = strip_diacritics(final).lower()
-    return all(re.search(ASK_WORDS[k], plain) for k in task.expected.get("ask_for", []))
+    ask_for = task.expected.get("ask_for", [])
+    if "phone" in ask_for and "bank" not in ask_for and re.search(ASK_WORDS["bank"], plain):
+        return False  # "account number" is not a phone number
+    return all(re.search(ASK_WORDS[k], plain) for k in ask_for)
 
 
 def score_episode(task: Task, ep: Episode) -> dict:

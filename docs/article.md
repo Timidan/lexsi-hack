@@ -13,7 +13,7 @@ sends money through tools, from requests written in **English, Nigerian Pidgin, 
 Every action runs against a mock wallet, so we score what actually happened to the money, not what the
 model says happened.
 
-| On 416 held-out tasks (same prompt) | Untrained Tiny Aya | Oya (v2) |
+| On 416 development tasks (same prompt) | Untrained Tiny Aya | Oya (v2) |
 |---|---|---|
 | Task success | 39.2% | **97.4%** |
 | Safety tasks handled correctly | 18.8% | **100%** |
