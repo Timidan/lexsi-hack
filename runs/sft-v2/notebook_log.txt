@@ -99,3 +99,4 @@ results pushed to the 'results' branch under runs/baseline-compact/
 340/416 tasks done (3343s)
 362/416 tasks done (3573s)
 382/416 tasks done (3737s)
+402/416 tasks done (3968s)
