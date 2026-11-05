@@ -1,0 +1,222 @@
+{
+  "overall": {
+    "n": 416,
+    "success_rate": 0.3918269230769231,
+    "valid_call_rate": 0.7835294117647059,
+    "tool_f1": 0.6153044871794872,
+    "avg_calls": 1.0216346153846154,
+    "avg_extra_calls": 0.16105769230769232,
+    "unexpected_payment_rate": 0.18269230769230768,
+    "parse_error_rate": 0.0,
+    "no_tool_answer_rate": 0.0
+  },
+  "safety": {
+    "n": 128,
+    "success_rate": 0.1875,
+    "valid_call_rate": 0.7954545454545454,
+    "tool_f1": 0.3697916666666667,
+    "avg_calls": 1.03125,
+    "avg_extra_calls": 0.28125,
+    "unexpected_payment_rate": 0.234375,
+    "parse_error_rate": 0.0,
+    "no_tool_answer_rate": 0.0
+  },
+  "by_lang": {
+    "en": {
+      "n": 104,
+      "success_rate": 0.4326923076923077,
+      "valid_call_rate": 0.8229166666666666,
+      "tool_f1": 0.6875,
+      "avg_calls": 0.9230769230769231,
+      "avg_extra_calls": 0.07692307692307693,
+      "unexpected_payment_rate": 0.19230769230769232,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "pcm": {
+      "n": 104,
+      "success_rate": 0.34615384615384615,
+      "valid_call_rate": 0.8376068376068376,
+      "tool_f1": 0.528525641025641,
+      "avg_calls": 1.125,
+      "avg_extra_calls": 0.23076923076923078,
+      "unexpected_payment_rate": 0.1346153846153846,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "yo": {
+      "n": 104,
+      "success_rate": 0.3269230769230769,
+      "valid_call_rate": 0.646551724137931,
+      "tool_f1": 0.5496794871794871,
+      "avg_calls": 1.1153846153846154,
+      "avg_extra_calls": 0.25961538461538464,
+      "unexpected_payment_rate": 0.14423076923076922,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "yo_en": {
+      "n": 104,
+      "success_rate": 0.46153846153846156,
+      "valid_call_rate": 0.84375,
+      "tool_f1": 0.6955128205128205,
+      "avg_calls": 0.9230769230769231,
+      "avg_extra_calls": 0.07692307692307693,
+      "unexpected_payment_rate": 0.25961538461538464,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    }
+  },
+  "by_category": {
+    "airtime_contact": {
+      "n": 32,
+      "success_rate": 0.0,
+      "valid_call_rate": 0.6666666666666666,
+      "tool_f1": 0.3333333333333333,
+      "avg_calls": 1.125,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.46875,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "airtime_direct": {
+      "n": 32,
+      "success_rate": 0.9375,
+      "valid_call_rate": 0.9375,
+      "tool_f1": 0.9375,
+      "avg_calls": 1.0,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "balance": {
+      "n": 32,
+      "success_rate": 1.0,
+      "valid_call_rate": 1.0,
+      "tool_f1": 1.0,
+      "avg_calls": 1.0,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "chitchat": {
+      "n": 32,
+      "success_rate": 0.5,
+      "valid_call_rate": 0.3870967741935484,
+      "tool_f1": 0.5,
+      "avg_calls": 0.96875,
+      "avg_extra_calls": 0.96875,
+      "unexpected_payment_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": null
+    },
+    "data_contact": {
+      "n": 32,
+      "success_rate": 0.0,
+      "valid_call_rate": 0.9375,
+      "tool_f1": 0.625,
+      "avg_calls": 1.0,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.9375,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "data_direct": {
+      "n": 32,
+      "success_rate": 0.96875,
+      "valid_call_rate": 1.0,
+      "tool_f1": 1.0,
+      "avg_calls": 1.0,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.03125,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "electricity": {
+      "n": 32,
+      "success_rate": 0.9375,
+      "valid_call_rate": 0.9375,
+      "tool_f1": 0.9375,
+      "avg_calls": 1.0,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "injection": {
+      "n": 32,
+      "success_rate": 0.0,
+      "valid_call_rate": 0.6875,
+      "tool_f1": 0.5833333333333333,
+      "avg_calls": 1.0,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.03125,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "insufficient_funds": {
+      "n": 32,
+      "success_rate": 0.75,
+      "valid_call_rate": 1.0,
+      "tool_f1": 0.8958333333333334,
+      "avg_calls": 1.0,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.03125,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "missing_info": {
+      "n": 32,
+      "success_rate": 0.0,
+      "valid_call_rate": 0.9375,
+      "tool_f1": 0.0,
+      "avg_calls": 1.0,
+      "avg_extra_calls": 1.0,
+      "unexpected_payment_rate": 0.625,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": null
+    },
+    "transfer_contact": {
+      "n": 32,
+      "success_rate": 0.0,
+      "valid_call_rate": 0.18181818181818182,
+      "tool_f1": 0.509375,
+      "avg_calls": 1.03125,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "transfer_direct": {
+      "n": 32,
+      "success_rate": 0.0,
+      "valid_call_rate": 0.9696969696969697,
+      "tool_f1": 0.6770833333333333,
+      "avg_calls": 1.03125,
+      "avg_extra_calls": 0.0,
+      "unexpected_payment_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    },
+    "unknown_contact": {
+      "n": 32,
+      "success_rate": 0.0,
+      "valid_call_rate": 0.5833333333333334,
+      "tool_f1": 0.0,
+      "avg_calls": 1.125,
+      "avg_extra_calls": 0.125,
+      "unexpected_payment_rate": 0.25,
+      "parse_error_rate": 0.0,
+      "no_tool_answer_rate": 0.0
+    }
+  },
+  "config": {
+    "model": "CohereLabs/tiny-aya-global",
+    "adapter": null,
+    "prompt_style": "compact",
+    "n_tasks": 416,
+    "seconds": 1184.3
+  }
+}
