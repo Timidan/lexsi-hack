@@ -388,6 +388,7 @@ RUN_NAME = "sft-v2"              # the trained adapter to publish
 PROMPT_STYLE = "compact"         # must match how RUN_NAME was trained
 BASELINE_RUN = f"baseline-{PROMPT_STYLE}"
 QUANT = "Q4_K_M"                 # 4-bit; falls back to Q8_0 if the quantizer cannot be built
+SCORE_QUANTS = ["Q4_K_M", "Q8_0"]  # scored on the 30 native-speaker requests before QUANT is published
 PRIVATE = True                   # keep the model and the Space private until submission
 ADAPTER_REPO = "auto"            # {hf user}/oya-tiny-aya-{RUN_NAME}, uploaded by notebook 02
 GGUF_REPO = "auto"               # {hf user}/oya-tiny-aya-gguf
@@ -457,20 +458,30 @@ else:
         f"--outfile {GGUF_PATH} --outtype q8_0")
 print(GGUF_PATH, f"{os.path.getsize(GGUF_PATH) / 1e9:.2f} GB")
 """),
-    ("markdown", "## 3. Smoke test: the quantized model must still solve held-out tasks"),
+    ("markdown", "## 3. The quantized model on the 30 native-speaker requests"),
     ("code", """
 run("pip install -q llama-cpp-python==0.3.36 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu")
 sys.path.insert(0, ".")
 from naija_agent.evaluate import evaluate
+from naija_agent.human import load_human_tasks
 from naija_agent.llama_backend import LlamaChat
-from naija_agent.tasks import CATEGORIES, generate
 
-chat = LlamaChat(model_path=GGUF_PATH)
-# one held-out task per category in English and Yoruba, scored exactly like the full evaluation
-test = generate("test", 1, seed=2026)
-pick = [t for t in test if t.lang in ("en", "yo")][: 2 * len(CATEGORIES)]
-m = evaluate(pick, chat, f"{WORK}/gguf-smoke", batch_size=1, publish=False)
-print(f"GGUF smoke test: {m['overall']['success_rate']:.0%} of {len(pick)} tasks | chat mode: {chat.mode}")
+# Scored exactly like the full evaluation (results go to the `results` branch). Full precision: 100% task success.
+human = load_human_tasks("human_eval/requests.txt")
+for q in SCORE_QUANTS:
+    path = GGUF_PATH if q == QUANT else f"{WORK}/oya-{q}.gguf"
+    if q != QUANT:
+        if built != 0:
+            continue
+        run(f"{WORK}/llama.cpp/build/bin/llama-quantize {WORK}/oya-f16.gguf {path} {q}")
+    chat = LlamaChat(model_path=path)
+    m = evaluate(human, chat, f"{WORK}/gguf-{RUN_NAME}-{q}-human", batch_size=1, verbose=False, config={"gguf": q})
+    o = m["overall"]
+    print(f"{q}: task success {o['success_rate']:.0%}, with the reply check {o['strict_success_rate']:.0%}, "
+          f"wrong payments {o['unexpected_payment_rate']:.0%} | {os.path.getsize(path) / 1e9:.1f} GB, "
+          f"{m['config']['seconds'] / len(human):.0f} s per request on {os.cpu_count()} CPUs | chat mode: {chat.mode}",
+          flush=True)
+    del chat
 """),
     ("markdown", "## 4. Publish the GGUF model and the Space"),
     ("code", """
@@ -495,13 +506,14 @@ shutil.rmtree(SPACE_DIR, ignore_errors=True)
 shutil.copytree("space", SPACE_DIR)
 shutil.copytree("naija_agent", f"{SPACE_DIR}/naija_agent", ignore=shutil.ignore_patterns("__pycache__"))
 run(f"rm -rf {WORK}/results && git clone -q --depth 1 -b results https://github.com/{REPO}.git {WORK}/results")
-for name, run_name in (("fine-tuned", RUN_NAME), ("untrained", BASELINE_RUN)):
+# replay data: both models on the 30 native-speaker requests
+for name, run_name in (("fine-tuned", f"{RUN_NAME}-human"), ("untrained", f"{BASELINE_RUN}-human")):
     os.makedirs(f"{SPACE_DIR}/data/{name}", exist_ok=True)
     for f in ("trajectories.jsonl", "scores.jsonl", "metrics.json"):
         shutil.copy(f"{WORK}/results/runs/{run_name}/{f}", f"{SPACE_DIR}/data/{name}/{f}")
-for f in ("comparison.md", "loss.png"):
-    if os.path.exists(f"{WORK}/results/runs/{RUN_NAME}/{f}"):
-        shutil.copy(f"{WORK}/results/runs/{RUN_NAME}/{f}", f"{SPACE_DIR}/data/{f}")
+for f, run_name in (("comparison.md", f"{RUN_NAME}-human"), ("loss.png", RUN_NAME)):
+    if os.path.exists(f"{WORK}/results/runs/{run_name}/{f}"):
+        shutil.copy(f"{WORK}/results/runs/{run_name}/{f}", f"{SPACE_DIR}/data/{f}")
 
 api.create_repo(SPACE_REPO, repo_type="space", space_sdk="gradio", private=PRIVATE, exist_ok=True)
 api.add_space_variable(SPACE_REPO, "OYA_GGUF_REPO", GGUF_REPO)
