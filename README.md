@@ -17,7 +17,7 @@ Everything is scored automatically against a mock payments world, so there is no
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/img/compare-c-dark.png">
-  <img alt="Task success on 30 held-out Yoruba and Pidgin requests: Oya 93%, GPT-6 Astra and GPT-6.1 Sol 97%, GPT-6 Luna 63%, Qwen3 4B 50%, Phi-4 mini 33%, untrained Tiny Aya 30%, Llama 3.2 3B 20%" src="docs/img/compare-c-light.png">
+  <img alt="Task success on 30 held-out Yoruba and Pidgin requests: Oya 93%, GPT-6 Astra 97%, Qwen3 4B 50%, untrained Tiny Aya 30%, Llama 3.2 3B 20%; also by Pidgin, Yoruba and safety tasks" src="docs/img/compare-c-light.png">
 </picture>
 
 Same prompt, tasks and scorer for every model; open models in 4-bit on a 4 GB laptop GPU. Details, wrong

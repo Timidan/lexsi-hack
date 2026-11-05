@@ -2,10 +2,14 @@
 """Render three benchmark designs at 800 px, with 2x PNG companions."""
 
 import json
+from functools import cache
+from io import BytesIO
 import os
 from decimal import Decimal, ROUND_DOWN, ROUND_HALF_UP
 from pathlib import Path
 import tempfile
+import subprocess
+import xml.etree.ElementTree as ET
 
 os.environ.setdefault("MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "oya-matplotlib"))
 
@@ -15,6 +19,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 from matplotlib.lines import Line2D
+from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 from matplotlib.patches import PathPatch
 from matplotlib.path import Path as PlotPath
 from matplotlib.ticker import PercentFormatter
@@ -24,6 +29,14 @@ ROOT = Path(__file__).resolve().parents[1]
 WIDTH = 800
 MARGIN = 24
 FONT = 8.5  # 11.8 px at the intended 800 px display width.
+C_MODELS = ("oya", "gpt-6-astra", "qwen3-4b", "tiny-aya", "llama-3.2-3b")
+C_LOGOS = {
+    "oya": "icon/oya-icon.svg",
+    "gpt-6-astra": "logos/openai.svg",
+    "qwen3-4b": "logos/qwen.svg",
+    "tiny-aya": "logos/aya.svg",
+    "llama-3.2-3b": "logos/meta.svg",
+}
 THEMES = {
     "light": dict(accent="#2a78d6", gray="#898781", surface="#fcfcfb",
                   ink="#0b0b0b", secondary="#52514e", grid="#e1e0d9", baseline="#c3c2b7"),
@@ -226,16 +239,32 @@ def design_b(rows, theme, n):
     return fig
 
 
+@cache
+def c_logo(name):
+    svg = ET.fromstring((ROOT / "docs/img" / C_LOGOS[name]).read_text())
+    svg.set("color", "#ffffff")
+    svg.set("fill", "#ffffff")
+    for element in svg.iter():
+        if "fill" in element.attrib and element.get("fill") != "none":
+            element.set("fill", "#ffffff")
+    png = subprocess.run(
+        ["rsvg-convert", "--width=256", "--height=256"],
+        input=ET.tostring(svg), capture_output=True, check=True,
+    ).stdout
+    return plt.imread(BytesIO(png), format="png")
+
+
 def design_c(rows, theme, n):
-    ordered = sorted(rows, key=lambda r: (r["name"] != "oya", -r["reviewed_success"], label(r)))
+    by_name = {row["name"]: row for row in rows}
+    ordered = [by_name[name] for name in C_MODELS]
     groups = [(f"All {n} tasks", "reviewed_success"), ("Pidgin", "pidgin"),
               ("Yoruba", "yoruba"), ("Safety tasks", "safety")]
     left, width, top, plot_height = 82, 694, 154, 300
-    group_gap = 24
-    bar_gap = 5 + max(0, len(ordered) - 5) * 4 / 3
-    group_width = (width - group_gap * (len(groups) - 1)) / len(groups)
-    cell = group_width / len(ordered)
-    label_size = max(8, FONT - max(0, len(ordered) - 5) / 6)
+    cell = width / (len(groups) * len(ordered) + 0.5 * (len(groups) - 1))
+    bar_width = cell * 0.75
+    group_gap = cell * 0.5  # Together with slot padding, one bar between groups.
+    group_width = cell * len(ordered)
+    label_size = FONT
 
     # Measure rotated names so future model names cannot run into the footer.
     probe = plt.figure(figsize=(8, 2), dpi=100)
@@ -246,26 +275,35 @@ def design_c(rows, theme, n):
                       .get_window_extent(renderer).height for row in ordered)
     title = wrap(probe, f"Task success on {n} held-out Yoruba and Pidgin requests",
                  WIDTH - 2 * MARGIN, size=15, bold=True)
+    also_tested = ", ".join(
+        f"{by_name[name]['label']} {percent(by_name[name]['reviewed_success'])}"
+        for name in ("gpt-6.1-sol", "gpt-6-luna", "phi-4-mini")
+    )
+    extra_note = wrap(probe, f"Also tested: {also_tested} (full table in the write-up). "
+                      "Logos: LobeHub icons (MIT); trademarks of their owners.",
+                      WIDTH - 2 * MARGIN)
+    note = wrap(probe, FOOTNOTE.format(n=n, polite=POLITE), WIDTH - 2 * MARGIN)
     plt.close(probe)
     top = 112 + 28 * (len(title.splitlines()) - 1)
     names_top = top + plot_height + 16
     groups_top = names_top + name_height + 20
     foot_top = groups_top + 40
-    fig = plt.figure(figsize=(WIDTH / 100, (foot_top + 98) / 100), dpi=100,
+    extra_top = foot_top + 14 + 17 * len(note.splitlines()) + 10
+    height = extra_top + 17 * len(extra_note.splitlines()) + 24
+    fig = plt.figure(figsize=(WIDTH / 100, height / 100), dpi=100,
                      facecolor=theme["surface"])
     text(fig, theme, WIDTH / 2, 22, title, size=15, bold=True, ha="center")
     text(fig, theme, WIDTH / 2, 57 + (len(title.splitlines()) - 1) * 28,
          SUBTITLE, muted=True, ha="center")
     ax = axes(fig, theme, left, top, width, plot_height, False)
     ax.set_xlim(0, width)
-    renderer = fig.canvas.get_renderer()
     for group_index, (group_name, key) in enumerate(groups):
         start = group_index * (group_width + group_gap)
         for i, row in enumerate(ordered):
             ours = row["name"] == "oya"
             x = start + (i + 0.5) * cell
             value = row[key] * 100
-            lo, hi = x - (cell - bar_gap) / 2, x + (cell - bar_gap) / 2
+            lo, hi = x - bar_width / 2, x + bar_width / 2
             # x units are display pixels; y units are percentages. Only the
             # top corners curve, with a 4 px radius and a flat zero baseline.
             rx = min(4, (hi - lo) / 2)
@@ -279,11 +317,23 @@ def design_c(rows, theme, n):
                              PlotPath.CLOSEPOLY])
             ax.add_patch(PathPatch(path, facecolor=theme["accent" if ours else "gray"],
                                    edgecolor="none", zorder=2))
-            if ours or row["name"] == "tiny-aya":  # before and after; every value is in the table
-                ax.annotate(percent(row[key]), (x, value), xytext=(0, 6),
-                            textcoords="offset points", ha="center", va="bottom",
-                            fontsize=label_size, color=theme["ink"],
-                            weight="bold" if ours else "normal", clip_on=False)
+            logo_size = bar_width * 0.55
+            padding = 5
+            bar_height = value * plot_height / 100
+            inside = bar_height >= logo_size + 2 * padding
+            logo_y = (-padding - logo_size / 2 if inside else padding + logo_size / 2)
+            # OffsetImage uses points, so convert our intended 100-dpi pixel size.
+            logo = OffsetImage(c_logo(row["name"]), zoom=logo_size * 72 / 100 / 256)
+            ax.add_artist(AnnotationBbox(
+                logo, (x, value), xybox=(0, logo_y * 72 / 100),
+                boxcoords="offset points", frameon=False, pad=0,
+                annotation_clip=False, zorder=4,
+            ))
+            value_offset = padding if inside else logo_size + 2 * padding
+            ax.annotate(percent(row[key]), (x, value), xytext=(0, value_offset * 72 / 100),
+                        textcoords="offset points", ha="center", va="bottom",
+                        fontsize=label_size, color=theme["ink"],
+                        weight="bold" if ours else "normal", clip_on=False)
             name = text(fig, theme, left + x, names_top, label(row), size=label_size,
                         bold=ours, muted=not ours, ha="right")
             name.set_rotation(45)
@@ -291,6 +341,7 @@ def design_c(rows, theme, n):
         text(fig, theme, left + start + group_width / 2, groups_top,
              group_name, muted=True, ha="center")
     footer(fig, theme, foot_top, n)
+    text(fig, theme, MARGIN, extra_top, extra_note, muted=True)
     return fig
 
 
