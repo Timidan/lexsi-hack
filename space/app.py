@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import os
+import threading
 from pathlib import Path
 
 import gradio as gr
@@ -153,6 +154,7 @@ def run_agent(user_text: str, chat: list, state: dict, reply_fn=model_reply):
 def confirm_payment(approve: bool, chat: list, state: dict, reply_fn=model_reply):
     """Run (or cancel) the payment the agent proposed, then let it continue."""
     calls, world = state.get("pending"), state["world"]
+    state["pending"] = None  # a second click on the same pending payment finds nothing to run
     if not calls:
         yield chat, wallet_markdown(world), state, gr.update(visible=False)
         return
@@ -216,19 +218,25 @@ def reset(injection: bool):
 # ─── voice ────────────────────────────────────────────────────────────────────
 
 VOICE_MODELS = {"Pidgin": ("whisper-pidgin", "P"), "Yoruba": ("buzzasr-yoruba", "Y")}  # best per language
-_asr = {}
+_asr, _asr_lock = {}, threading.Lock()
+
+
+def transcriber(name: str):
+    with _asr_lock:
+        if name not in _asr:
+            from naija_agent.voice import Transcriber
+            _asr[name] = Transcriber(name)
+        return _asr[name]
 
 
 def transcribe_input(audio_path: str | None, video_path: str | None, language: str) -> str:
     path = audio_path or video_path
     if not path:
         raise gr.Error("Record or upload a voice note or a video first.")
-    from naija_agent.voice import Transcriber, load_audio
+    from naija_agent.voice import load_audio
 
     name, code = VOICE_MODELS[language]
-    if name not in _asr:
-        _asr[name] = Transcriber(name)
-    text = _asr[name](load_audio(path), code)
+    text = transcriber(name)(load_audio(path), code)
     if not text:
         raise gr.Error("No speech found in that recording.")
     gr.Info("Check the numbers and names in the transcript, then press Enter to send.")
@@ -402,4 +410,6 @@ def build_ui():
 
 
 if __name__ == "__main__":
+    # download and load the speech models in the background, so the first Transcribe does not wait for them
+    threading.Thread(target=lambda: [transcriber(n) for n, _ in VOICE_MODELS.values()], daemon=True).start()
     build_ui().queue().launch()
