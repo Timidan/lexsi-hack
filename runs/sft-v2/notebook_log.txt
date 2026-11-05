@@ -87,3 +87,4 @@ evaluating ['fine-tuned', 'untrained'] in parallel, one GPU each
 107/416 tasks done (1022s)
 results pushed to the 'results' branch under runs/baseline-compact/
 129/416 tasks done (1222s)
+149/416 tasks done (1420s)
