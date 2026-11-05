@@ -83,3 +83,5 @@ evaluating ['fine-tuned', 'untrained'] in parallel, one GPU each
 20/416 tasks done (230s)
 42/416 tasks done (431s)
 64/416 tasks done (628s)
+86/416 tasks done (823s)
+107/416 tasks done (1022s)
