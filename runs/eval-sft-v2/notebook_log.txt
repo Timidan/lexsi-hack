@@ -1,1 +1,13 @@
 === notebook log for eval-sft-v2, started 2026-11-05 12:11:56 UTC ===
+live notebook log -> GitHub 'results' branch: runs/eval-sft-v2/notebook_log.txt
+...................
+----------------------------------------------------------------------
+Ran 19 tests in 0.244s
+
+OK
+{"prompt_style": "compact", "train": 2080, "val": 104, "test": 416, "human": 30}
+adapter: /kaggle/input/notebooks/timidanx/notebook80b729c38e/lexsi-hack/outputs/sft-v2 | GPUs: 2
+evaluating ['fine-tuned', 'untrained'] in parallel, one GPU each
+6/30 tasks done (97s)
+results pushed to the 'results' branch under runs/baseline-compact-human/
+16/30 tasks done (155s)
