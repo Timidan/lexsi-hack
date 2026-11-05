@@ -122,6 +122,8 @@ def template_split(template_id: str) -> str:
 
 
 def _pick(rng: random.Random, cat: str, lng: str, split: str) -> tuple[str, str]:
+    if split == "dpo":  # phrasings kept apart for DPO prompts (lang.DPO_REQUESTS)
+        return rng.choice([(f"{cat}.{lng}.dpo{i}", t) for i, t in enumerate(L.DPO_REQUESTS[cat][lng])])
     return rng.choice([(tid, t) for tid, t in _templates(cat, lng) if template_split(tid) == split])
 
 
@@ -370,7 +372,7 @@ def generate(split: str, per_cell: int, seed: int) -> list[Task]:
     rng = random.Random(f"{seed}-{split}")
     tasks, i = [], 0
     for cat in CATEGORIES:
-        for lng in L.LANGS:
+        for lng in (L.DPO_LANGS if split == "dpo" else L.LANGS):
             for _ in range(per_cell):
                 tasks.append(make_task(rng, cat, lng, split, i))
                 i += 1

@@ -297,6 +297,122 @@ REQUESTS: dict[str, dict[str, list[str]]] = {
 #   unknown_contact     -> airtime_contact / transfer_contact
 #   injection           -> transfer_direct / transfer_contact
 
+# Phrasings used only as DPO prompts (scripts/make_pairs.py, split "dpo"): never in the SFT data, the
+# development set or the native-speaker tests, so the model meets them fresh and makes real mistakes on them.
+DPO_LANGS = ["pcm", "yo"]
+DPO_REQUESTS: dict[str, dict[str, list[str]]] = {
+    "airtime_direct": {
+        "pcm": [
+            "Abeg recharge {amount} for this {network} line {phone}, my credit don finish",
+            "{phone} na {network}, abeg drop {amount} airtime for am",
+            "My guy, load {amount} card enter {phone} ({network}) sharp sharp",
+        ],
+        "yo": [
+            "Káàdì ti tán lórí {phone}. Ẹ bá mi fi {amount} sí i, {network} ni.",
+            "Jọ̀ọ́ ra káàdì {network} tó jẹ́ {amount} fún nọ́ńbà {phone}.",
+            "Mo nílò airtime {amount} sórí {phone}, {network} ni.",
+        ],
+    },
+    "data_direct": {
+        "pcm": [
+            "Abeg buy {plan} data for {phone}, e be {network} sim",
+            "Data don finish for {phone} o. {network}. Put {plan} for am",
+            "I wan buy {plan} for my {network} number {phone}, abeg run am",
+        ],
+        "yo": [
+            "Data ti tán lórí {phone}. Ẹ bá mi ra {plan} sí i, {network} ni.",
+            "Jọ̀ọ́ fi data {plan} sórí {phone} ({network}).",
+            "Mo fẹ́ ra {plan} data sórí ìlà {network} mi, {phone}.",
+        ],
+    },
+    "electricity": {
+        "pcm": [
+            "My prepaid don dey beep, abeg buy {amount} light for meter {meter}, {disco}",
+            "Abeg recharge my prepaid meter {meter} with {amount}, na {disco} dey supply us",
+            "{disco} meter {meter}, abeg pay {amount} make light no go off",
+        ],
+        "yo": [
+            "Mítà iná mi ń dún, ẹ bá mi ra iná {amount} sí {meter}, {disco} ni.",
+            "Jọ̀ọ́ san owó iná {amount}, mítà {meter}, {disco}.",
+            "{disco} ni wọ́n ń fún wa ní iná. Mítà mi ni {meter}, ẹ bá mi ra ti {amount}.",
+        ],
+    },
+    "airtime_contact": {
+        "pcm": [
+            "{contact} credit don finish, abeg send am {amount} airtime",
+            "Help me recharge {contact} phone with {amount}",
+            "Abeg top up {contact} line with {amount}, e wan call",
+        ],
+        "yo": [
+            "Káàdì {contact} ti tán, ẹ bá mi fi {amount} ránṣẹ́ sí i.",
+            "Ẹ bá mi ra airtime {amount} fún {contact}.",
+            "Jọ̀ọ́ fi káàdì {amount} ránṣẹ́ sí fóònù {contact}.",
+        ],
+    },
+    "data_contact": {
+        "pcm": [
+            "Abeg buy {plan} data for {contact}",
+            "{contact} need data for im phone, put {plan} for am",
+            "Make {contact} get {plan} data abeg, e wan browse",
+        ],
+        "yo": [
+            "Ẹ bá mi ra data {plan} fún {contact}.",
+            "Data {contact} ti tán, jọ̀ọ́ fi {plan} sí i.",
+            "Mo fẹ́ kí {contact} ní data {plan}, ẹ bá mi ṣe é.",
+        ],
+    },
+    "transfer_direct": {
+        "pcm": [
+            "I wan pay {amount} to {acct} for {bank}, abeg do am",
+            "Abeg pay {amount} into this account: {acct}, {bank}",
+            "I wan transfer {amount}. Account number na {acct}, bank na {bank}",
+        ],
+        "yo": [
+            "Ẹ fi {amount} ránṣẹ́ sí account {acct}, {bank} ni.",
+            "Jọ̀ọ́ san {amount} sínú {bank} {acct}.",
+            "Account {acct} ní {bank} ni mo fẹ́ fi {amount} ránṣẹ́ sí.",
+        ],
+    },
+    "transfer_contact": {
+        "pcm": [
+            "Make you send {amount} enter {contact} account abeg",
+            "{contact} wan buy food, abeg transfer {amount} give am",
+            "Pay {contact} {amount} for me abeg",
+        ],
+        "yo": [
+            "Ẹ bá mi fi {amount} ránṣẹ́ sí {contact} kíákíá.",
+            "Jọ̀ọ́ bá mi sanwó {amount} fún {contact}.",
+            "{contact} ń dúró de owó rẹ̀. Ẹ fi {amount} ránṣẹ́ sí i.",
+        ],
+    },
+    "balance": {
+        "pcm": ["How much I get for my wallet now?", "Abeg check my balance", "Make I see my balance abeg"],
+        "yo": ["Ẹ jọ̀ọ́, mo fẹ́ mọ iye owó tí mo ní.", "Ẹ bá mi wo iye owó tó kù.",
+               "Ṣé ẹ lè sọ iye owó tí mo ní fún mi?"],
+    },
+    "missing_info": {
+        "pcm": [
+            "airtime_all|Abeg load card for me, my line don dry",
+            "airtime_phone|Abeg buy {amount} recharge card",
+            "transfer_amount|Abeg send money go {contact} account",
+            "electricity_meter|Abeg pay {amount} for NEPA",
+            "data_plan|Put data for {phone} abeg",
+        ],
+        "yo": [
+            "airtime_all|Káàdì mi ti tán, ẹ bá mi ra.",
+            "airtime_phone|Jọ̀ọ́ ra káàdì {amount} fún mi.",
+            "transfer_amount|Ẹ bá mi fi owó ránṣẹ́ sí {contact}.",
+            "electricity_meter|Ẹ bá mi ra iná {amount}.",
+            "data_plan|Ẹ bá mi ṣe data fún nọ́ńbà {phone}.",
+        ],
+    },
+    "chitchat": {
+        "pcm": ["greet|Good evening o, how body?", "thanks|God bless you, you do well", "help|Abeg wetin you sabi do?"],
+        "yo": ["greet|Ẹ kú ìrọ̀lẹ́ o, ṣé dáadáa ni?", "thanks|Ẹ ṣé púpọ̀, ẹ ti gbìyànjú.",
+               "help|Kí ni iṣẹ́ tí ẹ lè ṣe fún mi?"],
+    },
+}
+
 
 # ─── Replies ──────────────────────────────────────────────────────────────────
 # Slots: {amount} {network} {phone} {plan} {disco} {meter} {token} {recipient}

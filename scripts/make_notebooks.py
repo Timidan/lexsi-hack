@@ -609,8 +609,173 @@ flush_live_log()
 ])
 
 
+dpo = nb([
+    ("markdown", """
+# 05 · DPO with AgentTune on the model's own mistakes (v3)
+
+Starts from the SFT adapter `sft-v2`: attach it with **Add Input → Your Work →** the v2 training notebook.
+1. Samples the model 4 times at every step of 1,040 fresh Pidgin and Yoruba tasks, phrased in ways it never trained on
+   (`DPO_REQUESTS` in `naija_agent/lang.py`; not the development set or the native-speaker requests), one shard per
+   GPU, and keeps its mistakes as preference pairs, judged with the scorer's own rules (`naija_agent/pairs.py`).
+2. Trains with Lexsi Labs' **AgentTune** (`create_agentic_trainer("dpo")`, TRL backend): DPO plus a plain loss on the
+   chosen turns, continuing the v2 LoRA adapter (`scripts/train_dpo.py`).
+3. Scores v3 and v2 side by side, one GPU each, on the native-speaker sets and the 416-task development set.
+
+Results go to the repo's `results` branch. About 2 hours on T4 x2.
+""" + SETUP_HELP),
+    ("code", """
+# ---- settings ----
+RUN_NAME = "dpo-v3"
+BASE_RUN = "sft-v2"            # SFT adapter to start from (Kaggle input, or HF_ADAPTER_REPO)
+HF_ADAPTER_REPO = None
+PROMPT_STYLE = "compact"       # must match how BASE_RUN was trained
+PER_CELL = 40                  # fresh tasks per (category, language): 1,040 tasks, about 2,400 steps
+SAMPLES = 4                    # samples per step, temperature 1.0
+SEED = 2027                    # 2026 built the SFT data
+MAX_PAIRS = 1200               # bounds training time
+EPOCHS, LR, BETA = 2.0, 2e-5, 0.1
+GRAD_ACCUM = 8                 # per GPU
+BATCH_SIZE = 16
+AGENTTUNE = "git+https://github.com/Lexsi-Labs/AgentTune@d4db4c12d52342227c4113a70183d0f64aa2f345"
+
+MODEL_ID = "CohereLabs/tiny-aya-global"
+REPO = "Timidan/lexsi-hack"
+BRANCH = "main"
+TRAIN_PER_CELL = 40
+ADAPTER_DIR = f"outputs/{RUN_NAME}"
+PAIRS = f"{ADAPTER_DIR}/pairs.jsonl"
+LOG_NAME = RUN_NAME
+
+import os
+os.environ["OYA_PROMPT"] = PROMPT_STYLE
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+os.environ["PYTHONUNBUFFERED"] = "1"
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+"""),
+    *SETUP_CELLS,
+    ("code", """
+# AgentTune pins exact versions of torch and others; install it without them and add TRL, which it trains with
+!pip install -q "trl==1.7.1" datasets
+!pip install -q --no-deps --ignore-requires-python "agenttune @ {AGENTTUNE}"
+"""),
+    ("code", RUN_HELPER + """
+import json, random, torch
+sys.path.insert(0, ".")
+from huggingface_hub import snapshot_download
+from naija_agent.adapters import find_adapter
+from naija_agent.publish import Publisher
+
+BASE_ADAPTER = find_adapter(BASE_RUN, HF_ADAPTER_REPO, token=HF_TOKEN)
+NGPU = torch.cuda.device_count()
+snapshot_download(MODEL_ID)
+if GITHUB_TOKEN:
+    os.environ["GITHUB_TOKEN"] = GITHUB_TOKEN
+os.makedirs(ADAPTER_DIR, exist_ok=True)
+print("start from:", BASE_ADAPTER, "| GPUs:", NGPU)
+"""),
+    ("markdown", "## 1. The model's own mistakes, as preference pairs"),
+    ("code", """
+shards = [f"CUDA_VISIBLE_DEVICES={g} {sys.executable} scripts/make_pairs.py --adapter {BASE_ADAPTER} "
+          f"--per-cell {PER_CELL} --samples {SAMPLES} --seed {SEED} --batch {BATCH_SIZE} "
+          f"--shard {g}/{NGPU} --out {ADAPTER_DIR}/pairs-{g}.jsonl" for g in range(NGPU)]
+run("; ".join(f"({c}) & p{g}=$!" for g, c in enumerate(shards)) + "; "      # one shard per GPU, at once
+    + " && ".join(f"wait $p{g}" for g in range(NGPU)))
+
+rows = [json.loads(l) for g in range(NGPU) for l in open(f"{ADAPTER_DIR}/pairs-{g}.jsonl", encoding="utf-8")]
+random.Random(SEED).shuffle(rows)
+rows = rows[:MAX_PAIRS]
+with open(PAIRS, "w", encoding="utf-8") as f:
+    for r in rows:
+        f.write(json.dumps(r, ensure_ascii=False) + "\\n")
+from collections import Counter
+stats = {"pairs": len(rows), "by_category": Counter(r["category"] for r in rows),
+         "by_lang": Counter(r["lang"] for r in rows), "by_turn": Counter(r["turn"] for r in rows)}
+json.dump(stats, open(f"{ADAPTER_DIR}/pair_stats.json", "w"), indent=2)
+print(json.dumps(stats, indent=2))
+for r in rows[:8]:
+    print(f"[{r['category']} / {r['lang']} / turn {r['turn']}] {r['prompt'][1]['content'][:120]}\\n"
+          f"  chosen:   {r['chosen'][0]['content'][:160]}\\n  rejected: {r['rejected'][0]['content'][:160]}\\n")
+Publisher(RUN_NAME).publish({"pairs.jsonl": PAIRS, "pair_stats.json": f"{ADAPTER_DIR}/pair_stats.json"},
+                            f"{RUN_NAME}: preference pairs", force=True)
+"""),
+    ("markdown", "## 2. DPO with AgentTune (both GPUs if available)"),
+    ("code", """
+import gc
+gc.collect(); torch.cuda.empty_cache()
+args = (f"--adapter {BASE_ADAPTER} --pairs {PAIRS} --out {ADAPTER_DIR} --epochs {EPOCHS} --lr {LR} "
+        f"--beta {BETA} --grad-accum {GRAD_ACCUM}")
+rc = 1
+if NGPU >= 2:
+    rc = run(f"{sys.executable} -m torch.distributed.run --standalone --nproc_per_node={NGPU} scripts/train_dpo.py {args}",
+             check=False)
+    if rc != 0:
+        print(f"\\n*** {NGPU}-GPU DPO failed (exit code {rc}); retrying on one GPU ***\\n", flush=True)
+if rc != 0:
+    rc = run(f"CUDA_VISIBLE_DEVICES=0 {sys.executable} scripts/train_dpo.py {args}", check=False)
+assert rc == 0, "DPO failed: see the log above"
+Publisher(RUN_NAME).publish({f: f"{ADAPTER_DIR}/{f}" for f in ("training_stats.json", "dpo_config.yaml",
+                                                                "lexsi_provenance.json") if os.path.exists(f"{ADAPTER_DIR}/{f}")},
+                            f"{RUN_NAME}: training stats", force=True)
+"""),
+    ("markdown", "## 3. v3 vs v2 on the same tasks, one GPU each"),
+    ("code", """
+gc.collect(); torch.cuda.empty_cache()
+from naija_agent.evaluate import evaluate_parallel, load_tasks
+from naija_agent.hf_policy import HFPolicy
+from naija_agent.human import load_human_tasks
+from naija_agent.scoring import compare
+
+sets = {"dev": load_tasks("data/tasks_test.jsonl")}
+if os.path.exists("data/tasks_human.jsonl"):
+    sets["human"] = load_tasks("data/tasks_human.jsonl")
+if os.path.exists("human_eval/requests2.txt"):
+    sets["human2"] = load_human_tasks("human_eval/requests2.txt")
+for name in sorted(sets, key=lambda n: n == "dev"):        # the small native-speaker sets first
+    tasks = sets[name]
+    jobs = [{"name": "v3", "out_dir": f"runs/{RUN_NAME}-{name}",
+             "make_policy": lambda d: HFPolicy(MODEL_ID, adapter=ADAPTER_DIR, device=d),
+             "config": {"model": MODEL_ID, "adapter": RUN_NAME, "set": name}},
+            {"name": "v2", "out_dir": f"runs/{BASE_RUN}-{name}-vs-{RUN_NAME}",
+             "make_policy": lambda d: HFPolicy(MODEL_ID, adapter=BASE_ADAPTER, device=d),
+             "config": {"model": MODEL_ID, "adapter": BASE_RUN, "set": name}}]
+    metrics = evaluate_parallel(tasks, jobs, batch_size=BATCH_SIZE)
+    table = compare({"v2": metrics["v2"], "v3": metrics["v3"]},
+                    title=f"{RUN_NAME} vs {BASE_RUN} on the {name} set ({len(tasks)} tasks, {PROMPT_STYLE} prompt)")
+    path_md = f"runs/{RUN_NAME}-{name}/comparison.md"
+    open(path_md, "w").write(table)
+    print(table)
+    Publisher(f"{RUN_NAME}-{name}").publish({"comparison.md": path_md}, f"{RUN_NAME}-{name}: comparison", force=True)
+"""),
+    ("code", """
+# Independent second opinion with Lexsi Labs' AuditKIT, on the development set
+from naija_agent.auditkit_bridge import auditkit_eval
+print(auditkit_eval(sets["dev"], f"runs/{RUN_NAME}-dev").summary())
+"""),
+    ("code", """
+# Upload the adapter to a PRIVATE Hugging Face repo if a write token is set (otherwise it stays in the Output tab)
+HF_WRITE_TOKEN = secret("HF_WRITE_TOKEN")
+if HF_WRITE_TOKEN:
+    from huggingface_hub import HfApi
+    api = HfApi(token=HF_WRITE_TOKEN)
+    hub_repo = f"{api.whoami()['name']}/oya-tiny-aya-{RUN_NAME}"
+    api.create_repo(hub_repo, private=True, exist_ok=True)
+    api.upload_folder(folder_path=ADAPTER_DIR, repo_id=hub_repo, commit_message=RUN_NAME,
+                      ignore_patterns=["ref/*", "pairs-*.jsonl", "training_args.bin"])
+    print("uploaded to https://huggingface.co/" + hub_repo)
+else:
+    print("No HF_WRITE_TOKEN: the adapter is in the Output tab under lexsi-hack/" + ADAPTER_DIR)
+"""),
+    ("code", """
+# push the end of this notebook's log to GitHub
+from naija_agent.notebook_log import flush_live_log
+flush_live_log()
+"""),
+])
+
+
 for name, book in (("01_setup_and_baseline.ipynb", baseline), ("02_train_and_eval.ipynb", train),
-                   ("03_publish_demo.ipynb", publish), ("04_eval_only.ipynb", evalonly)):
+                   ("03_publish_demo.ipynb", publish), ("04_eval_only.ipynb", evalonly),
+                   ("05_dpo.ipynb", dpo)):
     path = ROOT / "notebooks" / name
     path.write_text(json.dumps(book, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     print("wrote", path.relative_to(ROOT))

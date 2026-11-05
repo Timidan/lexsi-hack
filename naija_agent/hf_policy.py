@@ -11,7 +11,8 @@ DEFAULT_MODEL = "CohereLabs/tiny-aya-global"
 
 class HFPolicy:
     def __init__(self, model_id: str = DEFAULT_MODEL, adapter: str | None = None,
-                 load_in_4bit: bool = False, max_new_tokens: int = 256, device: str | None = None):
+                 load_in_4bit: bool = False, max_new_tokens: int = 256, device: str | None = None,
+                 temperature: float = 0.0):
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
@@ -39,6 +40,8 @@ class HFPolicy:
                 self.model = self.model.merge_and_unload()   # same outputs, faster generation
         self.model.eval()
         self.max_new_tokens = max_new_tokens
+        # 0 = greedy (evaluation); above 0 samples, used to find the model's likely mistakes (scripts/make_pairs.py)
+        self.sampling = {"do_sample": True, "temperature": temperature} if temperature > 0 else {"do_sample": False}
 
     def render(self, messages: list[dict]) -> str:
         return self.tok.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
@@ -65,7 +68,7 @@ class HFPolicy:
         texts = [self.render(m) for m in batch]
         enc = self.tok(texts, return_tensors="pt", padding=True, add_special_tokens=False).to(self.model.device)
         with torch.no_grad():
-            out = self.model.generate(**enc, max_new_tokens=self.max_new_tokens, do_sample=False,
+            out = self.model.generate(**enc, max_new_tokens=self.max_new_tokens, **self.sampling,
                                       pad_token_id=self.tok.pad_token_id)
         new = out[:, enc["input_ids"].shape[1]:]
         return [t.strip() for t in self.tok.batch_decode(new, skip_special_tokens=True)]
