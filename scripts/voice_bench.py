@@ -24,20 +24,10 @@ sys.path.insert(0, str(ROOT))
 
 from naija_agent.human import load_human_tasks, parse_requests  # noqa: E402
 from naija_agent.lang import strip_diacritics  # noqa: E402
+from naija_agent.voice import Transcriber, load_audio  # noqa: E402
 
 VOICE = ROOT / "human_eval" / "voice"
 TYPED = ROOT / "human_eval" / "requests.txt"
-
-# Whisper-family models; lang maps the clip suffix (Y/P) to the decoder's language token (None: the
-# model's own prompt). generate holds decoding settings a model card recommends; default is greedy.
-MODELS = {
-    "whisper-turbo": {"repo": "openai/whisper-large-v3-turbo", "lang": {"Y": "<|yo|>", "P": "<|en|>"}},
-    "naijavox": {"repo": "Axiveri/NaijaVox-V1", "lang": {"Y": "<|yo|>", "P": "<|pcm|>"}},
-    "whisper-pidgin": {"repo": "openai/whisper-large-v3-turbo", "adapter": "michaelodafe/whisper-pidgin-v1",
-                       "lang": {"P": "<|en|>"}},
-    "buzzasr-yoruba": {"repo": "BuzzASR/yoruba", "lang": {"Y": None},
-                       "generate": {"no_repeat_ngram_size": 3, "repetition_penalty": 1.2}},
-}
 
 # What must survive transcription for the money to go to the right place, per scenario.
 DETAILS = {1: ["08031234567", "1000", "mtn"], 2: ["09055512345", "2gb", "glo"], 3: ["45123456789", "5000", "ikeja"],
@@ -55,33 +45,16 @@ def norm(text: str) -> str:
 
 
 def transcribe(name: str, clips: Path) -> None:
-    import soundfile as sf
-    import torch
-    from transformers import WhisperForConditionalGeneration, WhisperProcessor
-
-    cfg = MODELS[name]
-    proc = WhisperProcessor.from_pretrained(cfg["repo"])
-    model = WhisperForConditionalGeneration.from_pretrained(cfg["repo"], dtype=torch.float16, attn_implementation="sdpa")
-    if cfg.get("adapter"):
-        from peft import PeftModel
-        model = PeftModel.from_pretrained(model, cfg["adapter"]).merge_and_unload()
-    model.to("cuda").eval()
-    vocab = proc.tokenizer.get_vocab()
+    asr = Transcriber(name, device="cuda")
+    cfg = asr.cfg
     lines, secs = [], []
     for scenario, suffix in [(n, s) for s in "YP" for n in range(1, 14)]:
         if suffix not in cfg["lang"]:
             continue
-        audio, sr = sf.read(clips / f"{scenario}{suffix}.wav", dtype="float32")
-        feats = proc.feature_extractor(audio, sampling_rate=sr, return_tensors="pt").input_features.to("cuda", torch.float16)
-        kw = dict(cfg.get("generate", {}), max_new_tokens=200)
-        if cfg["lang"][suffix]:
-            kw["decoder_input_ids"] = torch.tensor([[vocab["<|startoftranscript|>"], vocab[cfg["lang"][suffix]],
-                                                     vocab["<|transcribe|>"], vocab["<|notimestamps|>"]]], device="cuda")
+        audio = load_audio(str(clips / f"{scenario}{suffix}.wav"))
         t0 = time.time()
-        with torch.no_grad():
-            ids = model.generate(input_features=feats, **kw)
+        text = asr(audio, suffix) or "-"
         secs.append(time.time() - t0)
-        text = " ".join(proc.tokenizer.decode(ids[0], skip_special_tokens=True).split()) or "-"
         lines.append(f"{scenario}{suffix}: {text}")
         print(lines[-1], flush=True)
     VOICE.mkdir(parents=True, exist_ok=True)

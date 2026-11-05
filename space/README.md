@@ -22,7 +22,9 @@ asks when details are missing, refuses to overspend, and ignores instructions pl
 
 All tools run against a mock wallet: no real money, accounts or phone numbers are involved.
 
-- **Try it**: chat with the fine-tuned model (quantized GGUF, running on this Space's CPU).
+- **Try it**: chat with the fine-tuned model (quantized GGUF, running on this Space's CPU). Type a request, or
+  speak it: a voice note or video in Pidgin (whisper-pidgin-v1) or Yoruba (BuzzASR) becomes text you can
+  correct before sending. Every payment waits for you to confirm or cancel it.
 - **Before / after**: every held-out test task, untrained vs fine-tuned, with each tool call and a verdict.
 - **Results**: the before/after metrics.
 

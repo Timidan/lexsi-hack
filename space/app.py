@@ -3,6 +3,8 @@
 Tabs:
   Try it         chat with the fine-tuned Tiny Aya agent (GGUF on CPU via llama.cpp)
                  against a mock wallet; every tool call and the wallet state are shown.
+                 Requests can be typed or spoken (voice note or video, Pidgin or Yoruba);
+                 every payment waits for the user's confirmation.
   Before / after replay any held-out test task: untrained vs fine-tuned, side by side.
   Results        the before/after table and the training curve.
 
@@ -27,7 +29,7 @@ except ImportError:
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from naija_agent.prompting import ParseError, format_result_turn, parse_tool_calls, system_message
-from naija_agent.world import Contact, World, account_key
+from naija_agent.world import PAYMENT_TOOLS, Contact, World, account_key
 
 DATA = Path(os.environ.get("OYA_DATA_DIR", Path(__file__).parent / "data"))
 GGUF_REPO = os.environ.get("OYA_GGUF_REPO", "")
@@ -102,15 +104,80 @@ def _fmt_call(name, args) -> str:
     return f"`{name}({json.dumps(args, ensure_ascii=False)})`"
 
 
+def _naira(v) -> str:
+    try:
+        return f"₦{int(float(v)):,}"
+    except (TypeError, ValueError):
+        return f"₦{v}"
+
+
+def describe_payment(call: dict, world: World) -> str:
+    """One line a person can check before money moves."""
+    a = call.get("arguments") if isinstance(call.get("arguments"), dict) else {}
+    name = call.get("name")
+    if name == "buy_airtime":
+        return f"{_naira(a.get('amount'))} {a.get('network')} airtime to {a.get('phone')}"
+    if name == "buy_data":
+        return f"{a.get('plan')} {a.get('network')} data to {a.get('phone')}"
+    if name == "pay_electricity":
+        return f"{_naira(a.get('amount'))} electricity, {a.get('disco')} meter {a.get('meter_number')}"
+    holder = world.accounts.get(account_key(str(a.get("bank", "")), str(a.get("account_number", ""))))
+    return f"{_naira(a.get('amount'))} to {holder or 'an unverified account'} ({a.get('bank')} {a.get('account_number')})"
+
+
+def _execute(calls: list[dict], world: World, chat: list) -> list:
+    results = []
+    for c in calls:
+        res = world.execute(c["name"], c["arguments"])
+        ok = res.get("status") == "success"
+        chat.append({"role": "assistant",
+                     "content": f"{_fmt_call(c['name'], c['arguments'])}\n\n→ `{json.dumps(res, ensure_ascii=False)}`",
+                     "metadata": {"title": f"{'🔧' if ok else '⛔'} {c['name']}"}})
+        results.append((c["name"], res))
+    return results
+
+
 def run_agent(user_text: str, chat: list, state: dict, reply_fn=model_reply):
-    """Generator: yields (chat, wallet_md, state) after every model step."""
+    """Generator: yields (chat, wallet_md, state, confirm_row) after every model step."""
     world: World = state["world"]
     # keep the previous exchange only when the agent had asked a question
     messages = state["messages"] if state.get("awaiting_answer") else [
         {"role": "system", "content": system_message()}]
     messages = messages + [{"role": "user", "content": user_text}]
     chat = chat + [{"role": "user", "content": user_text}]
-    yield chat, wallet_markdown(world), state
+    state = {**state, "pending": None}
+    yield chat, wallet_markdown(world), state, gr.update(visible=False)
+    yield from agent_loop(messages, chat, state, reply_fn)
+
+
+def confirm_payment(approve: bool, chat: list, state: dict, reply_fn=model_reply):
+    """Run (or cancel) the payment the agent proposed, then let it continue."""
+    calls, world = state.get("pending"), state["world"]
+    if not calls:
+        yield chat, wallet_markdown(world), state, gr.update(visible=False)
+        return
+    chat = list(chat)
+    if not approve:  # end here: the model never saw a cancelled payment in training
+        chat.append({"role": "assistant", "content": "Cancelled. No money moved."})
+        yield chat, wallet_markdown(world), {**state, "pending": None, "awaiting_answer": False}, gr.update(visible=False)
+        return
+    results = _execute(calls, world, chat)
+    messages = state["messages"] + [{"role": "user", "content": format_result_turn(results)}]
+    state = {**state, "pending": None}
+    yield chat, wallet_markdown(world), state, gr.update(visible=False)
+    yield from agent_loop(messages, chat, state, reply_fn)
+
+
+def approve_payment(chat: list, state: dict):
+    yield from confirm_payment(True, chat, state)
+
+
+def cancel_payment(chat: list, state: dict):
+    yield from confirm_payment(False, chat, state)
+
+
+def agent_loop(messages: list, chat: list, state: dict, reply_fn=model_reply):
+    world: World = state["world"]
     final = None
     for _ in range(MAX_TURNS):
         reply = reply_fn(messages)
@@ -127,24 +194,45 @@ def run_agent(user_text: str, chat: list, state: dict, reply_fn=model_reply):
         if calls is None:
             final = reply
             break
-        results = []
-        for c in calls:
-            res = world.execute(c["name"], c["arguments"])
-            ok = res.get("status") == "success"
-            chat.append({"role": "assistant",
-                         "content": f"{_fmt_call(c['name'], c['arguments'])}\n\n→ `{json.dumps(res, ensure_ascii=False)}`",
-                         "metadata": {"title": f"{'🔧' if ok else '⛔'} {c['name']}"}})
-            results.append((c["name"], res))
-        messages.append({"role": "user", "content": format_result_turn(results)})
-        yield chat, wallet_markdown(world), state
+        if any(c["name"] in PAYMENT_TOOLS for c in calls):  # money moves only after the user confirms
+            chat.append({"role": "assistant", "metadata": {"title": "Waiting for your confirmation"},
+                         "content": "Pay " + "; ".join(describe_payment(c, world) for c in calls
+                                                       if c["name"] in PAYMENT_TOOLS) + "?"})
+            state = {**state, "messages": messages, "pending": calls}
+            yield chat, wallet_markdown(world), state, gr.update(visible=True)
+            return
+        messages.append({"role": "user", "content": format_result_turn(_execute(calls, world, chat))})
+        yield chat, wallet_markdown(world), state, gr.update(visible=False)
     chat.append({"role": "assistant", "content": final or "_(no answer after the step limit)_"})
     state = {**state, "messages": messages, "awaiting_answer": bool(final and final.rstrip().endswith("?"))}
-    yield chat, wallet_markdown(world), state
+    yield chat, wallet_markdown(world), state, gr.update(visible=False)
 
 
 def reset(injection: bool):
-    state = {"world": new_world(injection=injection), "messages": [], "awaiting_answer": False}
-    return [], wallet_markdown(state["world"]), state
+    state = {"world": new_world(injection=injection), "messages": [], "awaiting_answer": False, "pending": None}
+    return [], wallet_markdown(state["world"]), state, gr.update(visible=False)
+
+
+# ─── voice ────────────────────────────────────────────────────────────────────
+
+VOICE_MODELS = {"Pidgin": ("whisper-pidgin", "P"), "Yoruba": ("buzzasr-yoruba", "Y")}  # best per language
+_asr = {}
+
+
+def transcribe_input(audio_path: str | None, video_path: str | None, language: str) -> str:
+    path = audio_path or video_path
+    if not path:
+        raise gr.Error("Record or upload a voice note or a video first.")
+    from naija_agent.voice import Transcriber, load_audio
+
+    name, code = VOICE_MODELS[language]
+    if name not in _asr:
+        _asr[name] = Transcriber(name)
+    text = _asr[name](load_audio(path), code)
+    if not text:
+        raise gr.Error("No speech found in that recording.")
+    gr.Info("Check the numbers and names in the transcript, then press Enter to send.")
+    return text
 
 
 # ─── replay data ──────────────────────────────────────────────────────────────
@@ -260,16 +348,30 @@ def build_ui():
                 with gr.Column(scale=3):
                     chat = gr.Chatbot(type="messages", height=520, label="Oya")
                     box = gr.Textbox(placeholder="Type a request in English, Pidgin or Yoruba…", show_label=False)
+                    with gr.Row(visible=False) as confirm_row:
+                        pay = gr.Button("Confirm payment", variant="primary")
+                        cancel = gr.Button("Cancel")
+                    with gr.Accordion("Speak instead", open=False):
+                        with gr.Row():
+                            audio = gr.Audio(sources=["microphone", "upload"], type="filepath",
+                                             label="Voice note (first 30 s)")
+                            video = gr.File(file_types=["video"], type="filepath", label="Or a video (first 30 s)")
+                        with gr.Row():
+                            voice_lang = gr.Radio(list(VOICE_MODELS), value="Pidgin", label="Spoken language")
+                            listen = gr.Button("Transcribe")
                     gr.Examples(EXAMPLES, inputs=box)
                     with gr.Row():
                         injection = gr.Checkbox(label="Plant a prompt injection in bank lookups", value=False)
                         clear = gr.Button("New wallet")
                 with gr.Column(scale=2):
                     wallet = gr.Markdown(wallet_markdown(state.value["world"]))
-            box.submit(run_agent, [box, chat, state], [chat, wallet, state], concurrency_limit=1).then(
-                lambda: "", None, box)
-            clear.click(reset, [injection], [chat, wallet, state])
-            injection.change(reset, [injection], [chat, wallet, state])
+            outs = [chat, wallet, state, confirm_row]
+            box.submit(run_agent, [box, chat, state], outs, concurrency_limit=1).then(lambda: "", None, box)
+            pay.click(approve_payment, [chat, state], outs, concurrency_limit=1)
+            cancel.click(cancel_payment, [chat, state], outs, concurrency_limit=1)
+            listen.click(transcribe_input, [audio, video, voice_lang], box, concurrency_limit=1)
+            clear.click(reset, [injection], outs)
+            injection.change(reset, [injection], outs)
         with gr.Tab("Before / after"):
             gr.Markdown("Every held-out test task, answered by the **untrained** and the **fine-tuned** model. "
                         "Test requests use phrasings never seen in training.")

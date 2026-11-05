@@ -251,7 +251,10 @@ GPU (4 GB), Oya runs in 4-bit here, so the typed row is rerun in 4-bit too.
 - **Some are not.** Twice, Oya filled an unclear amount with a guess ("putuke" for "put 2k", and
   "2006" for "2,000") and bought ₦1,500 of airtime; once it bought data for a different number than the
   one spoken. A voice version therefore needs a confirm step: show the transcript and the planned
-  payment, and move money only after the user says yes. The demo does not have this yet.
+  payment, and move money only after the user says yes. The demo Space does this: speech becomes
+  editable text (whisper-pidgin-v1 for Pidgin, BuzzASR for Yoruba), and every payment, typed or
+  spoken, waits for the user to confirm or cancel it. On the Space's free CPU a clip takes about
+  20-30 seconds to transcribe.
 - **4-bit has a safety cost.** On the typed request "buy data for 0812…" with no plan or network, the
   4-bit model guessed 5GB on MTN, where the full-precision model (Kaggle) asked. The demo Space runs a
   4-bit model, so this applies to it.

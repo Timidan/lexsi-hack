@@ -57,8 +57,11 @@ Prompt format = AgentTune's Tiny Aya tool fallback (`naija_agent/prompting.py`).
   transcribed them and Oya (4-bit, on the user's laptop GPU) acted on each transcript. Results and
   findings: "Voice input" in `docs/article.md`; code `scripts/voice_bench.py`; transcripts
   `human_eval/voice/`. The audio and its 26 clips are private and stay off git (local only, under
-  `~/.cache/oya-voice/`). Not built yet: voice input in the Space, and the confirm-before-paying step
-  the results call for. Cohere Transcribe is untested (gated; the user has not accepted its terms).
+  `~/.cache/oya-voice/`). The Space now takes voice notes or video (Pidgin: whisper-pidgin-v1, Yoruba:
+  BuzzASR, both fp32 on CPU and loaded on first use; int8 was faster but changed numbers) and every
+  payment waits for Confirm or Cancel (Cancel ends without asking the model). Tested locally with the
+  4-bit model standing in for the GGUF; not yet tested on a real Space (needs notebook 03). Cohere
+  Transcribe is untested (gated; the user has not accepted its terms).
 
 ## Where things run: Kaggle (free GPUs) + GitHub as the log
 
