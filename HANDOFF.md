@@ -63,6 +63,33 @@ Prompt format = AgentTune's Tiny Aya tool fallback (`naija_agent/prompting.py`).
   4-bit model standing in for the GGUF; not yet tested on a real Space (needs notebook 03). Cohere
   Transcribe is untested (gated; the user has not accepted its terms).
 
+- **Comparison with other models (2026-11-05):** same 30 held-out tasks, prompt and scorer. Oya 93% (4-bit,
+  laptop), GPT-6 Astra / GPT-6.1 Sol 97%, GPT-6 Luna 63%, Qwen3 4B 50%, Phi-4 mini 33%, Tiny Aya untrained
+  30%, Llama 3.2 3B 20%. Code `scripts/compare_models.py` (runs + table, `runs/compare.json`) and
+  `scripts/plot_compare.py` (charts in `docs/img/`: design C = grouped bars like Mistral's launch charts, the
+  one the user asked for; A = scorecard; B = ranked bars). "Reviewed" success counts polite asks without a
+  question mark; each was read by hand. The OpenAI key was borrowed from miseops on LuxVPS for this run and
+  deleted from the laptop afterwards; ask before borrowing it again.
+
+## What Lexsi offers (checked 2026-11-05 against hackathon.lexsi.ai and the Lexsi-Labs GitHub)
+
+- Track 3's repos are only AgentTune ("post-train the agent for reliable tool use") and AuditKIT ("evaluate
+  tool-call accuracy and reliability"). Other repos (CuratorKIT, SafeTune, CircuitKIT, AlignTune) are allowed
+  but are other tracks'. FAQ: non-Cohere models may be used "in a supplementary way, such as a teacher model,
+  for validation, or an LLM as a judge" (so the speech models and the GPT comparison are fine).
+- Judging: write-up clarity /10, practical usefulness /10, code/notebook quality /10, overall /100.
+- **The HF article must have 9 sections** (kickoff slides): problem and approach; hackathon repos used (which,
+  for what, which features); models and licences; datasets/benchmarks and licences; model artifacts as a
+  public HF collection; data artifacts as a public HF collection; experiments and findings; "with more
+  credits"; teammates tagged. `docs/article.md` is not in this shape yet.
+- ROI comparison is "optional but preferred" (token billing vs self-hosting, GPU hours, GPU $/hour,
+  tokens/sec). AuditKIT has `LatencyStats`, `Throughput` and token-usage cost capture (`metrics/perf.py`).
+- Biggest gap: we only borrow AgentTune's prompt format; we do not train with it. Highest-value Lexsi work,
+  ranked: (1) a small AgentTune DPO/self-heal run on simulator-verified good/bad trajectories (12-24 h + GPU);
+  (2) deeper AuditKIT: wallet-specific red-team probes judged by the simulator, plus perf metrics for the ROI
+  table (6-12 h); (3) CuratorKIT dedup/provenance for the dataset collection (8-16 h).
+- Registered teams that join the Discord get $20 of HF credits (ZeroGPU); finalists get $200 more.
+
 ## Where things run: Kaggle (free GPUs) + GitHub as the log
 
 The user's Kaggle account is phone-verified (GPU + internet unlocked). Kaggle secrets already set up on

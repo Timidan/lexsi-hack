@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="576pt" height="534.96pt" viewBox="0 0 576 534.96" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-11-05T20:43:48.971819</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 534.96 
+L 576 534.96 
+L 576 0 
+L 0 0 
+z
+" style="fill: #1a1a19"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 122.4 296.64 
+L 558.72 296.64 
+L 558.72 110.88 
+L 122.4 110.88 
+z
+" style="fill: #1a1a19"/>
+   </g>
+   <g id="matplotlib.axis_1"/>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_1">
+      <path d="M 122.4 296.64 
+L 558.72 296.64 
+" clip-path="url(#p0c764a9601)" style="fill: none; stroke: #2c2c2a; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_2"/>
+     <g id="text_1">
+      <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #c3c2b7" x="115.4" y="299.869004" transform="rotate(-0 115.4 299.869004)">0%</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_3">
+      <path d="M 122.4 250.2 
+L 558.72 250.2 
+" clip-path="url(#p0c764a9601)" style="fill: none; stroke: #2c2c2a; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_4"/>
+     <g id="text_2">
+      <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #c3c2b7" x="115.4" y="253.429004" transform="rotate(-0 115.4 253.429004)">25%</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_5">
+      <path d="M 122.4 203.76 
+L 558.72 203.76 
+" clip-path="url(#p0c764a9601)" style="fill: none; stroke: #2c2c2a; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_6"/>
+     <g id="text_3">
+      <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #c3c2b7" x="115.4" y="206.989004" transform="rotate(-0 115.4 206.989004)">50%</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_7">
+      <path d="M 122.4 157.32 
+L 558.72 157.32 
+" clip-path="url(#p0c764a9601)" style="fill: none; stroke: #2c2c2a; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_8"/>
+     <g id="text_4">
+      <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #c3c2b7" x="115.4" y="160.549004" transform="rotate(-0 115.4 160.549004)">75%</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_9">
+      <path d="M 122.4 110.88 
+L 558.72 110.88 
+" clip-path="url(#p0c764a9601)" style="fill: none; stroke: #2c2c2a; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_10"/>
+     <g id="text_5">
+      <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #c3c2b7" x="115.4" y="114.109004" transform="rotate(-0 115.4 114.109004)">100%</text>
+     </g>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 139.8528 296.64 
+L 159.4872 296.64 
+L 159.4872 117.072 
+L 139.8528 117.072 
+z
+" clip-path="url(#p0c764a9601)" style="fill: #898781"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 194.3928 296.64 
+L 214.0272 296.64 
+L 214.0272 117.072 
+L 194.3928 117.072 
+z
+" clip-path="url(#p0c764a9601)" style="fill: #898781"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 248.9328 296.64 
+L 268.5672 296.64 
+L 268.5672 123.264 
+L 248.9328 123.264 
+z
+" clip-path="url(#p0c764a9601)" style="fill: #3987e5"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 303.4728 296.64 
+L 323.1072 296.64 
+L 323.1072 178.992 
+L 303.4728 178.992 
+z
+" clip-path="url(#p0c764a9601)" style="fill: #898781"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 358.0128 296.64 
+L 377.6472 296.64 
+L 377.6472 203.76 
+L 358.0128 203.76 
+z
+" clip-path="url(#p0c764a9601)" style="fill: #898781"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 412.5528 296.64 
+L 432.1872 296.64 
+L 432.1872 234.72 
+L 412.5528 234.72 
+z
+" clip-path="url(#p0c764a9601)" style="fill: #898781"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 467.0928 296.64 
+L 486.7272 296.64 
+L 486.7272 240.912 
+L 467.0928 240.912 
+z
+" clip-path="url(#p0c764a9601)" style="fill: #898781"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 521.6328 296.64 
+L 541.2672 296.64 
+L 541.2672 259.488 
+L 521.6328 259.488 
+z
+" clip-path="url(#p0c764a9601)" style="fill: #898781"/>
+   </g>
+   <g id="line2d_11">
+    <path d="M 122.4 296.64 
+L 558.72 296.64 
+" style="fill: none; stroke: #383835; stroke-linecap: square"/>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="149.67" y="107.669656" transform="rotate(-0 149.67 107.669656)">97%</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="204.21" y="107.669656" transform="rotate(-0 204.21 107.669656)">97%</text>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="258.75" y="113.861656" transform="rotate(-0 258.75 113.861656)">93%</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="313.29" y="169.589656" transform="rotate(-0 313.29 169.589656)">63%</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="367.83" y="194.357656" transform="rotate(-0 367.83 194.357656)">50%</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="422.37" y="225.317656" transform="rotate(-0 422.37 225.317656)">33%</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="476.91" y="231.509656" transform="rotate(-0 476.91 231.509656)">30%</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="531.45" y="250.085656" transform="rotate(-0 531.45 250.085656)">20%</text>
+   </g>
+  </g>
+  <g id="line2d_12">
+   <path d="M 17.28 388.8 
+L 558.72 388.8 
+" style="fill: none; stroke: #2c2c2a; stroke-width: 0.7; stroke-linecap: square"/>
+  </g>
+  <g id="line2d_13">
+   <path d="M 17.28 464.4 
+L 558.72 464.4 
+" style="fill: none; stroke: #2c2c2a; stroke-width: 0.7; stroke-linecap: square"/>
+  </g>
+  <g id="text_14">
+   <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="17.28" y="30.045469" transform="rotate(-0 17.28 30.045469)">Oya vs other models on 30 held-out Yoruba and Pidgin requests</text>
+  </g>
+  <g id="text_15">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c3c2b7" x="17.28" y="49.122969" transform="rotate(-0 17.28 49.122969)">Same prompt, same tasks, same scorer. Open models run in 4-bit on a 4 GB laptop GPU; OpenAI models via the API.</text>
+  </g>
+  <g id="text_16">
+   <text style="font-weight: 700; font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="17.28" y="89.285937" transform="rotate(-0 17.28 89.285937)">Task success</text>
+  </g>
+  <g id="text_17">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(137.370898 317.711367)">GPT-6</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(138.531016 329.130586)">Astra</text>
+  </g>
+  <g id="text_18">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #c3c2b7" x="149.67" y="345.68793" transform="rotate(-0 149.67 345.68793)">OpenAI API</text>
+  </g>
+  <g id="text_19">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="149.67" y="407.711367" transform="rotate(-0 149.67 407.711367)">0%</text>
+  </g>
+  <g id="text_20">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="149.67" y="432.421953" transform="rotate(-0 149.67 432.421953)">~$26.75</text>
+  </g>
+  <g id="text_21">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(187.856133 317.711367)">GPT-6.1</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(197.730742 329.261406)">Sol</text>
+  </g>
+  <g id="text_22">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #c3c2b7" x="204.21" y="345.68793" transform="rotate(-0 204.21 345.68793)">OpenAI API</text>
+  </g>
+  <g id="text_23">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="204.21" y="407.711367" transform="rotate(-0 204.21 407.711367)">0%</text>
+  </g>
+  <g id="text_24">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="204.21" y="432.421953" transform="rotate(-0 204.21 432.421953)">~$5.24</text>
+  </g>
+  <g id="text_25">
+   <text style="font-weight: 700; font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(249.498281 316.854727)">Oya</text>
+   <text style="font-weight: 700; font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(244.294688 328.756719)">(ours)</text>
+  </g>
+  <g id="text_26">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(243.669805 346.511367)">3.35B ·</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(248.967695 358.061406)">4-bit</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(234.985195 368.712969)">laptop GPU</text>
+  </g>
+  <g id="text_27">
+   <text style="font-weight: 700; font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="258.75" y="407.711367" transform="rotate(-0 258.75 407.711367)">3%</text>
+  </g>
+  <g id="text_28">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(251.991172 432.421953)">$0,</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(235.456016 444.461406)">self-hosted</text>
+  </g>
+  <g id="text_29">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="313.29" y="317.711367" transform="rotate(-0 313.29 317.711367)">GPT-6 Luna</text>
+  </g>
+  <g id="text_30">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #c3c2b7" x="313.29" y="345.68793" transform="rotate(-0 313.29 345.68793)">OpenAI API</text>
+  </g>
+  <g id="text_31">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="313.29" y="407.711367" transform="rotate(-0 313.29 407.711367)">0%</text>
+  </g>
+  <g id="text_32">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="313.29" y="432.421953" transform="rotate(-0 313.29 432.421953)">~$0.26</text>
+  </g>
+  <g id="text_33">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(346.025508 317.223945)">Qwen3 4B</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(351.559141 329.130586)">Instruct</text>
+  </g>
+  <g id="text_34">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(355.453867 346.511367)">4.0B ·</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(358.047695 358.061406)">4-bit</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(344.065195 368.712969)">laptop GPU</text>
+  </g>
+  <g id="text_35">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="367.83" y="407.711367" transform="rotate(-0 367.83 407.711367)">10%</text>
+  </g>
+  <g id="text_36">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(361.071172 432.421953)">$0,</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(344.536016 444.461406)">self-hosted</text>
+  </g>
+  <g id="text_37">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="422.37" y="317.846836" transform="rotate(-0 422.37 317.846836)">Phi-4 mini</text>
+  </g>
+  <g id="text_38">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(409.993867 346.511367)">3.8B ·</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(412.587695 358.061406)">4-bit</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(398.605195 368.712969)">laptop GPU</text>
+  </g>
+  <g id="text_39">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="422.37" y="407.711367" transform="rotate(-0 422.37 407.711367)">13%</text>
+  </g>
+  <g id="text_40">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(415.611172 432.421953)">$0,</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(399.076016 444.461406)">self-hosted</text>
+  </g>
+  <g id="text_41">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(458.965703 316.962969)">Tiny Aya</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(456.318086 329.261406)">untrained</text>
+  </g>
+  <g id="text_42">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(461.829805 346.511367)">3.35B ·</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(467.127695 358.061406)">4-bit</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(453.145195 368.712969)">laptop GPU</text>
+  </g>
+  <g id="text_43">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="476.91" y="407.711367" transform="rotate(-0 476.91 407.711367)">23%</text>
+  </g>
+  <g id="text_44">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(470.151172 432.421953)">$0,</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(453.616016 444.461406)">self-hosted</text>
+  </g>
+  <g id="text_45">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(510.443047 317.786406)">Llama 3.2</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(525.830039 329.186367)">3B</text>
+  </g>
+  <g id="text_46">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(519.073867 346.511367)">3.2B ·</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(521.667695 358.061406)">4-bit</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(507.685195 368.712969)">laptop GPU</text>
+  </g>
+  <g id="text_47">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #f0efec" x="531.45" y="407.711367" transform="rotate(-0 531.45 407.711367)">20%</text>
+  </g>
+  <g id="text_48">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(524.691172 432.421953)">$0,</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(508.156016 444.461406)">self-hosted</text>
+  </g>
+  <g id="text_49">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c3c2b7" x="17.28" y="406.832148" transform="rotate(-0 17.28 406.832148)">Wrong payments</text>
+  </g>
+  <g id="text_50">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c3c2b7" x="17.28" y="432.08793" transform="rotate(-0 17.28 432.08793)">Cost / 1,000 requests</text>
+  </g>
+  <g id="text_51">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(17.28 482.562969)">Task success counts polite requests without a question mark as asking (7 such replies, all checked by hand). Oya at full</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(17.28 494.037969)">precision: 100% (Kaggle). API cost from third-party list prices. 30 tasks is a small sample.</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p0c764a9601">
+   <rect x="122.4" y="110.88" width="436.32" height="185.76"/>
+  </clipPath>
+ </defs>
+</svg>

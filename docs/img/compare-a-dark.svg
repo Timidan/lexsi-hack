@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="576pt" height="544.32pt" viewBox="0 0 576 544.32" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-11-05T20:43:48.437176</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 544.32 
+L 576 544.32 
+L 576 0 
+L 0 0 
+z
+" style="fill: #1a1a19"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 159.84 442.08 
+L 285.12 442.08 
+L 285.12 120.96 
+L 159.84 120.96 
+z
+" style="fill: #1a1a19"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1"/>
+     <g id="text_1">
+      <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #c3c2b7" x="159.84" y="455.538008" transform="rotate(-0 159.84 455.538008)">0%</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2"/>
+     <g id="text_2">
+      <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #c3c2b7" x="222.48" y="455.538008" transform="rotate(-0 222.48 455.538008)">50%</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_3"/>
+     <g id="text_3">
+      <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #c3c2b7" x="285.12" y="455.538008" transform="rotate(-0 285.12 455.538008)">100%</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2"/>
+   <g id="patch_3">
+    <path d="M 159.84 134.28 
+L 276.768 134.28 
+L 276.768 145.8 
+L 159.84 145.8 
+z
+" clip-path="url(#pf86a885b8a)" style="fill: #3987e5"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 159.84 172.44 
+L 222.48 172.44 
+L 222.48 183.96 
+L 159.84 183.96 
+z
+" clip-path="url(#pf86a885b8a)" style="fill: #898781"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 159.84 210.6 
+L 201.6 210.6 
+L 201.6 222.12 
+L 159.84 222.12 
+z
+" clip-path="url(#pf86a885b8a)" style="fill: #898781"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 159.84 248.76 
+L 197.424 248.76 
+L 197.424 260.28 
+L 159.84 260.28 
+z
+" clip-path="url(#pf86a885b8a)" style="fill: #898781"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 159.84 286.92 
+L 184.896 286.92 
+L 184.896 298.44 
+L 159.84 298.44 
+z
+" clip-path="url(#pf86a885b8a)" style="fill: #898781"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 159.84 340.92 
+L 280.944 340.92 
+L 280.944 352.44 
+L 159.84 352.44 
+z
+" clip-path="url(#pf86a885b8a)" style="fill: #898781"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 159.84 379.08 
+L 280.944 379.08 
+L 280.944 390.6 
+L 159.84 390.6 
+z
+" clip-path="url(#pf86a885b8a)" style="fill: #898781"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 159.84 417.24 
+L 239.184 417.24 
+L 239.184 428.76 
+L 159.84 428.76 
+z
+" clip-path="url(#pf86a885b8a)" style="fill: #898781"/>
+   </g>
+   <g id="line2d_4">
+    <path d="M 159.84 442.08 
+L 159.84 120.96 
+" style="fill: none; stroke: #383835; stroke-linecap: square"/>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="281.768" y="142.248008" transform="rotate(-0 281.768 142.248008)">93%</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="227.48" y="180.408008" transform="rotate(-0 227.48 180.408008)">50%</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="206.6" y="218.568008" transform="rotate(-0 206.6 218.568008)">33%</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="202.424" y="256.728008" transform="rotate(-0 202.424 256.728008)">30%</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="189.896" y="294.888008" transform="rotate(-0 189.896 294.888008)">20%</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="285.944" y="348.888008" transform="rotate(-0 285.944 348.888008)">97%</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="285.944" y="387.048008" transform="rotate(-0 285.944 387.048008)">97%</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="244.184" y="425.208008" transform="rotate(-0 244.184 425.208008)">63%</text>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_11">
+    <path d="M 321.84 442.08 
+L 433.44 442.08 
+L 433.44 120.96 
+L 321.84 120.96 
+z
+" style="fill: #1a1a19"/>
+   </g>
+   <g id="matplotlib.axis_3">
+    <g id="xtick_4">
+     <g id="line2d_5"/>
+     <g id="text_12">
+      <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #c3c2b7" x="321.84" y="455.538008" transform="rotate(-0 321.84 455.538008)">0%</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_6"/>
+     <g id="text_13">
+      <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #c3c2b7" x="377.64" y="455.538008" transform="rotate(-0 377.64 455.538008)">50%</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_7"/>
+     <g id="text_14">
+      <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #c3c2b7" x="433.44" y="455.538008" transform="rotate(-0 433.44 455.538008)">100%</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_4"/>
+   <g id="patch_12">
+    <path d="M 321.84 134.28 
+L 325.56 134.28 
+L 325.56 145.8 
+L 321.84 145.8 
+z
+" clip-path="url(#pf0cf2000c2)" style="fill: #3987e5"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 321.84 172.44 
+L 333 172.44 
+L 333 183.96 
+L 321.84 183.96 
+z
+" clip-path="url(#pf0cf2000c2)" style="fill: #898781"/>
+   </g>
+   <g id="patch_14">
+    <path d="M 321.84 210.6 
+L 336.72 210.6 
+L 336.72 222.12 
+L 321.84 222.12 
+z
+" clip-path="url(#pf0cf2000c2)" style="fill: #898781"/>
+   </g>
+   <g id="patch_15">
+    <path d="M 321.84 248.76 
+L 347.88 248.76 
+L 347.88 260.28 
+L 321.84 260.28 
+z
+" clip-path="url(#pf0cf2000c2)" style="fill: #898781"/>
+   </g>
+   <g id="patch_16">
+    <path d="M 321.84 286.92 
+L 344.16 286.92 
+L 344.16 298.44 
+L 321.84 298.44 
+z
+" clip-path="url(#pf0cf2000c2)" style="fill: #898781"/>
+   </g>
+   <g id="patch_17">
+    <path d="M 321.84 340.92 
+L 321.84 340.92 
+L 321.84 352.44 
+L 321.84 352.44 
+z
+" clip-path="url(#pf0cf2000c2)" style="fill: #898781"/>
+   </g>
+   <g id="patch_18">
+    <path d="M 321.84 379.08 
+L 321.84 379.08 
+L 321.84 390.6 
+L 321.84 390.6 
+z
+" clip-path="url(#pf0cf2000c2)" style="fill: #898781"/>
+   </g>
+   <g id="patch_19">
+    <path d="M 321.84 417.24 
+L 321.84 417.24 
+L 321.84 428.76 
+L 321.84 428.76 
+z
+" clip-path="url(#pf0cf2000c2)" style="fill: #898781"/>
+   </g>
+   <g id="line2d_8">
+    <path d="M 321.84 442.08 
+L 321.84 120.96 
+" style="fill: none; stroke: #383835; stroke-linecap: square"/>
+   </g>
+   <g id="text_15">
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="330.56" y="142.248008" transform="rotate(-0 330.56 142.248008)">3%</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="338" y="180.408008" transform="rotate(-0 338 180.408008)">10%</text>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="341.72" y="218.568008" transform="rotate(-0 341.72 218.568008)">13%</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="352.88" y="256.728008" transform="rotate(-0 352.88 256.728008)">23%</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="349.16" y="294.888008" transform="rotate(-0 349.16 294.888008)">20%</text>
+   </g>
+   <g id="text_20">
+    <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="326.84" y="348.888008" transform="rotate(-0 326.84 348.888008)">0%</text>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="326.84" y="387.048008" transform="rotate(-0 326.84 387.048008)">0%</text>
+   </g>
+   <g id="text_22">
+    <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="326.84" y="425.208008" transform="rotate(-0 326.84 425.208008)">0%</text>
+   </g>
+  </g>
+  <g id="line2d_9">
+   <path d="M 17.28 319.68 
+L 558.72 319.68 
+" style="fill: none; stroke: #2c2c2a; stroke-width: 0.7; stroke-linecap: square"/>
+  </g>
+  <g id="line2d_10">
+   <path d="M 17.28 473.76 
+L 558.72 473.76 
+" style="fill: none; stroke: #2c2c2a; stroke-width: 0.7; stroke-linecap: square"/>
+  </g>
+  <g id="text_23">
+   <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="17.28" y="30.045469" transform="rotate(-0 17.28 30.045469)">Oya vs other models on 30 held-out Yoruba and Pidgin requests</text>
+  </g>
+  <g id="text_24">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c3c2b7" x="17.28" y="49.122969" transform="rotate(-0 17.28 49.122969)">Same prompt, same tasks, same scorer. Open models run in 4-bit on a 4 GB laptop GPU; OpenAI models via the API.</text>
+  </g>
+  <g id="text_25">
+   <text style="font-weight: 700; font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="17.28" y="86.666406" transform="rotate(-0 17.28 86.666406)">Model</text>
+  </g>
+  <g id="text_26">
+   <text style="font-weight: 700; font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="159.84" y="86.666406" transform="rotate(-0 159.84 86.666406)">Task success</text>
+  </g>
+  <g id="text_27">
+   <text style="font-weight: 700; font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(321.84 85.809766)">Tasks with a wrong payment</text>
+   <text style="font-weight: 700; font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(321.84 97.641367)">(lower is better)</text>
+  </g>
+  <g id="text_28">
+   <text style="font-weight: 700; font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(472.32 85.76793)">Cost per 1,000</text>
+   <text style="font-weight: 700; font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #f0efec" transform="translate(472.32 97.07293)">requests</text>
+  </g>
+  <g id="text_29">
+   <text style="font-weight: 700; font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="17.28" y="135.125117" transform="rotate(-0 17.28 135.125117)">Oya (ours)</text>
+  </g>
+  <g id="text_30">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c3c2b7" x="17.28" y="147.402969" transform="rotate(-0 17.28 147.402969)">3.35B · 4-bit laptop GPU</text>
+  </g>
+  <g id="text_31">
+   <text style="font-weight: 700; font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="472.32" y="143.341953" transform="rotate(-0 472.32 143.341953)">$0, self-hosted</text>
+  </g>
+  <g id="text_32">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="17.28" y="173.583945" transform="rotate(-0 17.28 173.583945)">Qwen3 4B Instruct</text>
+  </g>
+  <g id="text_33">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c3c2b7" x="17.28" y="185.562969" transform="rotate(-0 17.28 185.562969)">4.0B · 4-bit laptop GPU</text>
+  </g>
+  <g id="text_34">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="472.32" y="181.501953" transform="rotate(-0 472.32 181.501953)">$0, self-hosted</text>
+  </g>
+  <g id="text_35">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="17.28" y="212.366836" transform="rotate(-0 17.28 212.366836)">Phi-4 mini</text>
+  </g>
+  <g id="text_36">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c3c2b7" x="17.28" y="223.722969" transform="rotate(-0 17.28 223.722969)">3.8B · 4-bit laptop GPU</text>
+  </g>
+  <g id="text_37">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="472.32" y="219.661953" transform="rotate(-0 472.32 219.661953)">$0, self-hosted</text>
+  </g>
+  <g id="text_38">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="17.28" y="249.642969" transform="rotate(-0 17.28 249.642969)">Tiny Aya untrained</text>
+  </g>
+  <g id="text_39">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c3c2b7" x="17.28" y="261.882969" transform="rotate(-0 17.28 261.882969)">3.35B · 4-bit laptop GPU</text>
+  </g>
+  <g id="text_40">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="472.32" y="257.821953" transform="rotate(-0 472.32 257.821953)">$0, self-hosted</text>
+  </g>
+  <g id="text_41">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="17.28" y="288.626406" transform="rotate(-0 17.28 288.626406)">Llama 3.2 3B</text>
+  </g>
+  <g id="text_42">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c3c2b7" x="17.28" y="300.042969" transform="rotate(-0 17.28 300.042969)">3.2B · 4-bit laptop GPU</text>
+  </g>
+  <g id="text_43">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="472.32" y="295.981953" transform="rotate(-0 472.32 295.981953)">$0, self-hosted</text>
+  </g>
+  <g id="text_44">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="17.28" y="342.551367" transform="rotate(-0 17.28 342.551367)">GPT-6 Astra</text>
+  </g>
+  <g id="text_45">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c3c2b7" x="17.28" y="353.96793" transform="rotate(-0 17.28 353.96793)">OpenAI API</text>
+  </g>
+  <g id="text_46">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="472.32" y="349.981953" transform="rotate(-0 472.32 349.981953)">~$26.75</text>
+  </g>
+  <g id="text_47">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="17.28" y="380.786406" transform="rotate(-0 17.28 380.786406)">GPT-6.1 Sol</text>
+  </g>
+  <g id="text_48">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c3c2b7" x="17.28" y="392.12793" transform="rotate(-0 17.28 392.12793)">OpenAI API</text>
+  </g>
+  <g id="text_49">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="472.32" y="388.141953" transform="rotate(-0 472.32 388.141953)">~$5.24</text>
+  </g>
+  <g id="text_50">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="17.28" y="418.871367" transform="rotate(-0 17.28 418.871367)">GPT-6 Luna</text>
+  </g>
+  <g id="text_51">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c3c2b7" x="17.28" y="430.28793" transform="rotate(-0 17.28 430.28793)">OpenAI API</text>
+  </g>
+  <g id="text_52">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #f0efec" x="472.32" y="426.301953" transform="rotate(-0 472.32 426.301953)">~$0.26</text>
+  </g>
+  <g id="text_53">
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(17.28 491.922969)">Task success counts polite requests without a question mark as asking (7 such replies, all checked by hand). Oya at full</text>
+   <text style="font-size: 8.5px; font-family: 'DejaVu Sans'; fill: #c3c2b7" transform="translate(17.28 503.397969)">precision: 100% (Kaggle). API cost from third-party list prices. 30 tasks is a small sample.</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pf86a885b8a">
+   <rect x="159.84" y="120.96" width="125.28" height="321.12"/>
+  </clipPath>
+  <clipPath id="pf0cf2000c2">
+   <rect x="321.84" y="120.96" width="111.6" height="321.12"/>
+  </clipPath>
+ </defs>
+</svg>
