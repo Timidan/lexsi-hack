@@ -13,6 +13,7 @@ GITHUB_TOKEN that has write access.
 
 from __future__ import annotations
 
+import atexit
 import sys
 import threading
 import time
@@ -20,6 +21,14 @@ import traceback
 from pathlib import Path
 
 from .publish import Publisher
+
+_flush = None
+
+
+def flush_live_log() -> None:
+    """Push the log now (call at the end of a notebook)."""
+    if _flush is not None:
+        _flush()
 
 
 class _Tee:
@@ -41,7 +50,8 @@ class _Tee:
 
 
 def start_live_log(name: str, every_s: float = 300) -> Publisher | None:
-    out = Path("runs") / name
+    # kept outside runs/<name>/ so publishing a run folder never includes (and races on) the log
+    out = Path("logs") / name
     out.mkdir(parents=True, exist_ok=True)
     path = out / "notebook_log.txt"
     path.write_text(f"=== notebook log for {name}, started {time.strftime('%Y-%m-%d %H:%M:%S')} UTC ===\n",
@@ -66,6 +76,9 @@ def start_live_log(name: str, every_s: float = 300) -> Publisher | None:
             push(force=True)
 
     threading.Thread(target=loop, daemon=True).start()
+    global _flush
+    _flush = lambda: push(force=True, why="notebook finished")  # noqa: E731
+    atexit.register(_flush)
     try:
         ip = get_ipython()  # noqa: F821 (defined inside IPython/Jupyter)
 

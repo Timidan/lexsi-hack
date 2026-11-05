@@ -164,6 +164,11 @@ metrics = evaluate(tasks, policy, RUN_DIR, batch_size=BATCH_SIZE,
 """),
     AUDITKIT_CELL,
     FAILURES_CELL,
+    ("code", """
+# push the end of this notebook's log to GitHub
+from naija_agent.notebook_log import flush_live_log
+flush_live_log()
+"""),
 ])
 
 train = nb([
@@ -342,6 +347,11 @@ for f in ("comparison.md", "comparison_human.md"):
 ok = pub.publish(files, f"{RUN_NAME}: training log and comparison", force=True)
 print("published to the 'results' branch" if ok else ("nothing new to publish" if pub.enabled else "publishing off (no GITHUB_TOKEN)"))
 """),
+    ("code", """
+# push the end of this notebook's log to GitHub
+from naija_agent.notebook_log import flush_live_log
+flush_live_log()
+"""),
 ])
 
 RUN_HELPER = """
@@ -489,6 +499,11 @@ if PRIVATE:   # a private Space needs a read token to download the private GGUF
     api.add_space_secret(SPACE_REPO, "HF_TOKEN", HF_TOKEN)
 api.upload_folder(folder_path=SPACE_DIR, repo_id=SPACE_REPO, repo_type="space", commit_message=f"demo: {RUN_NAME}")
 print("Space: https://huggingface.co/spaces/" + SPACE_REPO, "(the first build takes a few minutes)")
+"""),
+    ("code", """
+# push the end of this notebook's log to GitHub
+from naija_agent.notebook_log import flush_live_log
+flush_live_log()
 """),
 ])
 

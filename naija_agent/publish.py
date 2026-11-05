@@ -82,33 +82,46 @@ class Publisher:
             self._git("checkout", "-q", "-b", BRANCH)
             self._git("remote", "add", "origin", url)
 
+    def _copy_in(self, files: dict[str, str | Path]) -> None:
+        target = Path(self.dir) / "runs" / self.name
+        target.mkdir(parents=True, exist_ok=True)
+        for dst, src in files.items():
+            src = Path(src)
+            if src.is_dir():
+                shutil.copytree(src, target / dst, dirs_exist_ok=True)
+            elif src.exists():
+                shutil.copy(src, target / dst)
+
     def publish(self, files: dict[str, str | Path], message: str, force: bool = False) -> bool:
-        """files: {name inside runs/<run>/: local path (file or folder)}."""
+        """files: {name inside runs/<run>/: local path (file or folder)}.
+
+        Each attempt starts from the branch exactly as it is on GitHub, copies the
+        files in and pushes; if another writer pushed first, it simply starts over.
+        Several publishers (training, evaluation, notebook log) can therefore write
+        to the branch at the same time without ever hitting a merge conflict."""
         if not self.enabled or (not force and time.time() - self.last < self.min_interval):
             return False
+        ident = ["-c", "user.name=oya-runner", "-c", "user.email=oya-runner@users.noreply.github.com"]
         try:
             self._ensure_checkout()
-            target = Path(self.dir) / "runs" / self.name
-            target.mkdir(parents=True, exist_ok=True)
-            for dst, src in files.items():
-                src = Path(src)
-                if src.is_dir():
-                    shutil.copytree(src, target / dst, dirs_exist_ok=True)
-                elif src.exists():
-                    shutil.copy(src, target / dst)
-            self._git("add", "-A")
-            ident = ["-c", "user.name=oya-runner", "-c", "user.email=oya-runner@users.noreply.github.com"]
-            if self._git(*ident, "commit", "-q", "-m", message).returncode != 0:
-                return False  # nothing changed
-            for _ in range(2):
-                r = self._git("push", "-q", "origin", BRANCH)
+            err = ""
+            for attempt in range(5):
+                if self._git("fetch", "-q", "--depth", "1", "origin", BRANCH).returncode == 0:
+                    self._git("reset", "-q", "--hard", "FETCH_HEAD")
+                self._copy_in(files)
+                self._git("add", "-A")
+                if self._git(*ident, "commit", "-q", "-m", message).returncode != 0:
+                    return False  # nothing changed
+                r = self._git("push", "-q", "origin", f"HEAD:refs/heads/{BRANCH}")
                 if r.returncode == 0:
                     self.last = time.time()
                     return True
-                self._git(*ident, "pull", "-q", "--rebase", "origin", BRANCH)
-            print("results push failed:", self._scrub(r.stderr.strip())[:300])
-            if "403" in r.stderr or "denied" in r.stderr.lower():
-                self.error = "no write access"
+                err = r.stderr
+                if "403" in err or "denied" in err.lower():
+                    self.error = "no write access"
+                    break
+                time.sleep(1 + 2 * attempt)
+            print("results push failed:", self._scrub(err.strip())[:300])
             return False
         except Exception as e:  # never break a training run because of publishing
             print("results push error:", self._scrub(str(e))[:300])
