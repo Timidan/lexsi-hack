@@ -4,7 +4,7 @@ The 26 held-out requests (human_eval/requests.txt) were read aloud by a native s
 clip per line, named 1Y.wav ... 13P.wav. The clips stay private; transcripts are kept here.
 
     python scripts/voice_bench.py transcribe naijavox --clips DIR   # -> human_eval/voice/naijavox.txt
-    python scripts/voice_bench.py score typed naijavox ... --adapter DIR
+    python scripts/voice_bench.py score typed naijavox ... --adapter DIR   # --adapter none: untrained Tiny Aya
 
 `score` reports word error rate, whether the details that decide where money goes survived
 (amount, number, name, network), and Oya's task success and wrong payments on each transcript
@@ -114,20 +114,22 @@ def score(names: list[str], adapter: str) -> str:
             wer[lang] = jiwer.wer([norm(refs[k]) for k in keys], [norm(hyps[k]) for k in keys]) if keys and name != "typed" else None
         checked = [(n, h) for (n, _), h in hyps.items() if n in DETAILS]
         kept = sum(all(d in norm(h) for d in DETAILS[n]) for n, h in checked) / len(checked)
-        run = ROOT / "runs" / f"voice-{name}"
+        untrained = adapter == "none"
+        run = ROOT / "runs" / f"voice-{name}{'-untrained' if untrained else ''}"
         if not (run / "metrics.json").exists():
-            policy = policy or HFPolicy("CohereLabs/tiny-aya-global", adapter=adapter, load_in_4bit=True)
+            policy = policy or HFPolicy("CohereLabs/tiny-aya-global", adapter=None if untrained else adapter,
+                                        load_in_4bit=True)
             evaluate(load_human_tasks(path), policy, run, batch_size=2, verbose=False, publish=False)
         m = json.loads((run / "metrics.json").read_text())
         by_lang = m["by_lang"]
         speed = re.search(r"seconds_per_clip: ([\d.]+)", text)
-        rows.append(f"| {name} | {pct(wer['pcm'])} | {pct(wer['yo'])} | {pct(kept)} "
+        rows.append(f"| {name}{' (untrained)' if untrained else ''} | {pct(wer['pcm'])} | {pct(wer['yo'])} | {pct(kept)} "
                     f"| {pct(by_lang.get('pcm', {}).get('success_rate'))} | {pct(by_lang.get('yo', {}).get('success_rate'))} "
                     f"| {pct(m['overall']['strict_success_rate'])} | {pct(m['overall']['unexpected_payment_rate'])} "
                     f"| {speed.group(1) if speed else '-'} |")
         print(rows[-1], flush=True)
     table = "\n".join(rows) + "\n"
-    out = ROOT / "runs" / "voice-comparison.md"
+    out = ROOT / "runs" / f"voice-comparison{'-untrained' if adapter == 'none' else ''}.md"
     out.write_text(table)
     return table
 

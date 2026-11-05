@@ -231,6 +231,18 @@ GPU (4 GB), Oya runs in 4-bit here, so the typed row is rerun in 4-bit too.
 \*Whisper repeated one phrase until its length limit on one clip, which pushes word errors past 100%.
 "Key details" are the amount, phone/account/meter number, name and network a payment depends on.
 
+**What fine-tuning adds, from voice.** The same inputs given to untrained Tiny Aya (same prompt, also
+4-bit):
+
+| Input | Success, Pidgin: untrained → Oya | Success, Yoruba: untrained → Oya | Tasks with a wrong payment: untrained → Oya |
+|---|---|---|---|
+| Typed text | 33% → **93%** | 27% → **93%** | 23% → **3%** |
+| whisper-pidgin-v1 (Pidgin only) | 20% → **60%** | – | 7% → 7% (1 of 15 each) |
+| NaijaVox-V1 | 7% → **53%** | 13% → **27%** | 27% → **7%** |
+| BuzzASR Yoruba (Yoruba only) | – | 27% → **40%** | 27% → **7%** |
+
+- **Fine-tuning still pays off from voice.** On every input Oya solves more tasks than the untrained
+  model, and on all but one it makes far fewer wrong payments (whisper-pidgin: one each, out of 15).
 - **Speech is the bottleneck, not Oya.** The best speech model per language takes Oya from 93% on
   typed text to 60% (Pidgin) and 40% (Yoruba). Numbers suffer most: a missing "0" or a split digit group
   breaks a phone number, and "Bisi" became "busy" in every Pidgin transcript.
