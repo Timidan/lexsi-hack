@@ -216,16 +216,17 @@ prompt injection planted in the account lookup. Same compact prompt for both mod
 
 Oya reads text. To see what happens when people *speak* their request, the native speaker read
 the 26 held-out lines aloud (one recording, cut into one clip per line, retakes removed). Four open
-speech models transcribed the clips, and Oya acted on each transcript. Because this ran on a laptop
+speech models transcribed the clips, and Oya acted on each transcript. Every row is Oya; the rows
+differ only in what Oya was given to read. Because this ran on a laptop
 GPU (4 GB), Oya runs in 4-bit here, so the typed row is rerun in 4-bit too.
 
-| Speech model | Word errors: Pidgin | Word errors: Yoruba (no tone marks) | Key details exactly right | Oya success: Pidgin | Oya success: Yoruba | Tasks with a wrong payment |
+| Input to Oya | Word errors: Pidgin | Word errors: Yoruba (no tone marks) | Key details exactly right | Oya success: Pidgin | Oya success: Yoruba | Tasks with a wrong payment |
 |---|---|---|---|---|---|---|
-| None (typed text) | – | – | 100% | 93% | 93% | 3% |
-| Whisper large-v3-turbo | 208%* | 85% | 25% | 40% | 27% | 20% |
-| whisper-pidgin-v1 (Pidgin only) | 39% | – | 20% | **60%** | – | 7% |
-| NaijaVox-V1 | **37%** | 64% | 20% | 53% | 27% | 7% |
-| BuzzASR Yoruba (Yoruba only) | – | **59%** | **60%** | – | **40%** | 7% |
+| Typed text → Oya | – | – | 100% | 93% | 93% | 3% |
+| Whisper large-v3-turbo → Oya | 208%* | 85% | 25% | 40% | 27% | 20% |
+| whisper-pidgin-v1 → Oya (Pidgin only) | 39% | – | 20% | **60%** | – | 7% |
+| NaijaVox-V1 → Oya | **37%** | 64% | 20% | 53% | 27% | 7% |
+| BuzzASR Yoruba → Oya (Yoruba only) | – | **59%** | **60%** | – | **40%** | 7% |
 
 \*Whisper repeated one phrase until its length limit on one clip, which pushes word errors past 100%.
 "Key details" are the amount, phone/account/meter number, name and network a payment depends on.
