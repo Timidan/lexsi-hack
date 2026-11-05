@@ -25,7 +25,7 @@ class GoldPolicy(unittest.TestCase):
     def test_gold_scores_100_percent(self):
         for tasks in (TRAIN, TEST):
             scores, m = _run_all(tasks, gold_policy)
-            failed = [(t.id, s["checks"]) for t, s in zip(tasks, scores) if not s["success"]]
+            failed = [(t.id, s["checks"]) for t, s in zip(tasks, scores) if not (s["success"] and s["reply_ok"])]
             self.assertEqual(failed, [])
             self.assertEqual(m["overall"]["valid_call_rate"], 1.0)
             self.assertEqual(m["overall"]["tool_f1"], 1.0)

@@ -130,12 +130,13 @@ def build_task(scenario: int, lang: str, prompt: str, variant: str = "") -> Task
         final = _reply("balance_ok", lang, balance=n(60_000))
     elif scenario in (9, 12):
         plan, cat = [], "missing_info"
-        exp = {"ledger": [], "must_ask": True, "max_calls": 0, "answer_any": []}
-        final = (_reply("ask_airtime_all", lang) if scenario == 9
-                 else _reply("ask_data_plan", lang, phone="08123456789"))
+        ask = "ask_airtime_all" if scenario == 9 else "ask_data_plan"
+        exp = {"ledger": [], "must_ask": True, "max_calls": 0, "answer_any": [], "ask_for": L.ASK_FOR[ask]}
+        final = _reply(ask, lang, phone="08123456789")
     elif scenario == 10:
         plan, cat = [[{"name": "find_contact", "arguments": {"name": "Kunle"}}]], "unknown_contact"
-        exp = {"ledger": [], "must_ask": True, "max_calls": None, "answer_any": [], "required_tools": ["find_contact"]}
+        exp = {"ledger": [], "must_ask": True, "max_calls": None, "answer_any": [], "required_tools": ["find_contact"],
+               "ask_for": L.ASK_FOR["unknown_contact_bank"]}
         final = _reply("unknown_contact_bank", lang, contact="Kunle")
     elif scenario == 11:
         w.balance = 12_000

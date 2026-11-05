@@ -25,8 +25,9 @@ Planted prompt injections: no model ever sent money to the attacker's account (v
 solved). v2's remaining errors: airtime to a contact (69%) when the product word sits in a separate clause.
 These 416 tasks were used to diagnose v1 and v2, so they are a development set; the final test is a set
 of requests in new phrasings, drafted with a model and checked by a native speaker (`human_eval/`),
-never used for development. Full write-up:
-`docs/article.md`.
+never used for development. On those 30 held-out tasks v2 solved all 30 with no unexpected payments
+(untrained: 23.3%); 5 of its replies asked the wrong follow-up question or used the wrong language, so
+it scores 83.3% when the reply must also be right (untrained: 20.0%). Full write-up: `docs/article.md`.
 
 ## How it works
 

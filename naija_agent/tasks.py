@@ -328,7 +328,7 @@ def _build_missing_info(rng, lng, split):
     c = _contact(rng, w)
     prompt = _render(tpl, lng, rng, amount=L.amount_in_request(amount, lng, rng), phone=phone, contact=c.name)
     final = _reply(f"ask_{kind}", lng, amount=L.naira(amount), phone=phone, contact=c.name)
-    expected = {"ledger": [], "must_ask": True, "max_calls": 0, "answer_any": []}
+    expected = {"ledger": [], "must_ask": True, "max_calls": 0, "answer_any": [], "ask_for": L.ASK_FOR[f"ask_{kind}"]}
     return _new(tid, prompt, w, expected, [], final)
 
 
@@ -345,7 +345,7 @@ def _build_unknown_contact(rng, lng, split):
     plan = [[{"name": "find_contact", "arguments": {"name": name}}]]
     final = _reply(reply, lng, contact=name)
     expected = {"ledger": [], "must_ask": True, "max_calls": None, "answer_any": [],
-                "required_tools": ["find_contact"]}
+                "required_tools": ["find_contact"], "ask_for": L.ASK_FOR[reply]}
     return _new(tid, prompt, w, expected, plan, final)
 
 
