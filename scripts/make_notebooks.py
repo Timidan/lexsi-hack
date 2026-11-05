@@ -371,7 +371,8 @@ publish = nb([
     ("markdown", """
 # 03 · Export to GGUF and publish the demo Space
 
-Takes the adapter that notebook 02 uploaded to Hugging Face, merges it into Tiny Aya, converts it to a 4-bit
+Takes the trained adapter (attach the training run's output with **Add Input → Your Work →** your
+`02_train_and_eval` notebook, or let notebook 02 upload it to Hugging Face), merges it into Tiny Aya, converts it to a 4-bit
 GGUF that runs on a free CPU, checks that the quantized model still solves held-out tasks, then publishes:
 - the GGUF model repo, and
 - the **Hugging Face Space demo**, with the before/after replay data from the repo's `results` branch.
@@ -418,8 +419,19 @@ print("adapter:", ADAPTER_REPO, "| gguf:", GGUF_REPO, "| space:", SPACE_REPO)
 """),
     ("markdown", "## 1. Merge the adapter into the base weights"),
     ("code", """
+from naija_agent.adapters import find_adapter
 base_dir = snapshot_download(MODEL_ID, token=HF_TOKEN)
-adapter_dir = snapshot_download(ADAPTER_REPO, token=HF_WRITE_TOKEN)
+try:   # the earlier training run's output, attached with Add Input -> Your Work
+    adapter_dir = find_adapter(RUN_NAME)
+    print("adapter from Kaggle input:", adapter_dir)
+    # the submission needs the adapter on Hugging Face too
+    api.create_repo(ADAPTER_REPO, private=PRIVATE, exist_ok=True)
+    api.upload_folder(folder_path=adapter_dir, repo_id=ADAPTER_REPO, commit_message=RUN_NAME,
+                      ignore_patterns=["progress.json", "checkpoint*"])
+    print("adapter uploaded to https://huggingface.co/" + ADAPTER_REPO)
+except FileNotFoundError:
+    adapter_dir = snapshot_download(ADAPTER_REPO, token=HF_WRITE_TOKEN)
+    print("adapter from Hugging Face:", ADAPTER_REPO)
 run(f"{sys.executable} scripts/merge_lora.py --base {base_dir} --adapter {adapter_dir} --out {WORK}/merged")
 """),
     ("markdown", "## 2. Convert to GGUF and quantize (llama.cpp, in its own environment)"),
@@ -507,8 +519,98 @@ flush_live_log()
 """),
 ])
 
+evalonly = nb([
+    ("markdown", """
+# 04 · Evaluate an existing adapter (no training)
+
+Scores a model trained earlier (default `sft-v2`) and the untrained model, side by side on the two GPUs,
+on the **native-speaker test set** (`human_eval/requests.txt`) and optionally the 416-task development set.
+Results go to the repo's `results` branch.
+
+**Where the adapter comes from:** attach the earlier training run's output (right panel: **Add Input →
+Your Work →** your `02_train_and_eval` notebook), or, if it was uploaded, its Hugging Face repo.
+""" + SETUP_HELP),
+    ("code", """
+# ---- settings ----
+RUN_NAME = "sft-v2"            # adapter to evaluate
+PROMPT_STYLE = "compact"       # must match how RUN_NAME was trained
+EVAL_HUMAN = True              # native-speaker test set (needs human_eval/requests.txt filled in)
+EVAL_DEV = False               # also the 416-task development set (about 35 minutes)
+EVAL_BASELINE = True           # also score the untrained model with the same prompt
+BATCH_SIZE = 16
+HF_ADAPTER_REPO = None         # e.g. "your-hf-username/oya-tiny-aya-sft-v2" if not attached from Kaggle
+
+MODEL_ID = "CohereLabs/tiny-aya-global"
+REPO = "Timidan/lexsi-hack"
+BRANCH = "main"
+TRAIN_PER_CELL = 40
+LOG_NAME = f"eval-{RUN_NAME}"
+
+import os
+os.environ["OYA_PROMPT"] = PROMPT_STYLE
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+"""),
+    *SETUP_CELLS,
+    ("code", """
+import sys, torch
+sys.path.insert(0, ".")
+from naija_agent.adapters import find_adapter
+from naija_agent.evaluate import evaluate_parallel, load_tasks
+from naija_agent.hf_policy import HFPolicy
+from naija_agent.publish import Publisher
+from naija_agent.scoring import compare
+
+ADAPTER_DIR = find_adapter(RUN_NAME, HF_ADAPTER_REPO, token=HF_TOKEN)
+print("adapter:", ADAPTER_DIR, "| GPUs:", torch.cuda.device_count())
+
+sets = []
+if EVAL_HUMAN:
+    if os.path.exists("data/tasks_human.jsonl"):
+        sets.append(("human", "data/tasks_human.jsonl"))
+    else:
+        print("no native-speaker requests yet (human_eval/requests.txt is empty)")
+if EVAL_DEV:
+    sets.append(("dev", "data/tasks_test.jsonl"))
+
+for name, path in sets:
+    tasks = load_tasks(path)
+    jobs = [{"name": "fine-tuned", "out_dir": f"runs/{RUN_NAME}-{name}",
+             "make_policy": lambda d: HFPolicy(MODEL_ID, adapter=ADAPTER_DIR, device=d),
+             "config": {"model": MODEL_ID, "adapter": RUN_NAME, "set": name}}]
+    if EVAL_BASELINE:
+        jobs.append({"name": "untrained", "out_dir": f"runs/baseline-{PROMPT_STYLE}-{name}",
+                     "make_policy": lambda d: HFPolicy(MODEL_ID, device=d),
+                     "config": {"model": MODEL_ID, "adapter": None, "set": name}})
+    metrics = evaluate_parallel(tasks, jobs, batch_size=BATCH_SIZE)
+    if EVAL_BASELINE:
+        table = compare({"untrained": metrics["untrained"], "fine-tuned": metrics["fine-tuned"]},
+                        title=f"{RUN_NAME} on the {name} set ({len(tasks)} tasks, {PROMPT_STYLE} prompt)")
+        path_md = f"runs/{RUN_NAME}-{name}/comparison.md"
+        open(path_md, "w").write(table)
+        print(table)
+        Publisher(f"{RUN_NAME}-{name}").publish({"comparison.md": path_md}, f"{RUN_NAME}-{name}: comparison", force=True)
+"""),
+    ("code", """
+# Failures on the native-speaker set, to read
+import json
+p = f"runs/{RUN_NAME}-human/scores.jsonl"
+if os.path.exists(p):
+    rows = [json.loads(l) for l in open(p, encoding="utf-8")]
+    for r in rows:
+        if not r["success"]:
+            print(f"[{r['category']} / {r['lang']}] {r['prompt']}\\n   failed: {[k for k, v in r['checks'].items() if not v]}\\n   final: {str(r['final'])[:200]}\\n")
+"""),
+    ("code", """
+# push the end of this notebook's log to GitHub
+from naija_agent.notebook_log import flush_live_log
+flush_live_log()
+"""),
+])
+
+
 for name, book in (("01_setup_and_baseline.ipynb", baseline), ("02_train_and_eval.ipynb", train),
-                   ("03_publish_demo.ipynb", publish)):
+                   ("03_publish_demo.ipynb", publish), ("04_eval_only.ipynb", evalonly)):
     path = ROOT / "notebooks" / name
     path.write_text(json.dumps(book, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     print("wrote", path.relative_to(ROOT))
