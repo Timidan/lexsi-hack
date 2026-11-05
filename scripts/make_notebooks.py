@@ -290,7 +290,7 @@ if os.path.exists("data/tasks_human.jsonl"):
     hmetrics = evaluate_parallel(human, hjobs, batch_size=BATCH_SIZE)
     if EVAL_BASELINE:
         htable = compare({"untrained": hmetrics["untrained"], "fine-tuned": hmetrics["fine-tuned"]},
-                         title=f"{RUN_NAME}: {len(human)} requests written by a native speaker")
+                         title=f"{RUN_NAME}: {len(human)} held-out requests checked by a native speaker")
         open(f"{RUN_DIR}/comparison_human.md", "w").write(htable)
         print(htable)
 else:

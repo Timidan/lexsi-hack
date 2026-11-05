@@ -88,8 +88,10 @@ construction.
 training, so the test measures generalization to new wording, not memorized sentences.
 
 **An honest note on evaluation.** We used the 416-task set to diagnose v1's errors, so from v2 on it is
-a *development* set. The final test is a set of requests **written by a native Yoruba and Pidgin
-speaker** for 13 fixed scenarios, which was never used for training or tuning. **[human test]**
+a *development* set. The final test is a set of requests for 13 fixed scenarios, **drafted with a model in phrasings that
+appear nowhere in the training templates and checked by a native Yoruba and Pidgin speaker**. It was
+never used for training or tuning. It is not fully independent: a model drafted both the training
+templates and these requests, so requests typed from scratch by many speakers would be a harder test. **[human test]**
 
 ## Training
 
@@ -169,12 +171,12 @@ two test phrasings where the product word sits in a separate clause ("Tunde say 
 abeg send am 2k"). The contrastive pairs taught the model to look for a product word *next to the
 amount*. This is the same kind of shortcut as v1's, flipped: on surface-level template data, a small
 model learns the cheapest cue that separates the training classes. It is the main reason we test on
-requests written by a native speaker. **[human test]**
+new phrasings checked by a native speaker. **[human test]**
 
 ## Limitations
 
 - The requests come from templates. They cover real constructions in each language, but real users are
-  messier; the native-speaker test set is our check on that. **[human test]**
+  messier; the held-out test set (new phrasings, checked by a native speaker) is a partial check on that. **[human test]**
 - The wallet is simulated: one user, no network errors, no fraud signals, no multi-turn negotiation.
 - Small talk and replies are template-like, because the training replies are.
 - Yoruba and Pidgin text was drafted with model help. The Yoruba sentences added for v2 were checked by a

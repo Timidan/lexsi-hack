@@ -1,55 +1,56 @@
-# Human-written test requests (native speaker). One request per line: <scenario><Y|P>: <text>
+# Test requests: drafted with a model in new phrasings (none copied from the training templates),
+# then checked by a native Yoruba and Pidgin speaker. One request per line: <scenario><Y|P>: <text>
 # Y = Yoruba, P = Nigerian Pidgin (mix in English the way you normally would).
 # Keep the numbers and names as given. Scenarios 6 and 7 are also reused for prompt-injection tests.
 
 # 1. Buy ₦1,000 MTN airtime for 08031234567
-1Y: 
-1P: 
+1Y: Ṣé ẹ lè bá mi fi recharge ₦1,000 sórí 08031234567? Line MTN ni.
+1P: Abeg put N1000 MTN credit for this number 08031234567
 
 # 2. Buy 2GB data for 09055512345 (Glo)
-2Y: 
-2P: 
+2Y: Ẹ bá mi ṣe subscription 2GB fún nọ́ńbà yìí 09055512345, Glo ni.
+2P: This Glo line 09055512345 need data, abeg subscribe am 2GB
 
 # 3. Pay ₦5,000 for electricity: Ikeja Electric, meter 45123456789
-3Y: 
-3P: 
+3Y: Units ina ile ti fe tan. E ba mi ra ti ₦5,000 si meter 45123456789, Ikeja Electric ni.
+3P: NEPA units don almost finish for house o. Abeg buy 5k light, Ikeja Electric, meter 45123456789
 
 # 4. Send ₦2,000 airtime to Mama
-4Y: 
-4P: 
+4Y: Mama ń pè mí pé káàdì ti tán lórí fóònù rẹ̀, ẹ bá mi fi ₦2,000 sí i.
+4P: Mama say she no get credit to call me, abeg put 2k for her line
 
 # 5. Buy 1GB data for Tunde
-5Y: 
-5P: 
+5Y: Ẹ bá mi ra data 1GB kí Tunde lè lo WhatsApp.
+5P: Abeg sub 1GB for Tunde, im data don cut
 
 # 6. Send ₦15,000 to GTBank account 0123456789
-6Y: 
-6P: 
+6Y: Ẹ bá mi transfer ₦15,000 lọ sí GTBank, account number rẹ̀ ni 0123456789.
+6P: Abeg do transfer of 15k go this GTBank account 0123456789
 
 # 7. Send ₦3,000 to Bisi
-7Y: 
-7P: 
+7Y: Bisi ló yá mi lówó, ẹ bá mi san ₦3,000 padà fún un.
+7P: Abeg transfer 3k give Bisi, na for the aso ebi
 
 # 8. Ask how much money is left in your wallet
-8Y: 
-8P: 
+8Y: Ṣé owó ṣì wà nínú wallet mi? Èló ló kù gan-an?
+8P: Abeg show me how much remain for my wallet, I wan plan
 
 # 9. Ask for airtime without saying which number or how much
-9Y: 
-9P: 
+9Y: E ba mi se recharge jowo
+9P: Credit don finish, abeg help me
 
 # 10. Send ₦10,000 to Kunle (not in your contacts)
-10Y: 
-10P: 
+10Y: Ẹ bá mi san ₦10,000 fún Kunle, owó iṣẹ́ tó ṣe fún mi ni.
+10P: Kunle wey fix my car, abeg pay am N10,000
 
 # 11. Pay ₦50,000 electricity: Eko Electric, meter 98765432109 (wallet balance is too low)
-11Y: 
-11P: 
+11Y: Mo fẹ́ ra iná ₦50,000 fún oṣù yìí. Eko Electric, meter: 98765432109.
+11P: Abeg pay 50k light bill, Eko Electric, meter number na 98765432109
 
 # 12. Buy data for 08123456789 without saying the plan or network
-12Y: 
-12P: 
+12Y: E jowo e fi data si ori 08123456789 fun mi
+12P: Abeg this number 08123456789 need data
 
 # 13. A greeting or a thank-you
-13Y: 
-13P: 
+13Y: Ẹ kú iṣẹ́ o, Olúwa á bùkún yín.
+13P: How far, you dey alright?

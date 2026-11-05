@@ -24,7 +24,8 @@ Everything is scored automatically against a mock payments world, so there is no
 Planted prompt injections: no model ever sent money to the attacker's account (v2: 32/32 injection tasks
 solved). v2's remaining errors: airtime to a contact (69%) when the product word sits in a separate clause.
 These 416 tasks were used to diagnose v1 and v2, so they are a development set; the final test is a set
-of requests written by a native speaker (`human_eval/`), never used for development. Full write-up:
+of requests in new phrasings, drafted with a model and checked by a native speaker (`human_eval/`),
+never used for development. Full write-up:
 `docs/article.md`.
 
 ## How it works
