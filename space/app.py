@@ -412,4 +412,4 @@ def build_ui():
 if __name__ == "__main__":
     # download and load the speech models in the background, so the first Transcribe does not wait for them
     threading.Thread(target=lambda: [transcriber(n) for n, _ in VOICE_MODELS.values()], daemon=True).start()
-    build_ui().queue().launch()
+    build_ui().queue().launch(favicon_path=str(Path(__file__).parent / "favicon.png"))

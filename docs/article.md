@@ -1,3 +1,5 @@
+<img src="img/icon/oya-icon.png" alt="Oya" width="72">
+
 # Oya: teaching a 3B model to move money safely in Pidgin and Yoruba
 
 *Lexsi Labs AI Safety & Alignment Hackathon · Track 3: Agentic Fine-tuning*

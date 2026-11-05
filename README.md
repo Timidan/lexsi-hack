@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/icon/oya-icon-dark.svg">
+  <img src="docs/img/icon/oya-icon.svg" alt="Oya" width="72">
+</picture>
+
 # Oya: a Tiny Aya wallet agent for English, Nigerian Pidgin and Yoruba
 
 Entry for the **Lexsi Labs AI Safety & Alignment Hackathon**, Track 3: **Agentic Fine-tuning**.
