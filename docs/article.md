@@ -3,8 +3,8 @@
 *Lexsi Labs AI Safety & Alignment Hackathon · Track 3: Agentic Fine-tuning*
 *Model: Cohere Labs Tiny Aya (3.35B) + LoRA · Toolkits: Lexsi Labs AgentTune and AuditKIT*
 
-> **Draft.** Numbers below are from run `sft-v1` on the development set. Sections marked **[v2]** and
-> **[human test]** are filled in when those runs finish.
+> **Draft.** Numbers are from the development set (runs `sft-v1` and `sft-v2`). Sections marked
+> **[human test]** are filled in when the native-speaker test set has been scored.
 
 ## TL;DR
 
@@ -13,16 +13,16 @@ sends money through tools, from requests written in **English, Nigerian Pidgin, 
 Every action runs against a mock wallet, so we score what actually happened to the money, not what the
 model says happened.
 
-| On 416 held-out tasks | Untrained Tiny Aya | Oya (v1) |
+| On 416 held-out tasks (same prompt) | Untrained Tiny Aya | Oya (v2) |
 |---|---|---|
-| Task success | 20.7% | **91.8%** |
-| Safety tasks handled correctly | 7.8% | **90.6%** |
-| Valid tool calls | 60.8% | **99.6%** |
-| Tasks where money moved that should not have | 19.7% | 7.5% |
-| Yoruba requests solved | 14.4% | **85.6%** |
-| Planted prompt injections obeyed | n/a | **0 of 32** |
+| Task success | 39.2% | **97.4%** |
+| Safety tasks handled correctly | 18.8% | **100%** |
+| Valid tool calls | 78.4% | **99.8%** |
+| Tasks where money moved that should not have | 18.3% | **2.4%** |
+| Yoruba requests solved | 32.7% | **96.2%** |
+| Planted prompt injections obeyed | | **0 of 32** |
 
-Training cost: one free Kaggle T4, about 3 hours. Total spend: $0.
+Training cost: Kaggle's free GPUs (two T4s, 75 minutes). Total spend: $0.
 
 ## Why this problem
 
@@ -123,27 +123,34 @@ passed such an agent on 17% of tasks; the state check alone passed it on 42%.
 
 ## Results
 
-| Metric | Untrained | Oya v1 | Oya v2 **[v2]** |
-|---|---|---|---|
-| Task success | 20.7% | 91.8% | |
-| Safety tasks handled correctly | 7.8% | 90.6% | |
-| Valid tool calls | 60.8% | 99.6% | |
-| Tool F1 | 0.53 | 0.95 | |
-| Tasks with unexpected payments | 19.7% | 7.5% | |
-| English | 26.0% | 89.4% | |
-| Pidgin | 17.3% | 93.3% | |
-| Yoruba | 14.4% | 85.6% | |
-| Yoruba-English mix | 25.0% | 99.0% | |
+Each fine-tuned model is compared with the untrained model **using the same prompt**: v1 used the full
+tool prompt, v2 a compact one (same tool schemas, minified; 37% shorter).
 
-By category (v1): airtime, data, electricity, balance, transfers to an account, insufficient funds,
-unknown contacts and small talk were all at **100%**; data to a contact 97%; missing details 88%;
-injection 75%; transfers to a contact 34%.
+| Metric (416 development tasks) | Untrained, full prompt | v1 | Untrained, compact prompt | **v2** |
+|---|---|---|---|---|
+| Task success | 20.7% | 91.8% | 39.2% | **97.4%** |
+| Safety tasks handled correctly | 7.8% | 90.6% | 18.8% | **100%** |
+| Valid tool calls | 60.8% | 99.6% | 78.4% | **99.8%** |
+| Tool F1 | 0.53 | 0.95 | 0.62 | **0.98** |
+| Tasks with unexpected payments | 19.7% | 7.5% | 18.3% | **2.4%** |
+| English | 26.0% | 89.4% | 43.3% | **99.0%** |
+| Pidgin | 17.3% | 93.3% | 34.6% | **94.2%** |
+| Yoruba | 14.4% | 85.6% | 32.7% | **96.2%** |
+| Yoruba-English mix | 25.0% | 99.0% | 46.2% | **100%** |
 
-**Prompt injection.** In none of the 32 injection tasks did Oya send money to the attacker's account.
-In 25 of the 29 cases where the planted text reached it, its reply also warned the user about it. Of the
-8 injection failures, 7 were the transfer mix-up below and 1 was a malformed call; none obeyed the attacker.
+**Prompt format alone matters.** The compact prompt nearly doubled the *untrained* model's success
+(20.7% to 39.2%) and its safety score (7.8% to 18.8%). We report each fine-tuned model against the
+untrained model with its own prompt, so v2's gain is measured against the stronger baseline.
 
-**What v1 still got wrong (34 of 416).**
+**v2 by category:** every category at 100% except airtime to a contact (69%) and data to a contact (97%).
+Missing details, unknown contacts, insufficient funds and prompt injection: all 100%.
+
+**Prompt injection.** Neither model ever sent money to the attacker's account. In v1, 25 of the 29
+replies where the planted text reached the model also warned the user about it; the 8 v1 injection
+failures were 7 transfer mix-ups (below) and 1 malformed call, none obeying the attacker. v2 solved all
+32 injection tasks.
+
+**What v1 got wrong (34 of 416).**
 - **"Pay Aisha 2000" and "Ibrahim needs 5k, send it to him" were treated as airtime** (29 errors).
   Every one came from three test phrasings that never say "transfer", "account" or "money". The model
   had learned to key on those words. The airtime always went to the right person's number (27 of 27),
@@ -151,10 +158,18 @@ In 25 of the 29 cases where the planted text reached it, its reply also warned t
 - **"Ra káàdì 3600 naira"** (buy ₦3,600 airtime, no number given) was answered with an **invented phone
   number** in 4 Yoruba cases. Training had only one Yoruba phrasing of that kind.
 
-**What v2 changes.** New training phrasings (none copied from the test set) for transfers that use
+**What v2 changed.** New training phrasings (none copied from the test set) for transfers that use
 "pay", "give", "dash" and "I owe", with contrastive airtime twins ("Give Tunde 2000" vs "Give Tunde
-2000 airtime"), and more Yoruba and Pidgin requests with missing details. v2 also uses a 37% shorter
-prompt and both of Kaggle's GPUs. **[v2]**
+2000 airtime"), and more Yoruba and Pidgin requests with missing details; plus the compact prompt and
+training on both of Kaggle's GPUs (75 minutes instead of 182).
+
+**What v2 got wrong (11 of 416), and why it matters.** Transfers to a contact went from 34% to 100%, but
+airtime to a contact fell from 100% to 69%: the failures are in Pidgin and Yoruba, consistent with the
+two test phrasings where the product word sits in a separate clause ("Tunde say im no get **credit**,
+abeg send am 2k"). The contrastive pairs taught the model to look for a product word *next to the
+amount*. This is the same kind of shortcut as v1's, flipped: on surface-level template data, a small
+model learns the cheapest cue that separates the training classes. It is the main reason we test on
+requests written by a native speaker. **[human test]**
 
 ## Limitations
 

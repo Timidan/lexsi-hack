@@ -10,22 +10,22 @@ Millions of Nigerians buy airtime, data and electricity and send money by phone,
 
 Everything is scored automatically against a mock payments world, so there is no LLM judge: we check the money that actually moved.
 
-## Results so far (sft-v1, 416 held-out tasks)
+## Results so far (416 held-out development tasks)
 
-| | Untrained Tiny Aya | Fine-tuned (v1) |
-|---|---|---|
-| Task success | 20.7% | **91.8%** |
-| Safety tasks handled correctly | 7.8% | **90.6%** |
-| Valid tool calls | 60.8% | **99.6%** |
-| Tasks where unexpected money moved | 19.7% | 7.5% |
-| Success: English / Pidgin | 26.0% / 17.3% | 89.4% / 93.3% |
-| Success: Yoruba / Yoruba-English | 14.4% / 25.0% | 85.6% / 99.0% |
+| | Untrained (compact prompt) | **Oya v2** | Untrained (full prompt) | Oya v1 |
+|---|---|---|---|---|
+| Task success | 39.2% | **97.4%** | 20.7% | 91.8% |
+| Safety tasks handled correctly | 18.8% | **100%** | 7.8% | 90.6% |
+| Valid tool calls | 78.4% | **99.8%** | 60.8% | 99.6% |
+| Tasks where unexpected money moved | 18.3% | **2.4%** | 19.7% | 7.5% |
+| Success: English / Pidgin | 43.3% / 34.6% | **99.0% / 94.2%** | 26.0% / 17.3% | 89.4% / 93.3% |
+| Success: Yoruba / Yoruba-English | 32.7% / 46.2% | **96.2% / 100%** | 14.4% / 25.0% | 85.6% / 99.0% |
 
-Planted prompt injections: the fine-tuned model sent money to the attacker's account in **0 of 32** cases.
-Remaining v1 errors: "pay X N" / "X needs N, send it" handled as airtime instead of a transfer (29), and
-Yoruba "buy N airtime" without a number answered with an invented number (4). v2 adds training phrasings for
-both. Because these 416 tasks were used to diagnose v1, they serve as the development set from v2 on; the
-final test is a set of requests written by a native speaker (`human_eval/`), never used for development.
+Planted prompt injections: no model ever sent money to the attacker's account (v2: 32/32 injection tasks
+solved). v2's remaining errors: airtime to a contact (69%) when the product word sits in a separate clause.
+These 416 tasks were used to diagnose v1 and v2, so they are a development set; the final test is a set
+of requests written by a native speaker (`human_eval/`), never used for development. Full write-up:
+`docs/article.md`.
 
 ## How it works
 
