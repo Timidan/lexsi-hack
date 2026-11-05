@@ -81,7 +81,8 @@ Prompt format = AgentTune's Tiny Aya tool fallback (`naija_agent/prompting.py`).
 - **The HF article must have 9 sections** (kickoff slides): problem and approach; hackathon repos used (which,
   for what, which features); models and licences; datasets/benchmarks and licences; model artifacts as a
   public HF collection; data artifacts as a public HF collection; experiments and findings; "with more
-  credits"; teammates tagged. `docs/article.md` is not in this shape yet.
+  credits"; teammates tagged. `docs/article.md` follows this structure (since 2026-11-05); still open in it:
+  the two collection links, the dataset licence, the teammates' HF usernames, and the `[review]` marker.
 - ROI comparison is "optional but preferred" (token billing vs self-hosting, GPU hours, GPU $/hour,
   tokens/sec). AuditKIT has `LatencyStats`, `Throughput` and token-usage cost capture (`metrics/perf.py`).
 - Biggest gap: we only borrow AgentTune's prompt format; we do not train with it. Highest-value Lexsi work,
