@@ -1,1 +1,28 @@
 === notebook log for publish-sft-v2, started 2026-11-05 23:52:33 UTC ===
+live notebook log -> GitHub 'results' branch: runs/publish-sft-v2/notebook_log.txt
+$ pip install -q -U huggingface_hub safetensors
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+datasets 4.8.5 requires huggingface-hub<2.0,>=0.25.0, but you have huggingface-hub 2.4.0 which is incompatible.
+gradio 6.30.0 requires pillow<13.0,>=8.0, but you have pillow 13.0.0 which is incompatible.
+adapter: timidan/oya-tiny-aya-sft-v2 | gguf: timidan/oya-tiny-aya-gguf | space: timidan/oya
+adapter from Kaggle input: /kaggle/input/notebooks/timidanx/notebook80b729c38e/lexsi-hack/outputs/sft-v2
+adapter uploaded to https://huggingface.co/timidan/oya-tiny-aya-sft-v2
+$ /usr/bin/python3 scripts/merge_lora.py --base /root/.cache/huggingface/hub/models--CohereLabs--tiny-aya-global/snapshots/af89d219b53ed9b13b8a4645f9c8028973510324 --adapter /kaggle/input/notebooks/timidanx/notebook80b729c38e/lexsi-hack/outputs/sft-v2 --out /tmp/oya/merged
+{"merged_weights": 252, "scale": 2.0, "r": 16, "lora_alpha": 32}
+$ rm -rf /tmp/oya/llama.cpp && git clone -q --depth 1 https://github.com/ggml-org/llama.cpp /tmp/oya/llama.cpp
+$ /usr/bin/python3 -m venv /tmp/oya/conv && /tmp/oya/conv/bin/pip install -q -r /tmp/oya/llama.cpp/requirements/requirements-convert_hf_to_gguf.txt
+Error: Command '['/tmp/oya/conv/bin/python3', '-m', 'ensurepip', '--upgrade', '--default-pip']' returned non-zero exit status 1.
+
+=== CELL FAILED ===
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.13/dist-packages/IPython/core/interactiveshell.py", line 3553, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/ipykernel_16/3382610490.py", line 3, in <cell line: 0>
+    run(f"{sys.executable} -m venv {WORK}/conv && "
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        f"{WORK}/conv/bin/pip install -q -r {WORK}/llama.cpp/requirements/requirements-convert_hf_to_gguf.txt")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/ipykernel_16/2939550471.py", line 9, in run
+    raise RuntimeError(f"command failed ({rc}): {cmd}")
+RuntimeError: command failed (1): /usr/bin/python3 -m venv /tmp/oya/conv && /tmp/oya/conv/bin/pip install -q -r /tmp/oya/llama.cpp/requirements/requirements-convert_hf_to_gguf.txt
