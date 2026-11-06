@@ -157,11 +157,17 @@ Timings: v2 training 75 min on 2 x T4; scoring 416 tasks ~65 min per model (now 
 
 Steps 1-3 of the original list are done (held-out set written, v2 scored on it, v2 chosen as final).
 
-4. **Demo:** notebook 03 is running on Kaggle as **`03 publish sft-v2`** (CPU, started 2026-11-06 ~01:30 WAT).
-   It uploads the v2 adapter, the GGUF and the Space, all **private**, after scoring Q4_K_M and Q8_0 on the 30
-   native-speaker requests (`runs/gguf-sft-v2-*-human` on `results`). Then open the Space: check it builds,
-   its memory with both speech models, speed, and try the examples. Re-run 03 with `RUN_NAME = "dpo-v3"` only
-   if v3 passes the gate.
+4. **Demo:** notebook 03 (Kaggle **`03 publish sft-v2`**, version 2, CPU) uploaded, both **private**:
+   `timidan/oya-tiny-aya-sft-v2` (adapter) and `timidan/oya-tiny-aya-gguf` (Q4_K_M). The GGUF on the 30
+   native-speaker requests: **Q4_K_M 100% task success, 90% with the reply check, 0 wrong payments, 21 s per
+   request on 4 CPUs**; Q8_0 100% / 83% / 0, 28 s, so Q4_K_M stays. (bitsandbytes 4-bit was the one that
+   guessed a data plan; the GGUF does not.) **Creating the Space failed: HTTP 402, Gradio Spaces now need HF
+   PRO, even on free CPU; static Spaces stay free.** The Submit page does not require a Space (public model and
+   dataset collections, write-up, GitHub repo, abstract), so this is a choice, not a blocker: HF PRO ($9/month,
+   the user pays), the Discord's $20 HF credits if they cover it, or LuxVPS (4 CPUs, 15 GB RAM, ~11 GB free, no
+   swap, ~20 live entries; fits the text demo plus Pidgin voice, not the 6 GB Yoruba speech model as well).
+   The Space code in the repo now warms the model at startup (`warm_up` in `space/app.py`). Re-run 03 with
+   `RUN_NAME = "dpo-v3"` only if v3 passes the gate.
 4b. **New test set:** the user is writing the 13 scenarios again in Yoruba and Pidgin, in their own words
    (asked 2026-11-06). Put them in `human_eval/requests2.txt` (same `1Y:`/`1P:` format), never train on them,
    and score untrained, v2 and v3 on them (`naija_agent.human.load_human_tasks`).
