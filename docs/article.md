@@ -107,7 +107,7 @@ The core agent is a Cohere Labs model, as the rules require. Other models appear
 No existing dataset or benchmark covers tool calls from Pidgin and Yoruba requests, so every dataset here was
 built for this project, and no third-party data was used for training. We looked at INJONGO (Yoruba intents
 written by native speakers) but it has no Pidgin and no airtime or data requests. License for all project
-datasets: **[to choose: e.g. CC-BY 4.0]**.
+datasets: **CC-BY 4.0**; the code is MIT.
 
 **Mock wallet.** Seven tools: `check_balance`, `find_contact`, `buy_airtime`, `buy_data`,
 `pay_electricity`, `lookup_account` and `send_money`. State is deterministic, arguments are checked
@@ -143,23 +143,26 @@ the speech models' transcripts are published.
 
 ## 5. Model artifacts (public Hugging Face collection)
 
-**[to publish]** Collection link. It will hold:
+**[to publish]** [Oya: wallet agent models](https://huggingface.co/collections/timidan/oya-wallet-agent-models-6aedf0affb712ba373e3a17d), CC-BY-NC 4.0 (following Tiny Aya). It holds:
 
 - the LoRA adapter (`sft-v2`) with its training log and loss curve,
 - the merged model as a 4-bit GGUF (Q4_K_M), which runs on a CPU,
 - the demo Space: chat with Oya by text or voice, with every payment waiting for confirmation, plus a
   before/after replay of every held-out task. It runs the adapter unquantized (16-bit) on Hugging Face's free
-  ZeroGPU.
+  ZeroGPU,
+- the adapters from the two DPO rounds, which did not replace v2 (section 7).
 
 ## 6. Data artifacts (public Hugging Face collection)
 
-**[to publish]** Collection link. It will hold:
+**[to publish]** [Oya: wallet agent data](https://huggingface.co/collections/timidan/oya-wallet-agent-data-6aedf0b20bfbdecdb654e23c): one dataset, [timidan/oya-wallet-agent-data](https://huggingface.co/datasets/timidan/oya-wallet-agent-data),
+CC-BY 4.0 (model outputs inside it stay under their providers' terms). It holds:
 
 - the training chats (2,080 training, 104 validation) and the task files (416 development tasks, 30 held-out
   tasks), with the generator that rebuilds them,
+- the DPO pairs of both rounds (222 and 146),
 - `trajectories.jsonl` logs in AgentTune's format, with per-task scores, for every run in this article
   (development runs of v1, v2 and the untrained model; held-out runs of v2 and the untrained model; the
-  comparison with other models; the voice test),
+  comparison with other models; the GGUF scores; the DPO rounds; the voice test),
 - the held-out requests and the speech models' transcripts of the voice recordings (the audio itself stays
   private).
 

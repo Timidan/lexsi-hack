@@ -12,7 +12,9 @@ Fine-tuning**. Official rules (kickoff slides, hackathon.lexsi.ai/kickoff-slides
 - **At least 2 Lexsi repos as one connected system** (we: AgentTune trains and logs, AuditKIT reads its runs).
 - **One of 7 models:** Tiny Aya Base/Global/Fire/Water/Earth, Aya Expanse 8B/32B (we: Tiny Aya Global, 3.35B).
 - **Everything public on Hugging Face:** "models, adapters, logs, datasets, benchmarks", as a public, un-gated
-  **model collection** and **dataset collection** (article sections 5 and 6). Not built yet for data.
+  **model collection** and **dataset collection** (article sections 5 and 6). Built 2026-11-06, **private**:
+  [models](https://huggingface.co/collections/timidan/oya-wallet-agent-models-6aedf0affb712ba373e3a17d) (sft-v2, GGUF, Space, dpo-v3, dpo-v3b) and [data](https://huggingface.co/collections/timidan/oya-wallet-agent-data-6aedf0b20bfbdecdb654e23c) (`timidan/oya-wallet-agent-data`).
+- **Licences (user, 2026-11-06):** code MIT (`LICENSE`), data CC-BY 4.0, models CC-BY-NC 4.0 (Tiny Aya's).
 - **A Hugging Face article** with the 9 sections (`docs/article.md` follows them); a README is accepted if HF
   articles are not available. Original work. A Space is **not** required ("if relevant").
 - **Submission form: sent by email a couple of days before the deadline** (not via Discord), open until
@@ -129,7 +131,7 @@ Prompt format = AgentTune's Tiny Aya tool fallback (`naija_agent/prompting.py`).
   for what, which features); models and licences; datasets/benchmarks and licences; model artifacts as a
   public HF collection; data artifacts as a public HF collection; experiments and findings; "with more
   credits"; teammates tagged. `docs/article.md` follows this structure (since 2026-11-05); still open in it:
-  the two collection links, the dataset licence, the teammates' HF usernames, and the `[review]` marker.
+  the `[review]` marker (collection links, licences and teammates are in).
 - ROI comparison is "optional but preferred" (token billing vs self-hosting, GPU hours, GPU $/hour,
   tokens/sec). AuditKIT has `LatencyStats`, `Throughput` and token-usage cost capture (`metrics/perf.py`).
 - Biggest gap: we only borrow AgentTune's prompt format; we do not train with it. Highest-value Lexsi work,
@@ -210,10 +212,12 @@ Steps 1-3 of the original list are done (held-out set written, v2 scored on it, 
 4b. **New test set:** the user is writing the 13 scenarios again in Yoruba and Pidgin, in their own words
    (asked 2026-11-06). Put them in `human_eval/requests2.txt` (same `1Y:`/`1P:` format), never train on them,
    and score untrained, v2 and v3 on them (`naija_agent.human.load_human_tasks`).
-5. **Write-up:** held-out results are in `docs/article.md`; still open: the `[review]` marker, a dataset card,
-   optionally the ROI table. Publish the article on Hugging Face.
-6. **Before the deadline:** make the adapter, GGUF repo and Space public (ask the user first), check the
-   GitHub repo is public, and the user submits the form from the Discord.
+5. **Write-up:** held-out results are in `docs/article.md`; still open: the `[review]` marker, optionally
+   the ROI table. Publish the article on Hugging Face.
+6. **Before the deadline:** with the user's OK, make public the two collections, the four model repos, the
+   dataset, the Space and the GitHub repo; then the user sends the emailed submission form (abstract under 500
+   words). The dataset is rebuilt by `OYA_PROMPT=compact python scripts/build_data.py --train-per-cell 40`
+   plus the `results` branch's `runs/` and the local `runs/compare-*`, `runs/voice-*`.
 
 ## Things to keep in mind
 

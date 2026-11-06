@@ -77,3 +77,10 @@ GPU (free Kaggle T4): open `notebooks/01_setup_and_baseline.ipynb` on Kaggle and
 - Prices, providers and accounts are a simulation, not live tariffs or real accounts.
 - The Yoruba and Pidgin text is a first draft pending native-speaker review: see `docs/language_review.md`.
 - Built with [AgentTune](https://github.com/Lexsi-Labs/AgentTune) and [AuditKIT](https://github.com/Lexsi-Labs/AuditKIT) by Lexsi Labs, and [Tiny Aya](https://huggingface.co/CohereLabs/tiny-aya-global) by Cohere Labs (CC-BY-NC).
+
+## Licence
+
+- Code: MIT ([LICENSE](LICENSE)).
+- Data (`human_eval/`, `runs/` and the generated sets in [timidan/oya-wallet-agent-data](https://huggingface.co/datasets/timidan/oya-wallet-agent-data)): CC-BY 4.0.
+- Models ([timidan/oya-tiny-aya-sft-v2](https://huggingface.co/timidan/oya-tiny-aya-sft-v2) and its GGUF): CC-BY-NC 4.0,
+  following Tiny Aya.
