@@ -1,0 +1,58 @@
+# Second held-out test set: native-written phrasings found online, with each scenario's numbers and names put in.
+# Never train on these. Same format as requests.txt: <scenario><Y|P>: <text>
+#
+# Sources (both CC BY 4.0):
+#   INJONGO  masakhane/InjongoIntent on Hugging Face, Yoruba (yor) utterances written by native speakers.
+#            Cited as <split> <intent> <example_id>.
+#   Wazobia  WAZOBIALABS/nigerian-pidgin-voice-text, wazobia_pidgin_v07_500.csv. Cited as <entry_id>.
+# "slots" = only amounts, numbers, names, banks or the meter changed. "assembled" = two phrases from the source joined.
+# No usable source was found for Pidgin airtime, data or electricity requests, Yoruba data requests or a Yoruba
+# greeting, so scenarios 2, 5 and 12 and the Pidgin lines of 1, 3, 4, 9 and 11 are missing.
+
+# 1. Buy ₦1,000 MTN airtime for 08031234567
+# assembled: "Bá mi san ₦60,000 si ..." (train transfer train-00000031) + "san fún káàdì ìpè MTN" (test min_payment test-00000069)
+1Y: Bá mi san ₦1,000 fún káàdì ìpè MTN 08031234567
+
+# 3. Pay ₦5,000 for electricity: Ikeja Electric, meter 45123456789
+# slots: "Jọ̀wọ́ Bá mi san owó iná ile mi lórí Visa Card mi" (test pay_bill test-00000076)
+3Y: Jọ̀wọ́ Bá mi san ₦5,000 owó iná ile mi, Ikeja Electric, meter 45123456789
+
+# 4. Send ₦2,000 airtime to Mama
+# assembled, as 1Y
+4Y: Bá mi san ₦2,000 fún káàdì ìpè Mama
+
+# 6. Send ₦15,000 to GTBank account 0123456789
+# slots: "Bá mi san ₦60,000 si àpamọ́ oníbàárà mi ti Wema" (train transfer train-00000031)
+6Y: Bá mi san ₦15,000 si àpamọ́ GTBank 0123456789
+# slots: "Abeg help me transfer money" (Wazobia WZ-T-0079)
+6P: Abeg help me transfer ₦15,000 to GTBank account 0123456789
+
+# 7. Send ₦3,000 to Bisi
+# slots: "Mo fẹ́ kí o san ₦50,000 láti orí afárá Opay mi sí oníbàárà mi." (train transfer train-00000019)
+7Y: Mo fẹ́ kí o san ₦3,000 sí Bisi.
+# slots: "Abeg help me transfer money" (Wazobia WZ-T-0079)
+7P: Abeg help me transfer 3k to Bisi
+
+# 8. Ask how much money is left in your wallet
+# slots: "Èló ló ṣẹ́kù nínú àpò ìfowópamọ́ dorm mi?" (train balance train-00000027)
+8Y: Èló ló ṣẹ́kù nínú àpò ìfowópamọ́ mi?
+# as written: Wazobia WZ-T-0090
+8P: Where my money dey?
+
+# 9. Ask for airtime without saying which number or how much
+# assembled: "Ǹjẹ́ o le Bá mi sanwó iná" (train pay_bill train-00000046) with "san fún káàdì ìpè" (as 1Y)
+9Y: Ǹjẹ́ o le Bá mi san fún káàdì ìpè
+
+# 10. Send ₦10,000 to Kunle (not in your contacts)
+# slots: "Bá mi san ẹgbẹ̀rún mẹ́wàá Náírà láti orí Paystack mi sí àpò ilè-ìfowópamọ́ Union mi" (train transfer train-00000020)
+10Y: Bá mi san ẹgbẹ̀rún mẹ́wàá Náírà sí Kunle
+# slots: "Abeg help me transfer money" (Wazobia WZ-T-0079)
+10P: Abeg help me transfer ₦10,000 to Kunle
+
+# 11. Pay ₦50,000 electricity: Eko Electric, meter 98765432109 (wallet balance is too low)
+# slots: "Ní kíákíá bá mi sàn owó iná tí mo jẹ" (train pay_bill train-00000035)
+11Y: Ní kíákíá bá mi sàn ₦50,000 owó iná, Eko Electric, meter 98765432109
+
+# 13. A greeting or a thank-you
+# as written: Wazobia WZ-T-0378 (sincere)
+13P: Thank you for the advice

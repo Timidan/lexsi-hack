@@ -209,9 +209,12 @@ Steps 1-3 of the original list are done (held-out set written, v2 scored on it, 
    - Tiny Aya is CC-BY-NC 4.0, so the adapter and GGUF stay CC-BY-NC 4.0. Fallback host: LuxVPS (4 CPUs,
      15 GB RAM; text demo plus Pidgin voice only).
    Re-run 03 with `RUN_NAME = "dpo-v3"` only if v3 passes the gate.
-4b. **New test set:** the user is writing the 13 scenarios again in Yoruba and Pidgin, in their own words
-   (asked 2026-11-06). Put them in `human_eval/requests2.txt` (same `1Y:`/`1P:` format), never train on them,
-   and score untrained, v2 and v3 on them (`naija_agent.human.load_human_tasks`).
+4b. **New test set:** the user asked for it to come from the internet (2026-11-06). `human_eval/requests2.txt`
+   has 14 lines (18 tasks) built from native-written CC BY 4.0 text: INJONGO's Yoruba utterances and Wazobia's
+   Pidgin phrases, with each scenario's numbers and names put in; the source of every line is in the file.
+   Nothing usable was found for Pidgin airtime, data or electricity, Yoruba data, or a Yoruba greeting
+   (AfriSenti is CC BY-NC-SA; the Pidgin speech corpus is read news). Never train on it. Score untrained, v2 and
+   v3b on it with notebook 04 (`EVAL_HUMAN2 = True`, `OTHER_RUNS = ["dpo-v3b"]`).
 5. **Write-up:** held-out results are in `docs/article.md`; still open: the `[review]` marker, optionally
    the ROI table. Publish the article on Hugging Face.
 6. **Before the deadline:** with the user's OK, make public the two collections, the four model repos, the
