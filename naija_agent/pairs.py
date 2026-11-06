@@ -11,9 +11,10 @@ from __future__ import annotations
 
 import json
 
+from .lang import REPLY_LANG
 from .prompting import ParseError, parse_tool_calls
 from .runner import gold_conversation
-from .scoring import reply_ok
+from .scoring import _looks_yoruba, reply_ok
 from .tasks import Task
 from .world import PAYMENT_TOOLS, SCHEMA_BY_NAME
 
@@ -44,6 +45,19 @@ def is_mistake(task: Task, gold_turn: str, sample: str) -> bool | None:
     if all(c["name"] in LOOKUP_TOOLS for c in got):
         return None
     return True                                       # a wrong, extra or unknown payment call
+
+
+def wrong_language(pair: dict) -> bool:
+    """The rejected turn is a reply in the wrong language. v2 makes this mistake almost only one way (a Yoruba
+    reply to a Pidgin request: 75 of the first 222 pairs, against 1), and training on those taught v3 to avoid
+    Yoruba replies altogether, so these pairs are left out."""
+    text = pair["rejected"][0]["content"]
+    try:
+        if parse_tool_calls(text) is not None:
+            return False
+    except ParseError:
+        return False
+    return _looks_yoruba(text) != (REPLY_LANG[pair["lang"]] == "yo")
 
 
 def positions(task: Task) -> list[tuple[list[dict], str]]:

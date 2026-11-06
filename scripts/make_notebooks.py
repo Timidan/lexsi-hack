@@ -645,7 +645,7 @@ Results go to the repo's `results` branch. On T4 x2: about 4 hours with sampling
 """ + SETUP_HELP),
     ("code", """
 # ---- settings ----
-RUN_NAME = "dpo-v3"
+RUN_NAME = "dpo-v3b"
 BASE_RUN = "sft-v2"            # SFT adapter to start from (Kaggle input, or HF_ADAPTER_REPO)
 HF_ADAPTER_REPO = None
 PROMPT_STYLE = "compact"       # must match how BASE_RUN was trained
@@ -654,8 +654,10 @@ SAMPLES = 4                    # samples per step, temperature 1.0
 SEED = 2027                    # 2026 built the SFT data
 MAX_PAIRS = 1200               # bounds training time
 REUSE_PAIRS = True             # take the pairs an earlier run published to `results` (sampling takes ~3 hours)
-EPOCHS, LR, BETA = 2.0, 5e-5, 0.1
-GRAD_ACCUM = 4                 # per GPU: 222 pairs on 2 GPUs -> about 56 steps
+PAIRS_FROM = "dpo-v3"          # ... namely this run's
+DROP_WRONG_LANGUAGE = True     # dpo-v3 learned to avoid Yoruba replies from them (naija_agent.pairs.wrong_language)
+EPOCHS, LR, BETA = 2.0, 2e-5, 0.1
+GRAD_ACCUM = 4                 # per GPU, on 2 GPUs: 146 pairs -> about 36 steps
 BATCH_SIZE = 16
 AGENTTUNE = "git+https://github.com/Lexsi-Labs/AgentTune@d4db4c12d52342227c4113a70183d0f64aa2f345"
 
@@ -697,9 +699,9 @@ print("start from:", BASE_ADAPTER, "| GPUs:", NGPU)
     ("markdown", "## 1. The model's own mistakes, as preference pairs"),
     ("code", """
 reused = REUSE_PAIRS and run(f"git fetch -q --depth 1 origin results && "
-                             f"git show FETCH_HEAD:runs/{RUN_NAME}/pairs.jsonl > {PAIRS}", check=False) == 0
+                             f"git show FETCH_HEAD:runs/{PAIRS_FROM}/pairs.jsonl > {PAIRS}", check=False) == 0
 if reused:
-    print("reusing the pairs an earlier run published")
+    print(f"reusing the pairs {PAIRS_FROM} published")
     rows = [json.loads(l) for l in open(PAIRS, encoding="utf-8")]
 else:
     shards = [f"CUDA_VISIBLE_DEVICES={g} {sys.executable} scripts/make_pairs.py --adapter {BASE_ADAPTER} "
@@ -710,6 +712,14 @@ else:
     rows = [json.loads(l) for g in range(NGPU) for l in open(f"{ADAPTER_DIR}/pairs-{g}.jsonl", encoding="utf-8")]
     random.Random(SEED).shuffle(rows)
     rows = rows[:MAX_PAIRS]
+    with open(PAIRS, "w", encoding="utf-8") as f:
+        for r in rows:
+            f.write(json.dumps(r, ensure_ascii=False) + "\\n")
+if DROP_WRONG_LANGUAGE:
+    from naija_agent.pairs import wrong_language
+    kept = [r for r in rows if not wrong_language(r)]
+    print(f"left out {len(rows) - len(kept)} pairs whose rejected turn is a reply in the wrong language")
+    rows = kept
     with open(PAIRS, "w", encoding="utf-8") as f:
         for r in rows:
             f.write(json.dumps(r, ensure_ascii=False) + "\\n")
