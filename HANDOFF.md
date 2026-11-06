@@ -213,8 +213,10 @@ Steps 1-3 of the original list are done (held-out set written, v2 scored on it, 
    has 14 lines (18 tasks) built from native-written CC BY 4.0 text: INJONGO's Yoruba utterances and Wazobia's
    Pidgin phrases, with each scenario's numbers and names put in; the source of every line is in the file.
    Nothing usable was found for Pidgin airtime, data or electricity, Yoruba data, or a Yoruba greeting
-   (AfriSenti is CC BY-NC-SA; the Pidgin speech corpus is read news). Never train on it. Score untrained, v2 and
-   v3b on it with notebook 04 (`EVAL_HUMAN2 = True`, `OTHER_RUNS = ["dpo-v3b"]`).
+   (AfriSenti is CC BY-NC-SA; the Pidgin speech corpus is read news). Never train on it. **Scored 2026-11-06** (Kaggle
+   `04 eval human2`, notebook 04 at 63a1e31): v2 100% task success, 94.4% with the reply check, 0 wrong payments;
+   round 2 94.4% with one wrong payment (Mama's airtime sent as a bank transfer again); untrained 27.8%. In
+   `docs/article.md` ("Second held-out set") and the dataset's `online` split.
 5. **Write-up:** held-out results are in `docs/article.md`; still open: the `[review]` marker, optionally
    the ROI table. Publish the article on Hugging Face.
 6. **Before the deadline:** with the user's OK, make public the two collections, the four model repos, the

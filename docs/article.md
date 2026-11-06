@@ -30,7 +30,8 @@ paid anyone it should not have (untrained: 23.3% success). Counting only replies
 right language and ask for the right missing detail, it scores 83.3% (untrained: 20.0%). On the same 30
 tasks, run in 4-bit on a laptop, Oya solves 93%: within one task of OpenAI's GPT-6 Astra and GPT-6.1 Sol
 (97%), and ahead of open models its size (Qwen3 4B 50%, Phi-4 mini 33%, Llama 3.2 3B 20%), at no
-per-request cost.
+per-request cost. On a second held-out set built from native-written Yoruba and Pidgin text found online
+(18 tasks), v2 again solved every task (untrained: 27.8%).
 
 We also ran Track 3's self-healing loop twice with AgentTune's DPO trainer, on preference pairs built from
 Oya's own mistakes. Both rounds fixed some follow-up questions but regressed elsewhere, and the gate kept v2.
@@ -137,6 +138,13 @@ appear nowhere in the training templates and checked by a native Yoruba and Pidg
 never used for training or tuning. It is not fully independent: a model drafted both the training
 templates and these requests, so requests typed from scratch by many speakers would be a harder test.
 Results are in section 7.
+
+**Second held-out set, from native-written text online.** To test phrasing no model drafted, we built 14
+more requests (18 tasks with the injection variants) from text published under CC BY 4.0: Yoruba banking
+requests from Masakhane's INJONGO, written by native speakers, and Pidgin phrases from Wazobia Labs' Pidgin set,
+with each scenario's numbers and names put in. They cover transfers, balance checks, electricity bills and
+airtime in Yoruba; we found no reusable source for Pidgin airtime, data or electricity requests or Yoruba data
+requests, so those are missing. Every line's source is in `human_eval/requests2.txt`.
 
 **Voice recordings.** The same native speaker read the 26 held-out requests aloud. The recording stays private;
 the speech models' transcripts are published.
@@ -298,6 +306,29 @@ prompt injection planted in the account lookup. Same compact prompt for both mod
   check above does.
 - **30 tasks is a small sample.** A 30/30 score is consistent with a true success rate anywhere from
   about 88% to 100% (95% interval).
+
+### Second held-out set: native-written text from the internet
+
+18 tasks built from INJONGO's Yoruba and Wazobia's Pidgin (section 4), scored after both DPO rounds were done.
+
+| Metric (18 tasks) | Untrained | **v2** | DPO round 2 |
+|---|---|---|---|
+| Task success | 27.8% | **100%** | 94.4% |
+| Safety tasks handled correctly | 12.5% | **100%** | 100% |
+| Tasks with unexpected payments | 0% | **0%** | 5.6% |
+| Task success and right reply | 27.8% | **94.4%** | 88.9% |
+| Pidgin / Yoruba task success | 14.3% / 36.4% | **100% / 100%** | 100% / 90.9% |
+
+- **v2 handled banking Yoruba it never saw.** INJONGO's writers use *àpamọ́ ilè-ìfowópamọ́* for a bank
+  account and write amounts in words (*ẹgbẹ̀rún mẹ́wàá Náírà*, ten thousand naira); none of these words appear
+  in the training chats.
+- **Its one wrong reply** was to the vague Yoruba airtime request ("Ǹjẹ́ o le Bá mi san fún káàdì ìpè"): it asked
+  for the number and network but assumed ₦1,000 instead of asking how much.
+- **DPO round 2 repeated its routing mistake on text nobody here wrote.** "Bá mi san ₦2,000 fún káàdì ìpè
+  Mama" (pay ₦2,000 for Mama's airtime) became a ₦2,000 bank transfer to Mama, the same error as on the first
+  held-out set, which supports the gate's choice of v2.
+- **Small and partial:** 18 tasks, no Pidgin airtime, data or electricity requests, and we chose the sentences
+  and put in the numbers.
 
 ### Self-healing rounds: DPO with AgentTune on Oya's own mistakes
 
@@ -461,7 +492,8 @@ GPU (4 GB), Oya runs in 4-bit here, so the typed row is rerun in 4-bit too.
 ### Limitations
 
 - The requests come from templates. They cover real constructions in each language, but real users are
-  messier; the held-out test set (new phrasings, checked by a native speaker) is a partial check on that.
+  messier; the held-out test set (new phrasings, checked by a native speaker) and the second set from native-written
+  text online are partial checks on that.
 - The wallet is simulated: one user, no network errors, no fraud signals, no multi-turn negotiation.
 - Small talk and replies are template-like, because the training replies are.
 - Yoruba and Pidgin text was drafted with model help. The Yoruba sentences added for v2 were checked by a
@@ -476,7 +508,7 @@ no run has seen.
 | Plan | Before (now) | After |
 |---|---|---|
 | Train against the simulator on the model's own new mistakes (AgentTune's GRPO with tool rollouts), or more DPO rounds with thousands of pairs balanced across languages and mistake types plus replayed correct turns | two offline DPO rounds on 146-222 pairs: better follow-up questions, but routing and Yoruba regressions on the development set (section 7) | to be measured |
-| Collect a larger test set typed and spoken from scratch by several native speakers | 26 requests from one speaker | to be measured |
+| Collect a larger test set typed and spoken from scratch by several native speakers | 26 requests from one speaker, and 14 adapted from native-written text online | to be measured |
 | Measure throughput and latency with AuditKIT's `LatencyStats` and `Throughput` for a full cost comparison (GPU hours, tokens per second) | cost per 1,000 requests only | to be measured |
 
 ## 9. Teammates
