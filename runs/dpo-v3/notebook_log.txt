@@ -464,3 +464,5 @@ unknown_contact      n=2    success=100.0%  valid_calls=100.0%  tool_f1=1.00  ca
 evaluating ['v3', 'v2'] in parallel, one GPU each
 23/416 tasks done (195s)
 45/416 tasks done (351s)
+69/416 tasks done (504s)
+90/416 tasks done (658s)
