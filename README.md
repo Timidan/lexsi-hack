@@ -554,9 +554,10 @@ GPU (4 GB), Oya runs in 4-bit here, so the typed row is rerun in 4-bit too.
 - **Serving on ZeroGPU.** The demo Space runs the adapter unquantized on Hugging Face's free ZeroGPU, which
   attaches a GPU only while the model answers. It runs in bf16; the held-out scores above were measured in fp16
   on a T4, and bf16 was not scored separately. A confirmed ₦500 airtime purchase took two model calls, about
-  17 seconds end to end and 13 seconds of GPU. Visitors spend their own daily GPU allowance, 2 minutes without
-  a Hugging Face login and 5 with one: about five requests a day logged out, about fifteen logged in. After two
-  idle days the Space sleeps, and the next visit wakes it in a minute or two.
+  17 seconds end to end and 13 seconds of GPU. Visitors spend their own daily GPU allowance. Logged in it is
+  5 minutes, and a balance check used 16 seconds of it, so about fifteen requests a day. Logged out it is far
+  smaller: Hugging Face stopped our logged-out test after 3 GPU runs, about one request, so the demo then tells
+  visitors to log in or use the Before / after replay, which needs no GPU. After two idle days the Space sleeps, and the next visit wakes it in a minute or two.
 - **Cancelling a payment in the demo** ends the exchange with "Cancelled. No money moved." instead of passing the
   cancellation back to the model, because it never saw a cancelled payment in training.
 

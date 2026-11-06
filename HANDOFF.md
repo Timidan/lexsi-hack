@@ -201,7 +201,10 @@ Steps 1-3 of the original list are done (held-out set written, v2 scored on it, 
    `@spaces.GPU`. Verified through the Gradio API: "Abeg buy ₦500 MTN airtime for 08031234567." asked for
    confirmation, then bought it and replied in Pidgin (10.0 s + 6.6 s, 13.4 s of GPU for the two model calls);
    a 30 s voice clip used 2.5 s of GPU; the before/after replay loads. Visitors spend their own ZeroGPU quota
-   (2 min a day logged out, 5 logged in; the owner's is checked with `HfApi().get_zero_gpu_quota()`).
+   (logged in 5 min, about fifteen requests; the owner's is checked with `HfApi().get_zero_gpu_quota()`).
+   Logged out, Hugging Face stopped us after 3 GPU runs ("You have exceeded your ZeroGPU runs limit"); the user
+   hit it on their phone too. Since 2026-11-06 the demo catches that error, replies with how to carry on (log in,
+   or the Before / after replay), and says so in a line under the text box.
    - Secret `HF_TOKEN` (the Kaggle read token, copied by a one-line Kaggle cell); variable
      `OYA_PROMPT=compact`. **Keep the secret after going public:** Tiny Aya stays gated.
    - `model_reply` asks ZeroGPU for 30 s and uses about 7 s per call; a lower `duration` would give visitors more
@@ -229,8 +232,7 @@ Steps 1-3 of the original list are done (held-out set written, v2 scored on it, 
 6. **Published 2026-11-06** (user's OK): the two collections, the four model repos, the dataset and the Space
    are public and un-gated, and every page loads logged out; a scan before publishing found no audio or video
    and no token-like strings. The dataset viewer works (preview, search and filter, checked the same day). A `gradio_client` script with no token got "exceeded your ZeroGPU runs limit" after 3 model
-   calls; a logged-out browser visitor is identified differently (X-IP-Token) and was not verified, because
-   automated input did not reach the Space's iframe: try it by hand in a private tab. Then the user sends the submission form; its abstract is
+   calls, and the user's phone got an upgrade message too (step 4 has the fix). Then the user sends the submission form; its abstract is
    `docs/abstract.md` (488 words between `## Abstract` and `## Links`; keep it in step with the README's numbers). The dataset is rebuilt by `OYA_PROMPT=compact python scripts/build_data.py --train-per-cell 40`
    plus the `results` branch's `runs/` and the local `runs/compare-*`, `runs/voice-*`. After going public, look
    at the dataset viewer once (free accounts get none on private datasets; the three configs load locally).

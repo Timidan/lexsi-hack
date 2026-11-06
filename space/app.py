@@ -113,6 +113,16 @@ def model_reply(messages: list[dict]) -> str:
     return POLICY([messages])[0]
 
 
+GPU_LIMIT = ("Hugging Face's free GPU time for you is used up for today. Log in to Hugging Face (free) to get "
+             "5 minutes a day, about fifteen requests, or open the Before / after tab, which replays every "
+             "held-out task without a GPU.")
+
+
+def gpu_limit(e: Exception) -> bool:
+    """ZeroGPU refuses a call once the visitor's daily allowance is spent ("You have exceeded your ...")."""
+    return "exceeded your" in str(e).lower()
+
+
 # ─── live agent ───────────────────────────────────────────────────────────────
 
 ASKS = re.compile("|".join(ASK_WORDS.values()))
@@ -204,7 +214,14 @@ def agent_loop(messages: list, chat: list, state: dict, reply_fn=model_reply):
     world: World = state["world"]
     final = None
     for _ in range(MAX_TURNS):
-        reply = reply_fn(messages)
+        try:
+            reply = reply_fn(messages)
+        except Exception as e:
+            if not gpu_limit(e):
+                raise
+            chat.append({"role": "assistant", "content": GPU_LIMIT})
+            yield chat, wallet_markdown(world), {**state, "pending": None, "awaiting_answer": False}, gr.update(visible=False)
+            return
         messages.append({"role": "assistant", "content": reply})
         try:
             calls = parse_tool_calls(reply)
@@ -254,7 +271,12 @@ def transcribe_input(audio_path: str | None, video_path: str | None, language: s
     from naija_agent.voice import load_audio
 
     name, code = VOICE_MODELS[language]
-    text = transcribe(load_audio(path), name, code)
+    try:
+        text = transcribe(load_audio(path), name, code)
+    except Exception as e:
+        if gpu_limit(e):
+            raise gr.Error(GPU_LIMIT) from e
+        raise
     if not text:
         raise gr.Error("No speech found in that recording.")
     gr.Info("Check the numbers and names in the transcript, then press Enter to send.")
@@ -374,6 +396,8 @@ def build_ui():
                     with gr.Row(visible=False) as confirm_row:
                         pay = gr.Button("Confirm payment", variant="primary")
                         cancel = gr.Button("Cancel")
+                    gr.Markdown("Logged out, Hugging Face allows only a few GPU runs a day; log in (free) for about "
+                                "fifteen requests.")
                     with gr.Accordion("Speak instead", open=False):
                         with gr.Row():
                             audio = gr.Audio(sources=["microphone", "upload"], type="filepath",
