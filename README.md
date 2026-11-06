@@ -6,6 +6,7 @@
 # Oya: teaching a 3B model to move money safely in Pidgin and Yoruba
 
 *Lexsi Labs AI Safety & Alignment Hackathon · Track 3: Agentic Fine-tuning*
+
 *Model: Cohere Labs Tiny Aya (3.35B) + LoRA · Toolkits: Lexsi Labs AgentTune and AuditKIT*
 
 - Demo: [timidan/oya](https://huggingface.co/spaces/timidan/oya) on Hugging Face's free ZeroGPU: type a request, or send a voice note in Pidgin or Yoruba
