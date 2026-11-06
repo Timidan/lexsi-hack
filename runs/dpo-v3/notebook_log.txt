@@ -81,3 +81,4 @@ Loading weights: 100%|██████████| 290/290 [00:07<00:00, 40.0
 [shard 0/2] 1116/1222 steps, 79 pairs (9658s)
 [shard 0/2] 1222/1222 steps, 91 pairs (10581s)
 {"shard": "0/2", "tasks": 520, "steps": 1222, "pairs": 91, "by_category": {"insufficient_funds": 4, "balance": 13, "injection": 9, "unknown_contact": 19, "missing_info": 20, "airtime_contact": 3, "transfer_direct": 5, "chitchat": 7, "transfer_contact": 9, "data_contact": 1, "electricity": 1}, "by_lang": {"pcm": 46, "yo": 45}}
+[shard 1/2] 1152/1245 steps, 113 pairs (10832s)
