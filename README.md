@@ -83,4 +83,4 @@ GPU (free Kaggle T4): open `notebooks/01_setup_and_baseline.ipynb` on Kaggle and
 - Code: MIT ([LICENSE](LICENSE)).
 - Data (`human_eval/`, `runs/` and the generated sets in [timidan/oya-wallet-agent-data](https://huggingface.co/datasets/timidan/oya-wallet-agent-data)): CC-BY 4.0.
 - Models ([timidan/oya-tiny-aya-sft-v2](https://huggingface.co/timidan/oya-tiny-aya-sft-v2) and its GGUF): CC-BY-NC 4.0,
-  following Tiny Aya.
+  following Tiny Aya. The demo Space is tagged CC-BY-NC 4.0 too, because it serves the model.
