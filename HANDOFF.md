@@ -8,16 +8,22 @@ or keys into a chat.
 ## The goal
 
 Entry for the **Lexsi Labs AI Safety & Alignment Hackathon** (hackathon.lexsi.ai), **Track 3: Agentic
-Fine-tuning**. Rules as we understood them (confirm on the hackathon Discord): Cohere Labs models only
-(we use `CohereLabs/tiny-aya-global`, 3.35B), Lexsi toolkits encouraged (AgentTune, AuditKIT), teams of 1-3.
-
-- **Submission form (link is in the Discord): due end of day Nov 14, 2026, AoE (12:59 on Nov 15 in Lagos).** Aim for Nov 13.
-- Up to 20 finalists announced around Nov 16; they may keep improving until Nov 21; live demo Nov 22.
-- Deliverables (from another entrant's public checklist; verify in Discord): public GitHub repo; public
-  Hugging Face Space demo that shows the tool trace; Hugging Face artifacts (LoRA adapter,
-  `trajectories.jsonl` logs, dataset card); a Hugging Face article (metrics and why, dataset/task/model
-  rationale, before/after table); at least two metrics before and after; optional ROI table
-  (self-hosted Tiny Aya vs a closed API).
+Fine-tuning**. Official rules (kickoff slides, hackathon.lexsi.ai/kickoff-slides, read 2026-11-06):
+- **At least 2 Lexsi repos as one connected system** (we: AgentTune trains and logs, AuditKIT reads its runs).
+- **One of 7 models:** Tiny Aya Base/Global/Fire/Water/Earth, Aya Expanse 8B/32B (we: Tiny Aya Global, 3.35B).
+- **Everything public on Hugging Face:** "models, adapters, logs, datasets, benchmarks", as a public, un-gated
+  **model collection** and **dataset collection** (article sections 5 and 6). Not built yet for data.
+- **A Hugging Face article** with the 9 sections (`docs/article.md` follows them); a README is accepted if HF
+  articles are not available. Original work. A Space is **not** required ("if relevant").
+- **Submission form: sent by email a couple of days before the deadline** (not via Discord), open until
+  **end of day Nov 14, 2026, AoE (12:59 on Nov 15 in Lagos).** Aim for Nov 13. Needs an abstract under 500 words.
+- Judging: validity check (public artifacts, write-up, checklist, no duplicates), then double-blind scores:
+  write-up clarity /10, practical usefulness /10, code/notebook quality /10, overall /100. Up to 20 teams told
+  on Nov 16, prep Nov 16-21, live Demo Day Nov 22.
+- Track 3 problem statements we match: **Reliable tool calling** (v2) and **Self-healing agents** ("detect failing
+  runs, classify why they failed, generate corrective training examples, retrain, and gate redeployment on
+  measured accuracy": exactly the v3 loop below). The SafeTune slide names "quantize 4-bit for serving" as a
+  place safety leaks; our GGUF test measures that.
 
 ## What the project is
 
@@ -111,7 +117,9 @@ Prompt format = AgentTune's Tiny Aya tool fallback (`naija_agent/prompting.py`).
   ranked: (1) a small AgentTune DPO/self-heal run on simulator-verified good/bad trajectories (12-24 h + GPU);
   (2) deeper AuditKIT: wallet-specific red-team probes judged by the simulator, plus perf metrics for the ROI
   table (6-12 h); (3) CuratorKIT dedup/provenance for the dataset collection (8-16 h).
-- Registered teams that join the Discord get $20 of HF credits (ZeroGPU); finalists get $200 more.
+- Registered teams that join the Discord get $20 of HF credits (ZeroGPU); finalists get $200 more. The coupon
+  was **emailed on Nov 1 at 5:30 PM IST** (from hello@lexssi.com or ram.kadiyala@lexsi.ai; check spam); the
+  first 800 to redeem it with a registered email and a payment method get it.
 
 ## Where things run: Kaggle (free GPUs) + GitHub as the log
 
