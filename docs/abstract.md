@@ -44,7 +44,7 @@ checked by one native speaker), and the wallet is simulated.
 ## Links
 
 - Code and notebooks: https://github.com/Timidan/lexsi-hack
-- Write-up: https://github.com/Timidan/lexsi-hack/blob/main/docs/article.md
+- Write-up: https://github.com/Timidan/lexsi-hack#readme
 - Models: https://huggingface.co/collections/timidan/oya-wallet-agent-models-6aedf0affb712ba373e3a17d
 - Data: https://huggingface.co/collections/timidan/oya-wallet-agent-data-6aedf0b20bfbdecdb654e23c
 - Demo: https://huggingface.co/spaces/timidan/oya

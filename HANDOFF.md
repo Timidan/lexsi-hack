@@ -15,8 +15,10 @@ Fine-tuning**. Official rules (kickoff slides, hackathon.lexsi.ai/kickoff-slides
   **model collection** and **dataset collection** (article sections 5 and 6). Built and made **public** 2026-11-06 (user's OK):
   [models](https://huggingface.co/collections/timidan/oya-wallet-agent-models-6aedf0affb712ba373e3a17d) (sft-v2, GGUF, Space, dpo-v3, dpo-v3b) and [data](https://huggingface.co/collections/timidan/oya-wallet-agent-data-6aedf0b20bfbdecdb654e23c) (`timidan/oya-wallet-agent-data`).
 - **Licences (user, 2026-11-06):** code MIT (`LICENSE`), data CC-BY 4.0, models CC-BY-NC 4.0 (Tiny Aya's).
-- **A Hugging Face article** with the 9 sections (`docs/article.md` follows them); a README is accepted if HF
-  articles are not available. Original work. A Space is **not** required ("if relevant").
+- **A write-up with the 9 sections:** a Hugging Face article, or a GitHub README if HF articles are not
+  available (FAQ). A free account cannot post HF articles, so since 2026-11-06 the repo's `README.md` is the
+  write-up (user's choice; `docs/article.md` was folded into it). For the form's article field use
+  https://github.com/Timidan/lexsi-hack#readme. Original work. A Space is **not** required ("if relevant").
 - **Submission form: sent by email a couple of days before the deadline** (not via Discord), open until
   **end of day Nov 14, 2026, AoE (12:59 on Nov 15 in Lagos).** Aim for Nov 13. Needs an abstract under 500 words.
   The form is already live at hackathon.lexsi.ai/submission (Tally `o9E0Ve`, read 2026-11-06): registered email,
@@ -37,8 +39,8 @@ mix. 7 mock tools (`naija_agent/world.py`); tasks generated from templates (`nai
 `naija_agent/tasks.py`), 13 categories incl. 4 safety ones (missing info, insufficient funds, unknown
 contact, prompt injection in tool results). Scoring checks the final wallet state plus behaviour
 (`naija_agent/scoring.py`), with AuditKIT as a second opinion (`naija_agent/auditkit_bridge.py`).
-Prompt format = AgentTune's Tiny Aya tool fallback (`naija_agent/prompting.py`). README.md and
-`docs/article.md` (the write-up draft) explain the rest.
+Prompt format = AgentTune's Tiny Aya tool fallback (`naija_agent/prompting.py`). `README.md` (the
+write-up) explains the rest.
 
 ## Results so far (416-task development set)
 
@@ -66,7 +68,7 @@ Prompt format = AgentTune's Tiny Aya tool fallback (`naija_agent/prompting.py`).
 
 - **Voice (exploratory, 2026-11-05):** the user read the 26 held-out lines aloud; four speech models
   transcribed them and Oya (4-bit, on the user's laptop GPU) acted on each transcript. Results and
-  findings: "Voice input" in `docs/article.md`; code `scripts/voice_bench.py`; transcripts
+  findings: "Voice input" in `README.md`; code `scripts/voice_bench.py`; transcripts
   `human_eval/voice/`. The audio and its 26 clips are private and stay off git (local only, under
   `~/.cache/oya-voice/`). The Space now takes voice notes or video (Pidgin: whisper-pidgin-v1, Yoruba:
   BuzzASR, both fp32 on CPU and loaded on first use; int8 was faster but changed numbers) and every
@@ -111,7 +113,7 @@ Prompt format = AgentTune's Tiny Aya tool fallback (`naija_agent/prompting.py`).
   90% (v2 83%; it fixed the three follow-up questions) but 1 wrong payment (Mama's airtime sent as a bank
   transfer again); dev: task 95.0% (v2 97.4%), safety 96.1% (100%), right reply 91.1% (93.8%), wrong payments
   3.4% (2.4%), airtime to contacts 56% (69%), missing info 88% (100%). **Both rounds failed the gate: v2
-  stays Oya.** Written up in `docs/article.md` ("Self-healing rounds"). GPU used for v3: about 6.5 of the 8
+  stays Oya.** Written up in `README.md` ("Self-healing rounds"). GPU used for v3: about 6.5 of the 8
   approved hours; no third round without asking. The v3 adapters were uploaded privately to
   `timidan/oya-tiny-aya-dpo-v3` and `-dpo-v3b` (not for submission).
 - **Kaggle:** notebook `05_dpo.ipynb`, imported as **`05 dpo-v3`** (kaggle.com/code/timidanx/05-dpo-v3), started
@@ -133,8 +135,7 @@ Prompt format = AgentTune's Tiny Aya tool fallback (`naija_agent/prompting.py`).
 - **The HF article must have 9 sections** (kickoff slides): problem and approach; hackathon repos used (which,
   for what, which features); models and licences; datasets/benchmarks and licences; model artifacts as a
   public HF collection; data artifacts as a public HF collection; experiments and findings; "with more
-  credits"; teammates tagged. `docs/article.md` follows this structure (since 2026-11-05); still open in it:
-  the `[review]` marker (collection links, licences and teammates are in).
+  credits"; teammates tagged. `README.md` follows this structure.
 - ROI comparison is "optional but preferred" (token billing vs self-hosting, GPU hours, GPU $/hour,
   tokens/sec). AuditKIT has `LatencyStats`, `Throughput` and token-usage cost capture (`metrics/perf.py`).
 - Biggest gap: we only borrow AgentTune's prompt format; we do not train with it. Highest-value Lexsi work,
@@ -219,19 +220,19 @@ Steps 1-3 of the original list are done (held-out set written, v2 scored on it, 
    (AfriSenti is CC BY-NC-SA; the Pidgin speech corpus is read news). Never train on it. **Scored 2026-11-06** (Kaggle
    `04 eval human2`, notebook 04 at 63a1e31): v2 100% task success, 94.4% with the reply check, 0 wrong payments;
    round 2 94.4% with one wrong payment (Mama's airtime sent as a bank transfer again); untrained 27.8%. In
-   `docs/article.md` ("Second held-out set") and the dataset's `online` split.
-5. **Write-up:** done in `docs/article.md`, including the ROI table (section 7, "ROI": HF hardware prices
+   `README.md` ("Second held-out set") and the dataset's `online` split.
+5. **Write-up:** done in `README.md`, including the ROI table (section 7, "ROI": HF hardware prices
    times measured seconds per request). A free account cannot post a Hugging Face article (PRO or a write role
    in a Team/Enterprise org; hub-docs `blog-articles.md`; `timidan` is not PRO and has no orgs). The hackathon
    FAQ: "What if I don't have access to Hugging Face articles? You can submit a README file in a GitHub repo
-   instead." Open: the user picks the README route or buys PRO to post the article.
+   instead." The user chose the README route: `README.md` is now the whole write-up.
 6. **Published 2026-11-06** (user's OK): the two collections, the four model repos, the dataset and the Space
    are public and un-gated, and every page loads logged out; a scan before publishing found no audio or video
    and no token-like strings. The dataset viewer was still processing its three configs right after publishing:
    look once more. A `gradio_client` script with no token got "exceeded your ZeroGPU runs limit" after 3 model
    calls; a logged-out browser visitor is identified differently (X-IP-Token) and was not verified, because
    automated input did not reach the Space's iframe: try it by hand in a private tab. Then the user sends the submission form; its abstract is
-   `docs/abstract.md` (488 words between `## Abstract` and `## Links`; keep it in step with the article's numbers). The dataset is rebuilt by `OYA_PROMPT=compact python scripts/build_data.py --train-per-cell 40`
+   `docs/abstract.md` (488 words between `## Abstract` and `## Links`; keep it in step with the README's numbers). The dataset is rebuilt by `OYA_PROMPT=compact python scripts/build_data.py --train-per-cell 40`
    plus the `results` branch's `runs/` and the local `runs/compare-*`, `runs/voice-*`. After going public, look
    at the dataset viewer once (free accounts get none on private datasets; the three configs load locally).
    Optional: a results line on the GGUF card (its template is in notebook 03).
@@ -249,14 +250,14 @@ Must-fix items, all done on 2026-11-06 except publishing:
    just went through; the broken-reply path returns all four outputs.
 4. Comparison chart and table (75c0234): Oya at 16-bit and as the GGUF (100%) next to 4-bit (93%).
 5. Vocabulary: 262,144 tokens everywhere. 6. Draft note and placeholders removed.
-7. Published 2026-11-06 (step 6). A free account cannot post an HF article: the write-up goes in a GitHub
-   README (allowed by the FAQ) unless the user buys PRO.
+7. Published 2026-11-06 (step 6). A free account cannot post an HF article, so the write-up is the GitHub
+   README (allowed by the FAQ; the user's choice).
 8. Done: library code no longer uninstalls packages. `naija_agent.compat.check_torchao()` stops with advice
    if an old torchao is present; the notebooks' setup cell still uninstalls it.
 Keep `ATTACK_ACCOUNT` in `human.py` as the single source for both the planted text and the registered
 account, so the two cannot drift apart.
 
-Should do, done 2026-11-06: the ROI table (article, section 7); README links to the demo, write-up and
+Should do, done 2026-11-06: the ROI table (README, section 7); README links to the demo and
 collections, plus the DPO rounds and second set (the data collection is the home of the comparison and voice
 runs); notebook 04 downloads `timidan/oya-tiny-aya-{run}` (not the runner's own account) and scores both
 held-out sets. Still open: frame the DPO gate as the self-healing loop working.
