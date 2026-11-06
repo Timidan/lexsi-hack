@@ -314,7 +314,8 @@ calling).
   (not in the contacts) ₦10,000, Phi-4 mini bought ₦10,000 of airtime for 08031234567, the example number
   in the tool description; Llama 3.2 3B sent airtime and data to that same example number instead of
   looking up Mama or Tunde, and guessed plans and networks.
-  The OpenAI models made none; Oya made one (it guessed a data plan in 4-bit, where full precision asked).
+  The OpenAI models made none; Oya made one in this laptop 4-bit format (it guessed a data plan, where full
+  precision asked). The GGUF the demo runs made none (see "What else we tested").
 - **Cost.** About $27 per 1,000 requests for GPT-6 Astra, $5 for GPT-6.1 Sol and $0.26 for GPT-6 Luna (measured
   tokens times list prices reported by third-party pricing pages); Oya runs on a laptop GPU or a free CPU Space
   with no per-request fee.
@@ -322,8 +323,9 @@ calling).
   details politely without a question mark ("Abeg send im bank name and 10-digit account number"); our scorer
   looks for a question mark, so these were read by hand and counted as asking. Without that adjustment GPT-6
   Astra and Sol score 90%.
-- **Caveats:** 30 tasks; one run per model; open models in 4-bit (Oya at full precision scores 100% on this
-  set); the OpenAI models might do better with native function calling.
+- **Caveats:** 30 tasks; one run per model; open models in 4-bit (Oya scores 100% on this set at full
+  precision, and as the Q4_K_M GGUF the demo runs); the OpenAI models might do better with native function
+  calling.
 
 ### Voice input (exploratory)
 
@@ -368,9 +370,9 @@ GPU (4 GB), Oya runs in 4-bit here, so the typed row is rerun in 4-bit too.
   editable text (whisper-pidgin-v1 for Pidgin, BuzzASR for Yoruba), and every payment, typed or
   spoken, waits for the user to confirm or cancel it. On two CPU threads (measured on a laptop, like
   the free Space's CPU) a clip takes about 20-30 seconds to transcribe.
-- **4-bit has a safety cost.** On the typed request "buy data for 0812…" with no plan or network, the
-  4-bit model guessed 5GB on MTN, where the full-precision model (Kaggle) asked. The demo Space runs a
-  4-bit model, so this applies to it.
+- **How the model is compressed matters.** On the typed request "buy data for 0812…" with no plan or
+  network, this laptop's 4-bit model (bitsandbytes) guessed 5GB on MTN, where the full-precision model asked.
+  The 4-bit GGUF the demo runs (llama.cpp Q4_K_M) asked; see "What else we tested".
 - **Caveats:** one speaker, one recording, 26 clips. Word errors are measured against the written line,
   not a verbatim transcript of what was said. Cohere's own speech model (Cohere Transcribe) was not
   tested: it needs access approval and does not cover Yoruba.
@@ -379,8 +381,19 @@ GPU (4 GB), Oya runs in 4-bit here, so the typed row is rerun in 4-bit too.
 
 - **Prompt length:** the compact prompt (37% shorter) helps the untrained model as much as it helps v2; see
   "Development results".
-- **4-bit against full precision:** the same v2 adapter solves 30 of 30 held-out tasks at full precision and
-  28 of 30 in 4-bit, including one guessed data plan; see "Voice input".
+- **Compressed for serving against full precision.** Fine-tuned models can lose safety when they are
+  quantized for serving (Lexsi's SafeTune material names this step), so we scored the same v2 adapter on the
+  30 held-out tasks in each format:
+
+  | Format | Task success | Right reply too | Wrong payments | Size | Seconds per request (4 CPUs) |
+  |---|---|---|---|---|---|
+  | Full precision (Kaggle T4) | 100% | 83% | 0 | 6.7 GB | – |
+  | GGUF Q4_K_M (llama.cpp), what the demo runs | 100% | 90% | 0 | 2.1 GB | 21 |
+  | GGUF Q8_0 (llama.cpp) | 100% | 83% | 0 | 3.6 GB | 28 |
+  | bitsandbytes 4-bit (laptop GPU) | 93% | 83% | 1 (guessed a data plan) | – | – |
+
+  The GGUF kept the safety behaviour; the one guessed payment came from the bitsandbytes format used for the
+  laptop experiments. Thirty tasks cannot separate 83% from 90%.
 - **8-bit speech models on CPU** were faster, but changed numbers (a spoken "3,000" came out as "113,000"), so the
   demo runs them at full precision.
 - **Cancelling a payment in the demo** ends the exchange with "Cancelled. No money moved." instead of passing the
@@ -404,7 +417,7 @@ no run has seen.
 | Plan | Before (now) | After |
 |---|---|---|
 | Train with AgentTune's own trainers: preference pairs (DPO) from simulator-verified failures, where the rejected reply guesses or asks for the wrong detail and the chosen one asks correctly | replies with the right language and follow-up: 83.3% (held-out, full precision) | to be measured |
-| Run the demo on a GPU at full precision instead of 4-bit on a CPU | 4-bit task success 93% with one guessed payment; full precision 100% (held-out) | to be measured in the Space |
+| Serve the demo on a GPU instead of CPUs | GGUF Q4_K_M on 4 CPUs: 100% task success, about 21 s per request (held-out) | to be measured |
 | Collect a larger test set typed and spoken from scratch by several native speakers | 26 requests from one speaker | to be measured |
 | Measure throughput and latency with AuditKIT's `LatencyStats` and `Throughput` for a full cost comparison (GPU hours, tokens per second) | cost per 1,000 requests only | to be measured |
 
