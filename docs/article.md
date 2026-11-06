@@ -148,7 +148,8 @@ the speech models' transcripts are published.
 - the LoRA adapter (`sft-v2`) with its training log and loss curve,
 - the merged model as a 4-bit GGUF (Q4_K_M), which runs on a CPU,
 - the demo Space: chat with Oya by text or voice, with every payment waiting for confirmation, plus a
-  before/after replay of every held-out task.
+  before/after replay of every held-out task. It runs the adapter unquantized (16-bit) on Hugging Face's free
+  ZeroGPU.
 
 ## 6. Data artifacts (public Hugging Face collection)
 
@@ -364,16 +365,16 @@ calling).
   in the tool description; Llama 3.2 3B sent airtime and data to that same example number instead of
   looking up Mama or Tunde, and guessed plans and networks.
   The OpenAI models made none; Oya made one in this laptop 4-bit format (it guessed a data plan, where full
-  precision asked). The GGUF the demo runs made none (see "What else we tested").
+  precision asked). The Q4_K_M GGUF made none (see "What else we tested").
 - **Cost.** About $27 per 1,000 requests for GPT-6 Astra, $5 for GPT-6.1 Sol and $0.26 for GPT-6 Luna (measured
-  tokens times list prices reported by third-party pricing pages); Oya runs on a laptop GPU or a free CPU Space
-  with no per-request fee.
+  tokens times list prices reported by third-party pricing pages); Oya runs on a laptop GPU or on Hugging Face's
+  free ZeroGPU, with no per-request fee.
 - **How "task success" was counted.** 7 replies asked for the missing
   details politely without a question mark ("Abeg send im bank name and 10-digit account number"); our scorer
   looks for a question mark, so these were read by hand and counted as asking. Without that adjustment GPT-6
   Astra and Sol score 90%.
 - **Caveats:** 30 tasks; one run per model; open models in 4-bit (Oya scores 100% on this set at full
-  precision, and as the Q4_K_M GGUF the demo runs); the OpenAI models might do better with native function
+  precision, and as the Q4_K_M GGUF); the OpenAI models might do better with native function
   calling.
 
 ### Voice input (exploratory)
@@ -417,11 +418,11 @@ GPU (4 GB), Oya runs in 4-bit here, so the typed row is rerun in 4-bit too.
   one spoken. A voice version therefore needs a confirm step: show the transcript and the planned
   payment, and move money only after the user says yes. The demo Space does this: speech becomes
   editable text (whisper-pidgin-v1 for Pidgin, BuzzASR for Yoruba), and every payment, typed or
-  spoken, waits for the user to confirm or cancel it. On two CPU threads (measured on a laptop, like
-  the free Space's CPU) a clip takes about 20-30 seconds to transcribe.
+  spoken, waits for the user to confirm or cancel it. On the Space's GPU, transcribing a 30-second
+  clip used 2.5 seconds of GPU time; two laptop CPU threads take 20-30 seconds.
 - **How the model is compressed matters.** On the typed request "buy data for 0812…" with no plan or
   network, this laptop's 4-bit model (bitsandbytes) guessed 5GB on MTN, where the full-precision model asked.
-  The 4-bit GGUF the demo runs (llama.cpp Q4_K_M) asked; see "What else we tested".
+  The 4-bit GGUF (llama.cpp Q4_K_M) asked; see "What else we tested".
 - **Caveats:** one speaker, one recording, 26 clips. Word errors are measured against the written line,
   not a verbatim transcript of what was said. Cohere's own speech model (Cohere Transcribe) was not
   tested: it needs access approval and does not cover Yoruba.
@@ -437,14 +438,18 @@ GPU (4 GB), Oya runs in 4-bit here, so the typed row is rerun in 4-bit too.
   | Format | Task success | Right reply too | Wrong payments | Size | Seconds per request (4 CPUs) |
   |---|---|---|---|---|---|
   | Full precision (Kaggle T4) | 100% | 83% | 0 | 6.7 GB | – |
-  | GGUF Q4_K_M (llama.cpp), what the demo runs | 100% | 90% | 0 | 2.1 GB | 21 |
+  | GGUF Q4_K_M (llama.cpp) | 100% | 90% | 0 | 2.1 GB | 21 |
   | GGUF Q8_0 (llama.cpp) | 100% | 83% | 0 | 3.6 GB | 28 |
   | bitsandbytes 4-bit (laptop GPU) | 93% | 83% | 1 (guessed a data plan) | – | – |
 
   The GGUF kept the safety behaviour; the one guessed payment came from the bitsandbytes format used for the
   laptop experiments. Thirty tasks cannot separate 83% from 90%.
 - **8-bit speech models on CPU** were faster, but changed numbers (a spoken "3,000" came out as "113,000"), so the
-  demo runs them at full precision.
+  demo runs them unquantized (16-bit, on its GPU).
+- **Serving on ZeroGPU.** The demo Space runs the adapter unquantized (bf16) on Hugging Face's free ZeroGPU,
+  which attaches a GPU only while the model answers. A confirmed ₦500 airtime purchase took two model calls,
+  about 17 seconds end to end and 13 seconds of GPU. Visitors spend their own daily GPU allowance: 2 minutes
+  without a Hugging Face login, 5 with one.
 - **Cancelling a payment in the demo** ends the exchange with "Cancelled. No money moved." instead of passing the
   cancellation back to the model, because it never saw a cancelled payment in training.
 
@@ -466,7 +471,6 @@ no run has seen.
 | Plan | Before (now) | After |
 |---|---|---|
 | Train against the simulator on the model's own new mistakes (AgentTune's GRPO with tool rollouts), or more DPO rounds with thousands of pairs balanced across languages and mistake types plus replayed correct turns | two offline DPO rounds on 146-222 pairs: better follow-up questions, but routing and Yoruba regressions on the development set (section 7) | to be measured |
-| Serve the demo on a GPU instead of CPUs | GGUF Q4_K_M on 4 CPUs: 100% task success, about 21 s per request (held-out) | to be measured |
 | Collect a larger test set typed and spoken from scratch by several native speakers | 26 requests from one speaker | to be measured |
 | Measure throughput and latency with AuditKIT's `LatencyStats` and `Throughput` for a full cost comparison (GPU hours, tokens per second) | cost per 1,000 requests only | to be measured |
 
@@ -481,7 +485,7 @@ https://github.com/Timidan/lexsi-hack
 
 1. `notebooks/01_setup_and_baseline.ipynb`: environment check and untrained baseline.
 2. `notebooks/02_train_and_eval.ipynb`: LoRA training (one or two GPUs) and before/after scoring.
-3. `notebooks/03_publish_demo.ipynb`: merge, convert to a 4-bit GGUF, publish the demo Space.
+3. `notebooks/03_publish_demo.ipynb`: merge, convert to a 4-bit GGUF, publish the demo Space (on free ZeroGPU).
 4. `notebooks/04_eval_only.ipynb`: score a trained adapter on the held-out set.
    `scripts/rescore.py` recomputes the reply check from saved scores, without a GPU.
 5. `scripts/voice_bench.py`: the voice comparison (transcripts in `human_eval/voice/`; the audio stays

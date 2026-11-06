@@ -188,18 +188,23 @@ Steps 1-3 of the original list are done (held-out set written, v2 scored on it, 
    `timidan/oya-tiny-aya-sft-v2` (adapter) and `timidan/oya-tiny-aya-gguf` (Q4_K_M). The GGUF on the 30
    native-speaker requests: **Q4_K_M 100% task success, 90% with the reply check, 0 wrong payments, 21 s per
    request on 4 CPUs**; Q8_0 100% / 83% / 0, 28 s, so Q4_K_M stays. (bitsandbytes 4-bit was the one that
-   guessed a data plan; the GGUF does not.) **Creating the Space on free CPU failed (HTTP 402: Gradio and Docker
-   Spaces on cpu-basic need PRO; static Spaces stay free). But free accounts older than 30 days with a verified
-   email can host up to 2 Gradio Spaces on ZeroGPU (huggingface.co/docs/hub/spaces-zerogpu): `timidan/oya` was
-   created on 2026-11-06, private, hardware `zero-a10g`, no app yet.** To run there, `space/app.py` must move
-   from llama.cpp to transformers + the adapter on `cuda` under `@spaces.GPU`; ZeroGPU takes torch 2.8-2.13
-   (requirements pin 2.15) and Python 3.10 or 3.12 (README says 3.11). Tiny Aya is gated (auto) and the adapter
-   is private, so the Space needs a read token as secret `HF_TOKEN` (the user adds it). Visitors spend their
-   own ZeroGPU quota (2 min a day logged out, 5 logged in). Tiny Aya is CC-BY-NC 4.0, so the adapter and GGUF
-   stay CC-BY-NC 4.0. Fallback: LuxVPS (4 CPUs, 15 GB RAM, ~11 GB free, no swap, ~20 live entries; fits the
-   text demo plus Pidgin voice, not the 6 GB Yoruba speech model as well).
-   The Space code in the repo now warms the model at startup (`warm_up` in `space/app.py`). Re-run 03 with
-   `RUN_NAME = "dpo-v3"` only if v3 passes the gate.
+   guessed a data plan; the GGUF does not.) **The demo runs on free ZeroGPU: `timidan/oya`, private, live
+   since 2026-11-06.** Gradio on free CPU needs PRO (HTTP 402), but free accounts may host 2 ZeroGPU Spaces
+   (huggingface.co/docs/hub/spaces-zerogpu). `space/app.py` loads Tiny Aya + the sft-v2 adapter (merged, bf16)
+   and both speech models (fp16) to `cuda` before launch; `model_reply` and `transcribe` run under
+   `@spaces.GPU`. Verified through the Gradio API: "Abeg buy ₦500 MTN airtime for 08031234567." asked for
+   confirmation, then bought it and replied in Pidgin (10.0 s + 6.6 s, 13.4 s of GPU for the two model calls);
+   a 30 s voice clip used 2.5 s of GPU; the before/after replay loads. Visitors spend their own ZeroGPU quota
+   (2 min a day logged out, 5 logged in; the owner's is checked with `HfApi().get_zero_gpu_quota()`).
+   - Secret `HF_TOKEN` (Tiny Aya is gated, the adapter private) was copied from the Kaggle secret by a one-line
+     cell; variable `OYA_PROMPT=compact`. Adding a secret does not restart a Space, and `restart_space` on this
+     free account returns 403 "Subscribe to PRO ... to use ZeroGPU": **restart by pushing a commit**.
+   - PEFT loads an adapter on "cuda" whenever torch reports a GPU, which ZeroGPU always does, so adapters are
+     loaded on the model's device (`hf_policy.py`, `voice.py`).
+   - Notebook 03 publishes the Space the same way (ZeroGPU, `OYA_ADAPTER`, `HF_TOKEN` from Kaggle).
+   - Tiny Aya is CC-BY-NC 4.0, so the adapter and GGUF stay CC-BY-NC 4.0. Fallback host: LuxVPS (4 CPUs,
+     15 GB RAM; text demo plus Pidgin voice only).
+   Re-run 03 with `RUN_NAME = "dpo-v3"` only if v3 passes the gate.
 4b. **New test set:** the user is writing the 13 scenarios again in Yoruba and Pidgin, in their own words
    (asked 2026-11-06). Put them in `human_eval/requests2.txt` (same `1Y:`/`1P:` format), never train on them,
    and score untrained, v2 and v3 on them (`naija_agent.human.load_human_tasks`).

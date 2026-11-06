@@ -1,24 +1,27 @@
 """Oya demo (Hugging Face Space).
 
 Tabs:
-  Try it         chat with the fine-tuned Tiny Aya agent (GGUF on CPU via llama.cpp)
+  Try it         chat with the fine-tuned Tiny Aya agent (16-bit, not quantized, on a ZeroGPU GPU)
                  against a mock wallet; every tool call and the wallet state are shown.
                  Requests can be typed or spoken (voice note or video, Pidgin or Yoruba);
                  every payment waits for the user's confirmation.
   Before / after replay any held-out test task: untrained vs fine-tuned, side by side.
   Results        the before/after table and the training curve.
 
-Configuration (Space variables):
-  OYA_GGUF_REPO  Hugging Face repo with the quantized fine-tuned model (live tab)
-  OYA_GGUF_FILE  file pattern inside it (default "*Q4_K_M.gguf")
+Configuration (Space variables and secrets):
+  OYA_MODEL      base model (default CohereLabs/tiny-aya-global)
+  OYA_ADAPTER    the fine-tuned LoRA adapter (default timidan/oya-tiny-aya-sft-v2)
+  OYA_PROMPT     prompt style the adapter was trained with ("compact")
+  HF_TOKEN       secret: a read token that can download Tiny Aya (gated) and the adapter
   OYA_DATA_DIR   folder with replay data (default "data")
 """
 
 from __future__ import annotations
 
+import spaces  # before anything that loads torch: ZeroGPU patches CUDA on import
+
 import json
 import os
-import threading
 from pathlib import Path
 
 import gradio as gr
@@ -33,8 +36,8 @@ from naija_agent.prompting import ParseError, format_result_turn, parse_tool_cal
 from naija_agent.world import PAYMENT_TOOLS, Contact, World, account_key
 
 DATA = Path(os.environ.get("OYA_DATA_DIR", Path(__file__).parent / "data"))
-GGUF_REPO = os.environ.get("OYA_GGUF_REPO", "")
-GGUF_FILE = os.environ.get("OYA_GGUF_FILE", "*Q4_K_M.gguf")
+MODEL_ID = os.environ.get("OYA_MODEL", "CohereLabs/tiny-aya-global")
+ADAPTER = os.environ.get("OYA_ADAPTER", "timidan/oya-tiny-aya-sft-v2")
 MAX_TURNS = 6
 
 LANG_NAMES = {"en": "English", "pcm": "Pidgin", "yo": "Yoruba", "yo_en": "Yoruba-English mix"}
@@ -83,28 +86,28 @@ def wallet_markdown(w: World) -> str:
     return "\n".join(lines)
 
 
-# ─── model ────────────────────────────────────────────────────────────────────
+# ─── models ───────────────────────────────────────────────────────────────────
+# ZeroGPU attaches a GPU only while an @spaces.GPU function runs. Models go to "cuda" once, before launch
+# (ZeroGPU emulates CUDA until then and moves them to the GPU for each call).
 
-_chat, _chat_lock = None, threading.Lock()   # one llama.cpp model, one generation at a time
+POLICY = None   # the fine-tuned agent
+ASR = {}        # speech-to-text models by name
 
 
+def load_models() -> None:
+    global POLICY
+    from naija_agent.hf_policy import HFPolicy
+    from naija_agent.voice import Transcriber
+
+    POLICY = HFPolicy(MODEL_ID, adapter=ADAPTER, device="cpu")   # greedy, as in the evaluation
+    POLICY.model.to("cuda")
+    for name, _ in VOICE_MODELS.values():
+        ASR[name] = Transcriber(name, device="cuda")
+
+
+@spaces.GPU(duration=30)
 def model_reply(messages: list[dict]) -> str:
-    global _chat
-    if not GGUF_REPO:
-        raise gr.Error("The live model is not configured on this Space (OYA_GGUF_REPO).")
-    with _chat_lock:
-        if _chat is None:
-            from naija_agent.llama_backend import LlamaChat
-
-            _chat = LlamaChat(repo_id=GGUF_REPO, filename=GGUF_FILE)
-        return _chat.reply(messages)
-
-
-def warm_up() -> None:
-    """Load the model and process the system prompt once at startup: llama.cpp keeps it cached, so later
-    requests only process their own turns (on 2 CPUs the 1,300-token prompt alone takes minutes)."""
-    if GGUF_REPO:
-        model_reply([{"role": "system", "content": system_message()}, {"role": "user", "content": "Hello"}])
+    return POLICY([messages])[0]
 
 
 # ─── live agent ───────────────────────────────────────────────────────────────
@@ -226,15 +229,11 @@ def reset(injection: bool):
 # ─── voice ────────────────────────────────────────────────────────────────────
 
 VOICE_MODELS = {"Pidgin": ("whisper-pidgin", "P"), "Yoruba": ("buzzasr-yoruba", "Y")}  # best per language
-_asr, _asr_lock = {}, threading.Lock()
 
 
-def transcriber(name: str):
-    with _asr_lock:
-        if name not in _asr:
-            from naija_agent.voice import Transcriber
-            _asr[name] = Transcriber(name)
-        return _asr[name]
+@spaces.GPU(duration=20)
+def transcribe(audio, name: str, code: str) -> str:
+    return ASR[name](audio, code)
 
 
 def transcribe_input(audio_path: str | None, video_path: str | None, language: str) -> str:
@@ -244,7 +243,7 @@ def transcribe_input(audio_path: str | None, video_path: str | None, language: s
     from naija_agent.voice import load_audio
 
     name, code = VOICE_MODELS[language]
-    text = transcriber(name)(load_audio(path), code)
+    text = transcribe(load_audio(path), name, code)
     if not text:
         raise gr.Error("No speech found in that recording.")
     gr.Info("Check the numbers and names in the transcript, then press Enter to send.")
@@ -356,9 +355,6 @@ def build_ui():
     with gr.Blocks(title="Oya: Tiny Aya wallet agent", theme=gr.themes.Soft()) as demo:
         gr.Markdown(INTRO)
         with gr.Tab("Try it"):
-            if not GGUF_REPO:
-                gr.Markdown("> ⚠️ Live model not configured on this Space (set `OYA_GGUF_REPO`). "
-                            "The **Before / after** tab still works.")
             state = gr.State(reset(False)[2])
             with gr.Row():
                 with gr.Column(scale=3):
@@ -418,7 +414,5 @@ def build_ui():
 
 
 if __name__ == "__main__":
-    # warm the agent model, then load the speech models, in the background, so first requests do not wait for them
-    threading.Thread(target=lambda: (warm_up(), [transcriber(n) for n, _ in VOICE_MODELS.values()]),
-                     daemon=True).start()
+    load_models()   # before launch: ZeroGPU packs the models for the GPU when the app starts
     build_ui().queue().launch(favicon_path=str(Path(__file__).parent / "favicon.png"))

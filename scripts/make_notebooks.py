@@ -375,7 +375,8 @@ Takes the trained adapter (attach the training run's output with **Add Input →
 `02_train_and_eval` notebook, or let notebook 02 upload it to Hugging Face), merges it into Tiny Aya, converts it to a 4-bit
 GGUF that runs on a free CPU, checks that the quantized model still solves held-out tasks, then publishes:
 - the GGUF model repo, and
-- the **Hugging Face Space demo**, with the before/after replay data from the repo's `results` branch.
+- the **Hugging Face Space demo**, with the before/after replay data from the repo's `results` branch. It runs
+  the adapter at full precision on ZeroGPU, which free accounts (over 30 days old) can use for two Spaces.
 
 Both are **private** by default (`PRIVATE = True`); flip them to public at submission time.
 
@@ -517,12 +518,12 @@ for f, run_name in (("comparison.md", f"{RUN_NAME}-human"), ("loss.png", RUN_NAM
     if os.path.exists(f"{WORK}/results/runs/{run_name}/{f}"):
         shutil.copy(f"{WORK}/results/runs/{run_name}/{f}", f"{SPACE_DIR}/data/{f}")
 
-api.create_repo(SPACE_REPO, repo_type="space", space_sdk="gradio", private=PRIVATE, exist_ok=True)
-api.add_space_variable(SPACE_REPO, "OYA_GGUF_REPO", GGUF_REPO)
-api.add_space_variable(SPACE_REPO, "OYA_GGUF_FILE", os.path.basename(GGUF_PATH))
+# Gradio on free CPU needs HF PRO; ZeroGPU does not
+api.create_repo(SPACE_REPO, repo_type="space", space_sdk="gradio", space_hardware="zero-a10g", private=PRIVATE,
+                exist_ok=True)
+api.add_space_variable(SPACE_REPO, "OYA_ADAPTER", ADAPTER_REPO)
 api.add_space_variable(SPACE_REPO, "OYA_PROMPT", PROMPT_STYLE)
-if PRIVATE:   # a private Space needs a read token to download the private GGUF
-    api.add_space_secret(SPACE_REPO, "HF_TOKEN", HF_TOKEN)
+api.add_space_secret(SPACE_REPO, "HF_TOKEN", HF_TOKEN)   # Tiny Aya is gated; the adapter may be private
 api.upload_folder(folder_path=SPACE_DIR, repo_id=SPACE_REPO, repo_type="space", commit_message=f"demo: {RUN_NAME}")
 print("Space: https://huggingface.co/spaces/" + SPACE_REPO, "(the first build takes a few minutes)")
 """),

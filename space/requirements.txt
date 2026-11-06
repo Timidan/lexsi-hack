@@ -1,8 +1,6 @@
---extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
---extra-index-url https://download.pytorch.org/whl/cpu
-llama-cpp-python==0.3.36
-huggingface_hub
-# speech to text (voice input)
-torch==2.15.0+cpu
+# ZeroGPU runs torch 2.8 to 2.13
+torch==2.11.0
 transformers==5.22.1
+accelerate
 peft==0.21.2
+huggingface_hub

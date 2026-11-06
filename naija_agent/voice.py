@@ -1,6 +1,6 @@
 """Speech to text in front of Oya: Whisper-family models, one clip at a time.
 
-Used by scripts/voice_bench.py (GPU, fp16) and the Space (CPU, loaded on first use).
+Used by scripts/voice_bench.py and the Space (GPU, fp16; the Space loads both models at startup).
 Needs torch, transformers and peft, plus the ffmpeg binary for decoding audio or video.
 """
 
@@ -43,7 +43,7 @@ class Transcriber:
                                                                 attn_implementation="sdpa")
         if self.cfg.get("adapter"):
             from peft import PeftModel
-            model = PeftModel.from_pretrained(model, self.cfg["adapter"]).merge_and_unload()
+            model = PeftModel.from_pretrained(model, self.cfg["adapter"], torch_device="cpu").merge_and_unload()
         self.model = model.to(device).eval()
         self.vocab = self.proc.tokenizer.get_vocab()
 

@@ -5,13 +5,18 @@ colorFrom: green
 colorTo: yellow
 sdk: gradio
 sdk_version: 5.50.0
-python_version: "3.11"
+python_version: "3.12"
 app_file: app.py
+suggested_hardware: zero-a10g
 pinned: false
 license: cc-by-nc-4.0
 short_description: Tiny Aya tool-calling agent for Pidgin and Yoruba payments
 models:
   - CohereLabs/tiny-aya-global
+  - timidan/oya-tiny-aya-sft-v2
+  - openai/whisper-large-v3-turbo
+  - michaelodafe/whisper-pidgin-v1
+  - BuzzASR/yoruba
 ---
 
 # Oya: a Tiny Aya wallet agent for English, Nigerian Pidgin and Yoruba
@@ -22,7 +27,7 @@ asks when details are missing, refuses to overspend, and ignores instructions pl
 
 All tools run against a mock wallet: no real money, accounts or phone numbers are involved.
 
-- **Try it**: chat with the fine-tuned model (quantized GGUF, running on this Space's CPU). Type a request, or
+- **Try it**: chat with the fine-tuned model (16-bit, not quantized, on this Space's ZeroGPU GPU). Type a request, or
   speak it: a voice note or video in Pidgin (whisper-pidgin-v1) or Yoruba (BuzzASR) becomes text you can
   correct before sending. Every payment waits for you to confirm or cancel it.
 - **Before / after**: every held-out test task, untrained vs fine-tuned, with each tool call and a verdict.

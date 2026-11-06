@@ -35,7 +35,8 @@ class HFPolicy:
 
             remove_old_torchao()
             from peft import PeftModel
-            self.model = PeftModel.from_pretrained(self.model, adapter)
+            # on the model's device: PEFT otherwise picks "cuda" whenever torch reports one (ZeroGPU always does)
+            self.model = PeftModel.from_pretrained(self.model, adapter, torch_device=str(self.model.device))
             if not load_in_4bit:
                 self.model = self.model.merge_and_unload()   # same outputs, faster generation
         self.model.eval()
