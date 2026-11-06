@@ -74,6 +74,7 @@ start_live_log(LOG_NAME)
 # Tiny Aya (cohere2 architecture) is verified with transformers 5.x (same floor AgentTune uses).
 !pip install -q -U "transformers>=5.17,<6" accelerate peft bitsandbytes auditkit
 # Kaggle ships torchao 0.10, which recent PEFT refuses to load next to; we don't use it
+# (naija_agent.compat.check_torchao stops with this advice if it is still installed)
 !pip uninstall -y -q torchao
 """),
     ("code", """

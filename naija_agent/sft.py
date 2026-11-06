@@ -92,9 +92,9 @@ def train_lora(model_id: str, train_path: str, out_dir: str, *, val_path: str | 
     gradients are summed across GPUs before each optimizer step, and only
     process 0 prints, saves and publishes. Results match single-GPU training
     with the same effective batch size (grad_accum)."""
-    from .compat import remove_old_torchao
+    from .compat import check_torchao
 
-    remove_old_torchao()
+    check_torchao()
     import torch
     from peft import LoraConfig, get_peft_model
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig

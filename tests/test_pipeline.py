@@ -175,5 +175,16 @@ class Parser(unittest.TestCase):
             parse_tool_calls('[{"tool_name": "x", "parameters": {')
 
 
+class Compat(unittest.TestCase):
+    def test_old_torchao_stops_with_advice_instead_of_uninstalling(self):
+        from unittest import mock
+        from naija_agent.compat import check_torchao
+        with mock.patch("importlib.metadata.version", return_value="0.10.0"):
+            with self.assertRaisesRegex(RuntimeError, "pip uninstall -y torchao"):
+                check_torchao()
+        with mock.patch("importlib.metadata.version", return_value="0.16.0"):
+            check_torchao()
+
+
 if __name__ == "__main__":
     unittest.main()

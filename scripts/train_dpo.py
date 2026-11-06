@@ -70,9 +70,9 @@ def main() -> None:
     ap.add_argument("--dtype", default="auto", choices=["auto", "fp16", "bf16", "fp32"])
     a = ap.parse_args()
 
-    from naija_agent.compat import remove_old_torchao
+    from naija_agent.compat import check_torchao
 
-    remove_old_torchao()
+    check_torchao()
     import torch
     import trl
     from agenttune.core.backend_factory import create_agentic_trainer

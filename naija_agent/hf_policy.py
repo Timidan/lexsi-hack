@@ -31,9 +31,9 @@ class HFPolicy:
                 load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=self.dtype)
         self.model = AutoModelForCausalLM.from_pretrained(model_id, **kwargs)
         if adapter:
-            from .compat import remove_old_torchao
+            from .compat import check_torchao
 
-            remove_old_torchao()
+            check_torchao()
             from peft import PeftModel
             # on the model's device: PEFT otherwise picks "cuda" whenever torch reports one (ZeroGPU always does)
             self.model = PeftModel.from_pretrained(self.model, adapter, torch_device=str(self.model.device))
