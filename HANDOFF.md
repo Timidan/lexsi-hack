@@ -196,8 +196,10 @@ Steps 1-3 of the original list are done (held-out set written, v2 scored on it, 
    confirmation, then bought it and replied in Pidgin (10.0 s + 6.6 s, 13.4 s of GPU for the two model calls);
    a 30 s voice clip used 2.5 s of GPU; the before/after replay loads. Visitors spend their own ZeroGPU quota
    (2 min a day logged out, 5 logged in; the owner's is checked with `HfApi().get_zero_gpu_quota()`).
-   - Secret `HF_TOKEN` (Tiny Aya is gated, the adapter private) was copied from the Kaggle secret by a one-line
-     cell; variable `OYA_PROMPT=compact`. Adding a secret does not restart a Space, and `restart_space` on this
+   - Secret `HF_TOKEN` (the Kaggle read token, copied by a one-line Kaggle cell); variable
+     `OYA_PROMPT=compact`. **Keep the secret after going public:** Tiny Aya stays gated.
+   - `model_reply` asks ZeroGPU for 30 s and uses about 7 s per call; a lower `duration` would give visitors more
+     calls and better queue priority. The Space sleeps after 48 h idle (`gcTimeout`); a cold start took ~1 min. Adding a secret does not restart a Space, and `restart_space` on this
      free account returns 403 "Subscribe to PRO ... to use ZeroGPU": **restart by pushing a commit**.
    - PEFT loads an adapter on "cuda" whenever torch reports a GPU, which ZeroGPU always does, so adapters are
      loaded on the model's device (`hf_policy.py`, `voice.py`).
