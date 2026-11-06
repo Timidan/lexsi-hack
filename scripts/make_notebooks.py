@@ -545,25 +545,26 @@ development set.
 Results go to the repo's `results` branch.
 
 **Where the adapter comes from:** attach the earlier training run's output (right panel: **Add Input →
-Your Work →** your `02_train_and_eval` notebook), or, if it was uploaded, its Hugging Face repo
-(`{hf user}/oya-tiny-aya-{run}`).
+Your Work →** your `02_train_and_eval` notebook), or it is downloaded from Hugging Face: by default the
+published adapters (`timidan/oya-tiny-aya-{run}`); set `ADAPTER_OWNER` to use your own uploads.
 """ + SETUP_HELP),
     ("code", """
 # ---- settings ----
 RUN_NAME = "sft-v2"            # adapter to evaluate
 PROMPT_STYLE = "compact"       # must match how RUN_NAME was trained
-EVAL_HUMAN = False             # first native-speaker set (human_eval/requests.txt; sft-v2 is in runs/sft-v2-human)
+EVAL_HUMAN = True              # the held-out set behind the headline numbers (human_eval/requests.txt)
+EVAL_HUMAN2 = True             # the second set, from native-written text online (human_eval/requests2.txt)
 EVAL_DEV = False               # also the 416-task development set (about 35 minutes)
 EVAL_BASELINE = True           # also score the untrained model with the same prompt
-EVAL_HUMAN2 = True             # the second set, from native-written text online (human_eval/requests2.txt)
-OTHER_RUNS = ["dpo-v3b"]       # more adapters on the same sets
+OTHER_RUNS = []                # more adapters on the same sets, e.g. ["dpo-v3", "dpo-v3b"]
+ADAPTER_OWNER = "timidan"      # adapters not attached as input come from {ADAPTER_OWNER}/oya-tiny-aya-{run}
 BATCH_SIZE = 16
 
 MODEL_ID = "CohereLabs/tiny-aya-global"
 REPO = "Timidan/lexsi-hack"
 BRANCH = "main"
 TRAIN_PER_CELL = 40
-LOG_NAME = f"eval-{RUN_NAME}-human2"   # results branch: runs/<LOG_NAME>/notebook_log.txt
+LOG_NAME = f"eval-{RUN_NAME}"  # results branch: runs/<LOG_NAME>/notebook_log.txt
 
 import os
 os.environ["OYA_PROMPT"] = PROMPT_STYLE
@@ -582,9 +583,7 @@ from naija_agent.scoring import compare
 
 from naija_agent.human import load_human_tasks
 
-from huggingface_hub import whoami
-hf_user = whoami(token=HF_TOKEN)["name"]   # adapters not attached here come from {hf user}/oya-tiny-aya-{run}
-ADAPTERS = {r: find_adapter(r, f"{hf_user}/oya-tiny-aya-{r}", token=HF_TOKEN) for r in [RUN_NAME] + OTHER_RUNS}
+ADAPTERS = {r: find_adapter(r, f"{ADAPTER_OWNER}/oya-tiny-aya-{r}", token=HF_TOKEN) for r in [RUN_NAME] + OTHER_RUNS}
 print("adapters:", ADAPTERS, "| GPUs:", torch.cuda.device_count())
 
 sets = []
