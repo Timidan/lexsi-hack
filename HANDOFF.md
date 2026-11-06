@@ -12,7 +12,7 @@ Fine-tuning**. Official rules (kickoff slides, hackathon.lexsi.ai/kickoff-slides
 - **At least 2 Lexsi repos as one connected system** (we: AgentTune trains and logs, AuditKIT reads its runs).
 - **One of 7 models:** Tiny Aya Base/Global/Fire/Water/Earth, Aya Expanse 8B/32B (we: Tiny Aya Global, 3.35B).
 - **Everything public on Hugging Face:** "models, adapters, logs, datasets, benchmarks", as a public, un-gated
-  **model collection** and **dataset collection** (article sections 5 and 6). Built 2026-11-06, **private**:
+  **model collection** and **dataset collection** (article sections 5 and 6). Built and made **public** 2026-11-06 (user's OK):
   [models](https://huggingface.co/collections/timidan/oya-wallet-agent-models-6aedf0affb712ba373e3a17d) (sft-v2, GGUF, Space, dpo-v3, dpo-v3b) and [data](https://huggingface.co/collections/timidan/oya-wallet-agent-data-6aedf0b20bfbdecdb654e23c) (`timidan/oya-wallet-agent-data`).
 - **Licences (user, 2026-11-06):** code MIT (`LICENSE`), data CC-BY 4.0, models CC-BY-NC 4.0 (Tiny Aya's).
 - **A Hugging Face article** with the 9 sections (`docs/article.md` follows them); a README is accepted if HF
@@ -221,10 +221,16 @@ Steps 1-3 of the original list are done (held-out set written, v2 scored on it, 
    round 2 94.4% with one wrong payment (Mama's airtime sent as a bank transfer again); untrained 27.8%. In
    `docs/article.md` ("Second held-out set") and the dataset's `online` split.
 5. **Write-up:** done in `docs/article.md`, including the ROI table (section 7, "ROI": HF hardware prices
-   times measured seconds per request). Still open: publish it as a Hugging Face article (check a free account
-   can), then swap its link into the README's links and the form.
-6. **Before the deadline:** with the user's OK, make public the two collections, the four model repos, the
-   dataset and the Space (the GitHub repo is already public); then the user sends the emailed submission form; its abstract is
+   times measured seconds per request). A free account cannot post a Hugging Face article (PRO or a write role
+   in a Team/Enterprise org; hub-docs `blog-articles.md`; `timidan` is not PRO and has no orgs). The hackathon
+   FAQ: "What if I don't have access to Hugging Face articles? You can submit a README file in a GitHub repo
+   instead." Open: the user picks the README route or buys PRO to post the article.
+6. **Published 2026-11-06** (user's OK): the two collections, the four model repos, the dataset and the Space
+   are public and un-gated, and every page loads logged out; a scan before publishing found no audio or video
+   and no token-like strings. The dataset viewer was still processing its three configs right after publishing:
+   look once more. A `gradio_client` script with no token got "exceeded your ZeroGPU runs limit" after 3 model
+   calls; a logged-out browser visitor is identified differently (X-IP-Token) and was not verified, because
+   automated input did not reach the Space's iframe: try it by hand in a private tab. Then the user sends the submission form; its abstract is
    `docs/abstract.md` (488 words between `## Abstract` and `## Links`; keep it in step with the article's numbers). The dataset is rebuilt by `OYA_PROMPT=compact python scripts/build_data.py --train-per-cell 40`
    plus the `results` branch's `runs/` and the local `runs/compare-*`, `runs/voice-*`. After going public, look
    at the dataset viewer once (free accounts get none on private datasets; the three configs load locally).
@@ -243,7 +249,8 @@ Must-fix items, all done on 2026-11-06 except publishing:
    just went through; the broken-reply path returns all four outputs.
 4. Comparison chart and table (75c0234): Oya at 16-bit and as the GGUF (100%) next to 4-bit (93%).
 5. Vocabulary: 262,144 tokens everywhere. 6. Draft note and placeholders removed.
-7. Still open: publishing everything (needs the user's OK); whether a free account can post an HF article.
+7. Published 2026-11-06 (step 6). A free account cannot post an HF article: the write-up goes in a GitHub
+   README (allowed by the FAQ) unless the user buys PRO.
 8. Done: library code no longer uninstalls packages. `naija_agent.compat.check_torchao()` stops with advice
    if an old torchao is present; the notebooks' setup cell still uninstalls it.
 Keep `ATTACK_ACCOUNT` in `human.py` as the single source for both the planted text and the registered
