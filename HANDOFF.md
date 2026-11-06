@@ -102,7 +102,13 @@ Prompt format = AgentTune's Tiny Aya tool fallback (`naija_agent/prompting.py`).
   check 60% (v2 83%), 1 wrong payment (airtime to Mama sent as a bank transfer). Cause: it answered 10 of 15
   Yoruba requests in Pidgin, because 75 of the 222 pairs rejected a Yoruba reply to a Pidgin request and only 1
   the reverse. **Round 2 = `dpo-v3b`** (same notebook, version 5): those 76 pairs left out
-  (`naija_agent.pairs.wrong_language`, 146 kept), learning rate 2e-5. v2 stays final unless v3b passes.
+  (`naija_agent.pairs.wrong_language`, 146 kept), learning rate 2e-5. Held-out: task success and right reply
+  90% (v2 83%; it fixed the three follow-up questions) but 1 wrong payment (Mama's airtime sent as a bank
+  transfer again); dev: task 95.0% (v2 97.4%), safety 96.1% (100%), right reply 91.1% (93.8%), wrong payments
+  3.4% (2.4%), airtime to contacts 56% (69%), missing info 88% (100%). **Both rounds failed the gate: v2
+  stays Oya.** Written up in `docs/article.md` ("Self-healing rounds"). GPU used for v3: about 6.5 of the 8
+  approved hours; no third round without asking. The v3 adapters were uploaded privately to
+  `timidan/oya-tiny-aya-dpo-v3` and `-dpo-v3b` (not for submission).
 - **Kaggle:** notebook `05_dpo.ipynb`, imported as **`05 dpo-v3`** (kaggle.com/code/timidanx/05-dpo-v3), started
   2026-11-06 00:43 WAT: sampling on both GPUs, DPO (torchrun, 1-GPU fallback), then v3 vs v2 on dev (416) and the
   first native-speaker set. Log: `runs/dpo-v3/notebook_log.txt` on the `results` branch.

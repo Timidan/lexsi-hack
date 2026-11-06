@@ -32,7 +32,10 @@ tasks, run in 4-bit on a laptop, Oya solves 93%: within one task of OpenAI's GPT
 (97%), and ahead of open models its size (Qwen3 4B 50%, Phi-4 mini 33%, Llama 3.2 3B 20%), at no
 per-request cost.
 
-Training cost: Kaggle's free GPUs (two T4s, 75 minutes). Total spend: $0.
+We also ran Track 3's self-healing loop twice with AgentTune's DPO trainer, on preference pairs built from
+Oya's own mistakes. Both rounds fixed some follow-up questions but regressed elsewhere, and the gate kept v2.
+
+Training cost: Kaggle's free GPUs (two T4s, 75 minutes for v2). Total spend: $0.
 
 ## 1. Problem statement and approach
 
@@ -55,8 +58,9 @@ four languages by running reference plans against it, so every example is correc
 fine-tuned Tiny Aya Global with LoRA on those chats, in AgentTune's prompt format for Tiny Aya, on Kaggle's
 free GPUs. Every model is scored on what happened to the money plus behaviour checks, with AuditKIT as a
 second opinion, first on a development set and then on held-out requests checked by a native Yoruba and Pidgin
-speaker, and compared with OpenAI's models and open models of the same size. The demo adds voice input and
-makes every payment wait for the user's confirmation.
+speaker, and compared with OpenAI's models and open models of the same size. We then ran two self-healing
+rounds with AgentTune's DPO trainer on Oya's own mistakes, gated on measured accuracy. The demo adds voice
+input and makes every payment wait for the user's confirmation.
 
 ## 2. Hackathon repos used
 
@@ -68,8 +72,11 @@ AuditKIT reads.
   `DEFAULT_TOOL_RESULT_FORMAT` in `agenttune/agentic/rollout_engines/rollout_factory.py`): tool schemas in the
   system prompt, calls as a JSON list `[{"tool_name": …, "parameters": …}]`, and tool results returned as a user
   turn starting with "Tool result". Training data, evaluation and the demo all use it. Every episode is saved as
-  `trajectories.jsonl` in AgentTune's `Trajectory` format. We did **not** use AgentTune's trainers: training is
-  our own loop on Hugging Face Transformers and PEFT (see section 8 for how we would use them).
+  `trajectories.jsonl` in AgentTune's `Trajectory` format.
+- **AgentTune: the DPO trainer.** v1 and v2 were trained with our own loop on Transformers and PEFT. The
+  two self-healing rounds (section 7) were trained with AgentTune's `create_agentic_trainer("dpo")` on its TRL
+  backend, with `precompute_ref_log_probs` and a small subclass that scores only the judged turn, which a
+  16 GB T4 needs for Tiny Aya's 262,000-word vocabulary.
 - **AuditKIT: an independent second opinion.** `auditkit.agent_eval` reads our trajectories with
   `episodes_from_agenttune`, builds an `AgentCase` per task (allowed tools and the reference tool route), checks
   the final wallet ledger with `FinalStateAssertion`, and adds its `tool_call_f1` and `tool_call_validity`
@@ -288,6 +295,48 @@ prompt injection planted in the account lookup. Same compact prompt for both mod
 - **30 tasks is a small sample.** A 30/30 score is consistent with a true success rate anywhere from
   about 88% to 100% (95% interval).
 
+### Self-healing rounds: DPO with AgentTune on Oya's own mistakes
+
+Track 3 lists *self-healing agents*: detect failing runs, classify why they failed, generate corrective
+training examples, retrain, and gate redeployment on measured accuracy. We ran that loop twice on v2.
+Neither round passed the gate, so v2 is still Oya. The gate is the part that worked.
+
+- **Detect.** v2 almost never errs on the phrasings it was trained on (no mistakes in 56 samples at
+  temperature 1.0), so we wrote new Pidgin and Yoruba phrasings, kept out of every other set, and sampled v2
+  four times at every step of 1,040 fresh tasks (about 3 hours on two T4s).
+- **Classify and correct.** Each sample is judged against the reference step with the scorer's rules: a
+  wrong or extra payment, a reply where a tool call was needed, the wrong follow-up question, the wrong
+  language, broken JSON. Each mistake becomes a pair: the chat so far, the reference turn (chosen) and v2's
+  turn (rejected). 222 pairs (`naija_agent/pairs.py`).
+- **Retrain.** AgentTune's `create_agentic_trainer("dpo")` on its TRL backend: DPO plus a plain loss on the
+  chosen turn, continuing v2's LoRA adapter with a frozen copy of it as the reference. TRL scores every token
+  of the 1,500-token chat over Tiny Aya's 262,000-word vocabulary, which does not fit a 16 GB T4 even on a
+  4-bit base; a 20-line subclass scores only from the judged turn on (same loss to the last digit on a test
+  model, 7 times faster).
+- **Gate.** The new adapter replaces v2 only if it does better on the requests, with no new wrong payments
+  and no regression on the development set.
+
+| | v2 | Round 1 (222 pairs) | Round 2 (146 pairs) |
+|---|---|---|---|
+| Held-out 30: task success | **100%** | 96.7% | 96.7% |
+| Held-out 30: task success and right reply | 83.3% | 60.0% | **90.0%** |
+| Held-out 30: wrong payments | **0** | 1 | 1 |
+| Development 416: task success | **97.4%** | 94.7% | 95.0% |
+| Development 416: safety tasks | **100%** | 96.9% | 96.1% |
+| Development 416: right reply | **93.8%** | 52.6% | 91.1% |
+| Development 416: wrong payments | **2.4%** | 4.3% | 3.4% |
+
+- **Round 1 drifted into Pidgin.** It answered 10 of the 15 Yoruba held-out requests in Pidgin. 75 of the
+  222 pairs rejected a Yoruba reply to a Pidgin request and only 1 the reverse, so DPO learned to avoid
+  Yoruba replies.
+- **Round 2 fixed the questions it aimed at and broke routing.** Without those pairs and at a lower learning
+  rate, it asked what v2 had not: how much airtime, the bank details of a payee not in the contacts, the
+  network for a data plan. But it sent "put ₦2,000 on Mama's phone" as a bank transfer to Mama, and on the
+  development set it lost ground on airtime to contacts (69% to 56%), on requests with missing details
+  (100% to 88%) and on one planted injection.
+- **Why, as far as we can tell:** a few hundred pairs from one round of sampling are narrow, and DPO pushes a
+  rejected turn down well beyond the context it came from. Section 8 lists what we would try next.
+
 ### Compared with other models
 
 The same 30 held-out tasks, the same prompt and the same scorer, given to OpenAI's current models through
@@ -416,7 +465,7 @@ no run has seen.
 
 | Plan | Before (now) | After |
 |---|---|---|
-| Train with AgentTune's own trainers: preference pairs (DPO) from simulator-verified failures, where the rejected reply guesses or asks for the wrong detail and the chosen one asks correctly | replies with the right language and follow-up: 83.3% (held-out, full precision) | to be measured |
+| Train against the simulator on the model's own new mistakes (AgentTune's GRPO with tool rollouts), or more DPO rounds with thousands of pairs balanced across languages and mistake types plus replayed correct turns | two offline DPO rounds on 146-222 pairs: better follow-up questions, but routing and Yoruba regressions on the development set (section 7) | to be measured |
 | Serve the demo on a GPU instead of CPUs | GGUF Q4_K_M on 4 CPUs: 100% task success, about 21 s per request (held-out) | to be measured |
 | Collect a larger test set typed and spoken from scratch by several native speakers | 26 requests from one speaker | to be measured |
 | Measure throughput and latency with AuditKIT's `LatencyStats` and `Throughput` for a full cost comparison (GPU hours, tokens per second) | cost per 1,000 requests only | to be measured |
