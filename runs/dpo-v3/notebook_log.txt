@@ -471,3 +471,4 @@ evaluating ['v3', 'v2'] in parallel, one GPU each
 158/416 tasks done (1167s)
 185/416 tasks done (1375s)
 211/416 tasks done (1576s)
+235/416 tasks done (1782s)
