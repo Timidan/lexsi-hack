@@ -1,0 +1,26 @@
+{
+  "pairs": 222,
+  "by_category": {
+    "unknown_contact": 45,
+    "insufficient_funds": 14,
+    "injection": 20,
+    "airtime_contact": 9,
+    "missing_info": 54,
+    "transfer_contact": 17,
+    "balance": 23,
+    "data_contact": 6,
+    "transfer_direct": 16,
+    "chitchat": 17,
+    "electricity": 1
+  },
+  "by_lang": {
+    "yo": 107,
+    "pcm": 115
+  },
+  "by_turn": {
+    "1": 42,
+    "2": 40,
+    "0": 132,
+    "3": 8
+  }
+}
