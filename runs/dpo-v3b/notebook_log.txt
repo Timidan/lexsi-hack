@@ -261,3 +261,32 @@ Caching reference log probs for train dataset: 100%|█████████�
 {'loss': '0.3949', 'grad_norm': '3.375', 'learning_rate': '1.655e-05', 'entropy': '0.07652', 'num_tokens': '7222', 'logits/chosen': '-0.8185', 'logits/rejected': '-1.042', 'mean_token_accuracy': '0.9897', 'rewards/chosen': '0.1816', 'rewards/rejected': '-0.82', 'rewards/accuracies': '0.975', 'rewards/margins': '1.002', 'logps/chosen': '-1.078', 'logps/rejected': '-13.52', 'epoch': '0.8219'}
 
  39%|███▉      | 15/38 [04:28<07:03, 18.41s/it]
+ 42%|████▏     | 16/38 [04:46<06:40, 18.19s/it]
+ 45%|████▍     | 17/38 [05:04<06:23, 18.25s/it]
+ 47%|████▋     | 18/38 [05:23<06:09, 18.47s/it]
+ 50%|█████     | 19/38 [05:28<04:30, 14.24s/it]
+ 53%|█████▎    | 20/38 [05:47<04:43, 15.74s/it]
+                                               
+{'loss': '0.3278', 'grad_norm': '2.183', 'learning_rate': '1.236e-05', 'entropy': '0.1042', 'num_tokens': '9401', 'logits/chosen': '-0.874', 'logits/rejected': '-0.9603', 'mean_token_accuracy': '0.9912', 'rewards/chosen': '0.2842', 'rewards/rejected': '-1.201', 'rewards/accuracies': '0.9412', 'rewards/margins': '1.485', 'logps/chosen': '-1.326', 'logps/rejected': '-16.73', 'epoch': '1.055'}
+
+ 53%|█████▎    | 20/38 [05:47<04:43, 15.74s/it]
+ 55%|█████▌    | 21/38 [06:04<04:35, 16.20s/it]
+ 58%|█████▊    | 22/38 [06:23<04:34, 17.15s/it]
+ 61%|██████    | 23/38 [06:42<04:21, 17.41s/it]
+ 63%|██████▎   | 24/38 [07:02<04:17, 18.36s/it]
+ 66%|██████▌   | 25/38 [07:20<03:57, 18.25s/it]
+                                               
+{'loss': '0.2806', 'grad_norm': '10.46', 'learning_rate': '7.642e-06', 'entropy': '0.08067', 'num_tokens': '1.184e+04', 'logits/chosen': '-0.8493', 'logits/rejected': '-0.9721', 'mean_token_accuracy': '0.9949', 'rewards/chosen': '0.1827', 'rewards/rejected': '-1.785', 'rewards/accuracies': '0.975', 'rewards/margins': '1.967', 'logps/chosen': '-0.9038', 'logps/rejected': '-22.93', 'epoch': '1.329'}
+
+ 66%|██████▌   | 25/38 [07:20<03:57, 18.25s/it]
+ 68%|██████▊   | 26/38 [07:38<03:36, 18.04s/it]
+ 71%|███████   | 27/38 [07:58<03:27, 18.83s/it]
+ 74%|███████▎  | 28/38 [08:17<03:07, 18.75s/it]
+ 76%|███████▋  | 29/38 [08:34<02:45, 18.36s/it]
+ 79%|███████▉  | 30/38 [08:52<02:25, 18.16s/it]
+                                               
+{'loss': '0.2524', 'grad_norm': '4.037', 'learning_rate': '3.451e-06', 'entropy': '0.1248', 'num_tokens': '1.434e+04', 'logits/chosen': '-0.9508', 'logits/rejected': '-1.099', 'mean_token_accuracy': '0.9921', 'rewards/chosen': '0.04768', 'rewards/rejected': '-2.572', 'rewards/accuracies': '0.95', 'rewards/margins': '2.62', 'logps/chosen': '-1.751', 'logps/rejected': '-33.37', 'epoch': '1.603'}
+
+ 79%|███████▉  | 30/38 [08:52<02:25, 18.16s/it]
+ 82%|████████▏ | 31/38 [09:09<02:05, 17.95s/it]
+ 84%|████████▍ | 32/38 [09:28<01:49, 18.19s/it]
