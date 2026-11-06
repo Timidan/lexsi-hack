@@ -539,29 +539,30 @@ evalonly = nb([
 # 04 · Evaluate an existing adapter (no training)
 
 Scores a model trained earlier (default `sft-v2`) and the untrained model, side by side on the two GPUs,
-on the **native-speaker test set** (`human_eval/requests.txt`) and optionally the 416-task development set.
+on the **native-speaker test sets** (`human_eval/requests.txt`, `requests2.txt`) and optionally the 416-task
+development set.
 Results go to the repo's `results` branch.
 
 **Where the adapter comes from:** attach the earlier training run's output (right panel: **Add Input →
-Your Work →** your `02_train_and_eval` notebook), or, if it was uploaded, its Hugging Face repo.
+Your Work →** your `02_train_and_eval` notebook), or, if it was uploaded, its Hugging Face repo
+(`{hf user}/oya-tiny-aya-{run}`).
 """ + SETUP_HELP),
     ("code", """
 # ---- settings ----
 RUN_NAME = "sft-v2"            # adapter to evaluate
 PROMPT_STYLE = "compact"       # must match how RUN_NAME was trained
-EVAL_HUMAN = True              # native-speaker test set (needs human_eval/requests.txt filled in)
+EVAL_HUMAN = False             # first native-speaker set (human_eval/requests.txt; sft-v2 is in runs/sft-v2-human)
 EVAL_DEV = False               # also the 416-task development set (about 35 minutes)
 EVAL_BASELINE = True           # also score the untrained model with the same prompt
-EVAL_HUMAN2 = True             # the second native-speaker set, typed by the speaker (human_eval/requests2.txt)
-OTHER_RUNS = []                # more adapters on the same sets, e.g. ["dpo-v3"] (attach that notebook too)
+EVAL_HUMAN2 = True             # the second set, from native-written text online (human_eval/requests2.txt)
+OTHER_RUNS = ["dpo-v3b"]       # more adapters on the same sets
 BATCH_SIZE = 16
-HF_ADAPTER_REPO = None         # e.g. "your-hf-username/oya-tiny-aya-sft-v2" if not attached from Kaggle
 
 MODEL_ID = "CohereLabs/tiny-aya-global"
 REPO = "Timidan/lexsi-hack"
 BRANCH = "main"
 TRAIN_PER_CELL = 40
-LOG_NAME = f"eval-{RUN_NAME}"
+LOG_NAME = f"eval-{RUN_NAME}-human2"   # results branch: runs/<LOG_NAME>/notebook_log.txt
 
 import os
 os.environ["OYA_PROMPT"] = PROMPT_STYLE
@@ -580,8 +581,9 @@ from naija_agent.scoring import compare
 
 from naija_agent.human import load_human_tasks
 
-ADAPTERS = {r: find_adapter(r, HF_ADAPTER_REPO if r == RUN_NAME else None, token=HF_TOKEN)
-            for r in [RUN_NAME] + OTHER_RUNS}
+from huggingface_hub import whoami
+hf_user = whoami(token=HF_TOKEN)["name"]   # adapters not attached here come from {hf user}/oya-tiny-aya-{run}
+ADAPTERS = {r: find_adapter(r, f"{hf_user}/oya-tiny-aya-{r}", token=HF_TOKEN) for r in [RUN_NAME] + OTHER_RUNS}
 print("adapters:", ADAPTERS, "| GPUs:", torch.cuda.device_count())
 
 sets = []
@@ -613,11 +615,11 @@ for name, tasks in sets:
         Publisher(f"{RUN_NAME}-{name}").publish({"comparison.md": path_md}, f"{RUN_NAME}-{name}: comparison", force=True)
 """),
     ("code", """
-# Failures on the native-speaker set, to read
+# Failures on the native-speaker sets, to read
 import json
-p = f"runs/{RUN_NAME}-human/scores.jsonl"
-if os.path.exists(p):
-    rows = [json.loads(l) for l in open(p, encoding="utf-8")]
+for name in ("human", "human2"):
+    p = f"runs/{RUN_NAME}-{name}/scores.jsonl"
+    rows = [json.loads(l) for l in open(p, encoding="utf-8")] if os.path.exists(p) else []
     for r in rows:
         if not r["success"]:
             print(f"[{r['category']} / {r['lang']}] {r['prompt']}\\n   failed: {[k for k, v in r['checks'].items() if not v]}\\n   final: {str(r['final'])[:200]}\\n")
