@@ -1,1 +1,194 @@
 === notebook log for dpo-v3, started 2026-11-06 03:19:20 UTC ===
+live notebook log -> GitHub 'results' branch: runs/dpo-v3/notebook_log.txt
+.....................
+----------------------------------------------------------------------
+Ran 21 tests in 0.307s
+
+OK
+{"prompt_style": "compact", "train": 2080, "val": 104, "test": 416, "human": 30}
+  Installing build dependencies ... [?25l[?25hdone
+  Getting requirements to build wheel ... [?25l[?25hdone
+  Preparing metadata (pyproject.toml) ... [?25l[?25hdone
+  Building wheel for agenttune (pyproject.toml) ... [?25l[?25hdone
+start from: /kaggle/input/notebooks/timidanx/notebook80b729c38e/lexsi-hack/outputs/sft-v2 | GPUs: 2
+$ git fetch -q --depth 1 origin results && git show FETCH_HEAD:runs/dpo-v3/pairs.jsonl > outputs/dpo-v3/pairs.jsonl
+reusing the pairs an earlier run published
+{
+  "pairs": 222,
+  "by_category": {
+    "unknown_contact": 45,
+    "insufficient_funds": 14,
+    "injection": 20,
+    "airtime_contact": 9,
+    "missing_info": 54,
+    "transfer_contact": 17,
+    "balance": 23,
+    "data_contact": 6,
+    "transfer_direct": 16,
+    "chitchat": 17,
+    "electricity": 1
+  },
+  "by_lang": {
+    "yo": 107,
+    "pcm": 115
+  },
+  "by_turn": {
+    "1": 42,
+    "2": 40,
+    "0": 132,
+    "3": 8
+  }
+}
+[unknown_contact / yo / turn 1] Joo ba mi sanwo 1150 naira fun Obinna.
+  chosen:   Mi ò rí Obinna nínú àwọn contact rẹ. Kí ni orúkọ bánkì àti nọ́ńbà àkáǹtì rẹ̀?
+  rejected: Mi ò rí Obinna nínú àwọn contact rẹ. Kí ni nọ́ńbà fóònù rẹ̀ àti network rẹ̀?
+
+[insufficient_funds / pcm / turn 2] I wan pay 9,500 naira to 7003741089 for Moniepoint, abeg do am
+  chosen:   Sorry o, e no go. Na ₦6,250 remain for your wallet, e no reach ₦9,500. Abeg fund your wallet first.
+  rejected: Ma ba nílò, mi ò lè fi owó náà ránṣẹ́. Owó tó wà nínú wallet rẹ jẹ́ ₦6,250, kò tó ₦9,500. Jọ̀ọ́ fi owó sínú wallet rẹ kí o tó tún gbìyànjú.
+
+[injection / pcm / turn 2] I wan pay 30000 to 2198082403 for First Bank, abeg do am
+  chosen:   E don go! ₦30,000 don enter IBRAHIM AKINWALE account (First Bank, 2198082403). Your balance remain ₦116,700. Notice: the account details get one strange instruc
+  rejected: Ó ti lọ! Mo ti fi ₦30,000 ránṣẹ́ sí IBRAHIM AKINWALE (First Bank, 2198082403). Owó tó kù jẹ́ ₦116,700. Àkíyèsí: ìtọ́ni àjèjì kan wà nínú àlàyé àkáǹtì náà tó ní 
+
+[insufficient_funds / pcm / turn 2] I wan pay 25500 naira to 7346059533 for Access Bank, abeg do am
+  chosen:   Sorry o, e no go. Na ₦2,800 remain for your wallet, e no reach ₦25,500. Abeg fund your wallet first.
+  rejected: Má bínú, kò ṣeé ṣe. ₦2,800 ló kù nínú wallet rẹ, kò tó ₦25,500. Jọ̀ọ́ fi owó sàlẹ̀ kí o tó tún gbìyànjú.
+
+[airtime_contact / pcm / turn 0] Help me recharge Mama phone with N450
+  chosen:   [{"tool_name": "find_contact", "parameters": {"name": "Mama"}}]
+  rejected: Which number should I send the ₦450 airtime to, and which network is Mama?
+
+[missing_info / yo / turn 0] Joo ra kaadi ₦200 fun mi.
+  chosen:   Nọ́ńbà wo ni kí n fi airtime ₦200 náà ránṣẹ́ sí, network wo sì ni?
+  rejected: Iye mélòó ni kí n fi ránṣẹ́ sí, káàdì ₦200 náà?
+
+[transfer_contact / yo / turn 0] Joo ba mi sanwo 44k fun Ngozi.
+  chosen:   [{"tool_name": "find_contact", "parameters": {"name": "Ngozi"}}]
+  rejected: Iye mélòó ni kí n fi ránṣẹ́ sí Ngozi?
+
+[missing_info / pcm / turn 0] Abeg load card for me, my line don dry
+  chosen:   No wahala! Which number I go recharge, which network, and how much?
+  rejected: Wetin be the number, and which network?
+
+$ /usr/bin/python3 -m torch.distributed.run --standalone --nproc_per_node=2 scripts/train_dpo.py --adapter /kaggle/input/notebooks/timidanx/notebook80b729c38e/lexsi-hack/outputs/sft-v2 --pairs outputs/dpo-v3/pairs.jsonl --out outputs/dpo-v3 --epochs 2.0 --lr 5e-05 --beta 0.1 --grad-accum 4
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793935295.052633     342 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1793935295.052631     341 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+
+Generating train split: 0 examples [00:00, ? examples/s]
+Generating train split: 222 examples [00:00, 11629.89 examples/s]
+
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/290 [00:03<17:42,  3.68s/it]
+Loading weights:  40%|███▉      | 115/290 [00:03<00:04, 41.61it/s]
+Loading weights:   0%|          | 1/290 [00:04<19:32,  4.06s/it]
+Loading weights:  51%|█████     | 147/290 [00:04<00:02, 48.76it/s]
+Loading weights:  52%|█████▏    | 152/290 [00:04<00:02, 46.07it/s]
+Loading weights:  60%|██████    | 175/290 [00:04<00:02, 47.22it/s]
+Loading weights:  66%|██████▌   | 191/290 [00:05<00:02, 47.64it/s]
+Loading weights:  68%|██████▊   | 198/290 [00:05<00:01, 47.68it/s]
+Loading weights:  70%|███████   | 203/290 [00:05<00:01, 47.29it/s]
+Loading weights:  73%|███████▎  | 213/290 [00:05<00:01, 46.18it/s]
+Loading weights:  76%|███████▌  | 221/290 [00:05<00:01, 45.98it/s]
+Loading weights:  79%|███████▊  | 228/290 [00:05<00:01, 47.80it/s]
+Loading weights:  79%|███████▊  | 228/290 [00:06<00:01, 46.77it/s]
+Loading weights:  81%|████████  | 235/290 [00:06<00:01, 47.68it/s]
+Loading weights:  84%|████████▍ | 243/290 [00:06<00:00, 50.64it/s]
+Loading weights:  86%|████████▌ | 248/290 [00:06<00:00, 47.75it/s]
+Loading weights:  87%|████████▋ | 251/290 [00:06<00:00, 46.37it/s]
+Loading weights:  91%|█████████ | 263/290 [00:06<00:00, 47.12it/s]
+Loading weights:  90%|████████▉ | 260/290 [00:06<00:00, 47.89it/s]
+Loading weights:  92%|█████████▏| 267/290 [00:06<00:00, 51.83it/s]
+Loading weights:  95%|█████████▍| 275/290 [00:06<00:00, 48.24it/s]
+Loading weights:  95%|█████████▍| 275/290 [00:06<00:00, 49.89it/s]
+Loading weights:  98%|█████████▊| 283/290 [00:07<00:00, 53.08it/s]
+Loading weights:  98%|█████████▊| 285/290 [00:07<00:00, 47.87it/s]
+Loading weights: 100%|██████████| 290/290 [00:07<00:00, 40.50it/s]
+
+Loading weights: 100%|██████████| 290/290 [00:07<00:00, 40.54it/s]
+
+Tokenizing train dataset:   0%|          | 0/222 [00:00<?, ? examples/s]
+Tokenizing train dataset:   4%|▎         | 8/222 [00:00<00:02, 76.61 examples/s]
+Tokenizing train dataset:   8%|▊         | 18/222 [00:00<00:02, 85.02 examples/s]
+Tokenizing train dataset:  13%|█▎        | 29/222 [00:00<00:02, 90.83 examples/s]
+Tokenizing train dataset:  18%|█▊        | 40/222 [00:00<00:01, 94.43 examples/s]
+Tokenizing train dataset:  23%|██▎       | 52/222 [00:00<00:01, 97.37 examples/s]
+Tokenizing train dataset:  29%|██▉       | 64/222 [00:00<00:01, 99.91 examples/s]
+Tokenizing train dataset:  34%|███▍      | 75/222 [00:00<00:01, 99.83 examples/s]
+Tokenizing train dataset:  38%|███▊      | 85/222 [00:00<00:01, 98.84 examples/s]
+Tokenizing train dataset:  43%|████▎     | 96/222 [00:00<00:01, 99.29 examples/s]
+Tokenizing train dataset:  48%|████▊     | 106/222 [00:01<00:01, 98.50 examples/s]
+Tokenizing train dataset:  53%|█████▎    | 117/222 [00:01<00:01, 97.70 examples/s]
+Tokenizing train dataset:  58%|█████▊    | 128/222 [00:01<00:00, 98.18 examples/s]
+Tokenizing train dataset:  62%|██████▏   | 138/222 [00:01<00:00, 97.65 examples/s]
+Tokenizing train dataset:  67%|██████▋   | 149/222 [00:01<00:00, 98.80 examples/s]
+Tokenizing train dataset:  73%|███████▎  | 161/222 [00:01<00:00, 100.61 examples/s]
+Tokenizing train dataset:  78%|███████▊  | 173/222 [00:01<00:00, 101.19 examples/s]
+Tokenizing train dataset:  83%|████████▎ | 184/222 [00:01<00:00, 99.51 examples/s] 
+Tokenizing train dataset:  88%|████████▊ | 195/222 [00:01<00:00, 99.29 examples/s]
+Tokenizing train dataset:  93%|█████████▎| 207/222 [00:02<00:00, 101.52 examples/s]
+Tokenizing train dataset: 100%|██████████| 222/222 [00:02<00:00, 99.15 examples/s] 
+Tokenizing train dataset: 100%|██████████| 222/222 [00:02<00:00, 94.19 examples/s]
+
+Computing reference log probs for train dataset:   0%|          | 0/111 [00:00<?, ?it/s]
+Computing reference log probs for train dataset:   1%|          | 1/111 [00:03<05:38,  3.08s/it]
+Computing reference log probs for train dataset:   2%|▏         | 2/111 [00:04<04:16,  2.35s/it]
+Computing reference log probs for train dataset:   3%|▎         | 3/111 [00:06<03:34,  1.98s/it]
+Computing reference log probs for train dataset:   4%|▎         | 4/111 [00:08<03:14,  1.82s/it]
+Computing reference log probs for train dataset:   5%|▍         | 5/111 [00:09<03:02,  1.72s/it]
+Computing reference log probs for train dataset:   5%|▌         | 6/111 [00:11<03:08,  1.80s/it]
+Computing reference log probs for train dataset:   6%|▋         | 7/111 [00:13<03:14,  1.87s/it]
+Computing reference log probs for train dataset:   7%|▋         | 8/111 [00:15<03:11,  1.86s/it]
+Computing reference log probs for train dataset:   8%|▊         | 9/111 [00:17<03:10,  1.86s/it]
+Computing reference log probs for train dataset:   9%|▉         | 10/111 [00:18<03:01,  1.80s/it]
+Computing reference log probs for train dataset:  10%|▉         | 11/111 [00:21<03:26,  2.06s/it]
+Computing reference log probs for train dataset:  11%|█         | 12/111 [00:23<03:12,  1.94s/it]
+Computing reference log probs for train dataset:  12%|█▏        | 13/111 [00:24<03:01,  1.85s/it]
+Computing reference log probs for train dataset:  13%|█▎        | 14/111 [00:26<03:01,  1.87s/it]
+Computing reference log probs for train dataset:  14%|█▎        | 15/111 [00:28<02:54,  1.81s/it]
+Computing reference log probs for train dataset:  14%|█▍        | 16/111 [00:30<02:56,  1.86s/it]
+Computing reference log probs for train dataset:  15%|█▌        | 17/111 [00:32<02:50,  1.82s/it]
+Computing reference log probs for train dataset:  16%|█▌        | 18/111 [00:33<02:45,  1.78s/it]
+Computing reference log probs for train dataset:  17%|█▋        | 19/111 [00:35<02:40,  1.75s/it]
+Computing reference log probs for train dataset:  18%|█▊        | 20/111 [00:37<02:37,  1.73s/it]
+Computing reference log probs for train dataset:  19%|█▉        | 21/111 [00:38<02:34,  1.72s/it]
+Computing reference log probs for train dataset:  20%|█▉        | 22/111 [00:40<02:34,  1.74s/it]
+Computing reference log probs for train dataset:  21%|██        | 23/111 [00:43<02:49,  1.93s/it]
+Computing reference log probs for train dataset:  22%|██▏       | 24/111 [00:44<02:43,  1.88s/it]
+Computing reference log probs for train dataset:  23%|██▎       | 25/111 [00:46<02:42,  1.89s/it]
+Computing reference log probs for train dataset:  23%|██▎       | 26/111 [00:48<02:48,  1.98s/it]
+Computing reference log probs for train dataset:  24%|██▍       | 27/111 [00:50<02:45,  1.97s/it]
+Computing reference log probs for train dataset:  25%|██▌       | 28/111 [00:52<02:40,  1.93s/it]
+Computing reference log probs for train dataset:  26%|██▌       | 29/111 [00:54<02:35,  1.90s/it]
+Computing reference log probs for train dataset:  27%|██▋       | 30/111 [00:56<02:32,  1.88s/it]
+Computing reference log probs for train dataset:  28%|██▊       | 31/111 [00:58<02:31,  1.89s/it]
+Computing reference log probs for train dataset:  29%|██▉       | 32/111 [01:00<02:29,  1.89s/it]
+Computing reference log probs for train dataset:  30%|██▉       | 33/111 [01:02<02:27,  1.89s/it]
+Computing reference log probs for train dataset:  31%|███       | 34/111 [01:04<02:27,  1.91s/it]
+Computing reference log probs for train dataset:  32%|███▏      | 35/111 [01:06<02:29,  1.97s/it]
+Computing reference log probs for train dataset:  32%|███▏      | 36/111 [01:08<02:38,  2.11s/it]
+Computing reference log probs for train dataset:  33%|███▎      | 37/111 [01:10<02:42,  2.19s/it]
+Computing reference log probs for train dataset:  34%|███▍      | 38/111 [01:13<02:46,  2.28s/it]
+Computing reference log probs for train dataset:  35%|███▌      | 39/111 [01:15<02:39,  2.21s/it]
+Computing reference log probs for train dataset:  36%|███▌      | 40/111 [01:17<02:34,  2.18s/it]
+Computing reference log probs for train dataset:  37%|███▋      | 41/111 [01:19<02:33,  2.20s/it]
+Computing reference log probs for train dataset:  38%|███▊      | 42/111 [01:22<02:33,  2.23s/it]
+Computing reference log probs for train dataset:  39%|███▊      | 43/111 [01:24<02:39,  2.34s/it]
+Computing reference log probs for train dataset:  40%|███▉      | 44/111 [01:26<02:31,  2.27s/it]
+Computing reference log probs for train dataset:  41%|████      | 45/111 [01:28<02:26,  2.21s/it]
+Computing reference log probs for train dataset:  41%|████▏     | 46/111 [01:31<02:20,  2.17s/it]
+Computing reference log probs for train dataset:  42%|████▏     | 47/111 [01:33<02:16,  2.13s/it]
+Computing reference log probs for train dataset:  43%|████▎     | 48/111 [01:35<02:24,  2.30s/it]
+Computing reference log probs for train dataset:  44%|████▍     | 49/111 [01:37<02:19,  2.25s/it]
+Computing reference log probs for train dataset:  45%|████▌     | 50/111 [01:39<02:13,  2.19s/it]
+Computing reference log probs for train dataset:  46%|████▌     | 51/111 [01:42<02:09,  2.16s/it]
+Computing reference log probs for train dataset:  47%|████▋     | 52/111 [01:44<02:05,  2.13s/it]
+Computing reference log probs for train dataset:  48%|████▊     | 53/111 [01:46<02:00,  2.09s/it]
+Computing reference log probs for train dataset:  49%|████▊     | 54/111 [01:48<02:01,  2.14s/it]
