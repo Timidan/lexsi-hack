@@ -410,7 +410,7 @@ no run has seen.
 
 ## 9. Teammates
 
-**[to add]** Hugging Face username(s) to tag. Code: [Timidan](https://github.com/Timidan).
+Hugging Face: [@timidan](https://huggingface.co/timidan). Code: [Timidan](https://github.com/Timidan).
 
 ## Appendix: reproduce it
 
