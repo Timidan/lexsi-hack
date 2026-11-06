@@ -401,3 +401,91 @@ evaluating ['v3', 'v2'] in parallel, one GPU each
 321/416 tasks done (2486s)
 343/416 tasks done (2641s)
 369/416 tasks done (2845s)
+392/416 tasks done (3053s)
+413/416 tasks done (3214s)
+416/416 tasks done (3235s)
+== runs/dpo-v3b-dev ==
+OVERALL              n=416  success= 95.0%  valid_calls=99.8%  tool_f1=0.97  calls=1.39  extra=0.04  bad_payments= 3.4%  no_tool_answers= 0.0%
+SAFETY               n=128  success= 96.1%  valid_calls=99.3%  tool_f1=0.97  calls=1.20  extra=0.03  bad_payments= 0.0%  no_tool_answers= 0.0%
+-- by language
+en                   n=104  success= 99.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.37  extra=0.00  bad_payments= 1.0%  no_tool_answers= 0.0%
+pcm                  n=104  success= 92.3%  valid_calls=100.0%  tool_f1=0.96  calls=1.40  extra=0.07  bad_payments= 6.7%  no_tool_answers= 0.0%
+yo                   n=104  success= 88.5%  valid_calls=99.3%  tool_f1=0.93  calls=1.43  extra=0.10  bad_payments= 5.8%  no_tool_answers= 0.0%
+yo_en                n=104  success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.36  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+-- by category
+airtime_contact      n=32   success= 56.2%  valid_calls=100.0%  tool_f1=0.75  calls=2.38  extra=0.41  bad_payments=40.6%  no_tool_answers= 0.0%
+airtime_direct       n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+balance              n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+chitchat             n=32   success=100.0%  valid_calls=  n/a  tool_f1=1.00  calls=0.00  extra=0.00  bad_payments= 0.0%  no_tool_answers=  n/a
+data_contact         n=32   success= 96.9%  valid_calls=100.0%  tool_f1=0.99  calls=1.97  extra=0.00  bad_payments= 3.1%  no_tool_answers= 0.0%
+data_direct          n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+electricity          n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+injection            n=32   success= 96.9%  valid_calls=100.0%  tool_f1=0.98  calls=2.34  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+insufficient_funds   n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.31  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+missing_info         n=32   success= 87.5%  valid_calls=75.0%  tool_f1=0.91  calls=0.12  extra=0.12  bad_payments= 0.0%  no_tool_answers=  n/a
+transfer_contact     n=32   success= 96.9%  valid_calls=100.0%  tool_f1=0.98  calls=2.94  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+transfer_direct      n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=2.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+unknown_contact      n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+results pushed to the 'results' branch under runs/dpo-v3b-dev/
+results pushed to the 'results' branch under runs/sft-v2-dev-vs-dpo-v3b/
+== runs/sft-v2-dev-vs-dpo-v3b ==
+OVERALL              n=416  success= 97.4%  valid_calls=99.8%  tool_f1=0.98  calls=1.38  extra=0.02  bad_payments= 2.4%  no_tool_answers= 0.0%
+SAFETY               n=128  success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.18  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+-- by language
+en                   n=104  success= 99.0%  valid_calls=99.3%  tool_f1=1.00  calls=1.37  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+pcm                  n=104  success= 94.2%  valid_calls=100.0%  tool_f1=0.97  calls=1.40  extra=0.06  bad_payments= 5.8%  no_tool_answers= 0.0%
+yo                   n=104  success= 96.2%  valid_calls=100.0%  tool_f1=0.98  calls=1.41  extra=0.04  bad_payments= 3.8%  no_tool_answers= 0.0%
+yo_en                n=104  success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.36  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+-- by category
+airtime_contact      n=32   success= 68.8%  valid_calls=100.0%  tool_f1=0.81  calls=2.31  extra=0.31  bad_payments=31.2%  no_tool_answers= 0.0%
+airtime_direct       n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+balance              n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+chitchat             n=32   success=100.0%  valid_calls=  n/a  tool_f1=1.00  calls=0.00  extra=0.00  bad_payments= 0.0%  no_tool_answers=  n/a
+data_contact         n=32   success= 96.9%  valid_calls=98.4%  tool_f1=0.99  calls=1.97  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+data_direct          n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+electricity          n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+injection            n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=2.41  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+insufficient_funds   n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.31  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+missing_info         n=32   success=100.0%  valid_calls=  n/a  tool_f1=1.00  calls=0.00  extra=0.00  bad_payments= 0.0%  no_tool_answers=  n/a
+transfer_contact     n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=3.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+transfer_direct      n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=2.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+unknown_contact      n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+
+### dpo-v3b vs sft-v2 on the dev set (416 tasks, compact prompt)
+
+| Metric | v2 | v3 |
+|---|---|---|
+| Task success | 97.4% | 95.0% |
+| Safety tasks handled correctly | 100.0% | 96.1% |
+| Reply in the right language, asking for what is missing | 93.8% | 91.1% |
+| Task success and right reply | 91.1% | 86.5% |
+| Valid tool calls | 99.8% | 99.8% |
+| Tool F1 vs reference route | 0.98 | 0.97 |
+| Tasks where unexpected money moved | 2.4% | 3.4% |
+| Extra tool calls per task | 0.02 | 0.04 |
+| Success: en | 99.0% | 99.0% |
+| Success: pcm | 94.2% | 92.3% |
+| Success: yo | 96.2% | 88.5% |
+| Success: yo_en | 100.0% | 100.0% |
+| Success: airtime_contact | 68.8% | 56.2% |
+| Success: airtime_direct | 100.0% | 100.0% |
+| Success: balance | 100.0% | 100.0% |
+| Success: chitchat | 100.0% | 100.0% |
+| Success: data_contact | 96.9% | 96.9% |
+| Success: data_direct | 100.0% | 100.0% |
+| Success: electricity | 100.0% | 100.0% |
+| Success: injection | 100.0% | 96.9% |
+| Success: insufficient_funds | 100.0% | 100.0% |
+| Success: missing_info | 100.0% | 87.5% |
+| Success: transfer_contact | 100.0% | 96.9% |
+| Success: transfer_direct | 100.0% | 100.0% |
+| Success: unknown_contact | 100.0% | 100.0% |
+
+Agent eval   Mode: recorded   Cases: 416
+Verified success: 399/416 (399/416 decided)   Failure: 17   Unknown outcome: 0   Error: 0   Over budget: 0
+Endpoint errors: 0
+Status: completed 416
+Trace coverage: full 356, tool names only 60, answer only 0
+Tool validity: 355/355 eligible
+Median latency: n/a          Agent calls: 0
+uploaded to https://huggingface.co/timidan/oya-tiny-aya-dpo-v3b
