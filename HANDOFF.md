@@ -220,8 +220,8 @@ Steps 1-3 of the original list are done (held-out set written, v2 scored on it, 
 5. **Write-up:** held-out results are in `docs/article.md`; still open: the `[review]` marker, optionally
    the ROI table. Publish the article on Hugging Face.
 6. **Before the deadline:** with the user's OK, make public the two collections, the four model repos, the
-   dataset and the Space (the GitHub repo is already public); then the user sends the emailed submission form (abstract under 500
-   words). The dataset is rebuilt by `OYA_PROMPT=compact python scripts/build_data.py --train-per-cell 40`
+   dataset and the Space (the GitHub repo is already public); then the user sends the emailed submission form; its abstract is
+   `docs/abstract.md` (478 words, under the 500 limit; keep it in step with the article's numbers). The dataset is rebuilt by `OYA_PROMPT=compact python scripts/build_data.py --train-per-cell 40`
    plus the `results` branch's `runs/` and the local `runs/compare-*`, `runs/voice-*`. After going public, look
    at the dataset viewer once (free accounts get none on private datasets; the three configs load locally).
    Optional: a results line on the GGUF card (its template is in notebook 03).
