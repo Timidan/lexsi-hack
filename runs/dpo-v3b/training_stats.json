@@ -1,0 +1,66 @@
+{
+  "model": "PeftModelForCausalLM(\n  (base_model): LoraModel(\n    (model): Cohere2ForCausalLM(\n      (model): Cohere2Model(\n        (embed_tokens): Embedding(262144, 2048, padding_idx=0)\n        (layers): ModuleList(\n          (0-35): 36 x Cohere2DecoderLayer(\n            (self_attn): Cohere2Attention(\n              (q_proj): lora.Linear(\n                (base_layer): Linear(in_features=2048, out_features=2048, bias=False)\n                (lora_dropout): ModuleDict(\n                  (default): Dropout(p=0, inplace=False)\n                  (ref): Dropout(p=0, inplace=False)\n                )\n                (lora_A): ModuleDict(\n                  (default): Linear(in_features=2048, out_features=16, bias=False)\n                  (ref): Linear(in_features=2048, out_features=16, bias=False)\n                )\n                (lora_B): ModuleDict(\n                  (default): Linear(in_features=16, out_features=2048, bias=False)\n                  (ref): Linear(in_features=16, out_features=2048, bias=False)\n                )\n                (lora_embedding_A): ParameterDict()\n                (lora_embedding_B): ParameterDict()\n                (lora_magnitude_vector): ModuleDict()\n              )\n              (k_proj): lora.Linear(\n                (base_layer): Linear(in_features=2048, out_features=512, bias=False)\n                (lora_dropout): ModuleDict(\n                  (default): Dropout(p=0, inplace=False)\n                  (ref): Dropout(p=0, inplace=False)\n                )\n                (lora_A): ModuleDict(\n                  (default): Linear(in_features=2048, out_features=16, bias=False)\n                  (ref): Linear(in_features=2048, out_features=16, bias=False)\n                )\n                (lora_B): ModuleDict(\n                  (default): Linear(in_features=16, out_features=512, bias=False)\n                  (ref): Linear(in_features=16, out_features=512, bias=False)\n                )\n                (lora_embedding_A): ParameterDict()\n                (lora_embedding_B): ParameterDict()\n                (lora_magnitude_vector): ModuleDict()\n              )\n              (v_proj): lora.Linear(\n                (base_layer): Linear(in_features=2048, out_features=512, bias=False)\n                (lora_dropout): ModuleDict(\n                  (default): Dropout(p=0, inplace=False)\n                  (ref): Dropout(p=0, inplace=False)\n                )\n                (lora_A): ModuleDict(\n                  (default): Linear(in_features=2048, out_features=16, bias=False)\n                  (ref): Linear(in_features=2048, out_features=16, bias=False)\n                )\n                (lora_B): ModuleDict(\n                  (default): Linear(in_features=16, out_features=512, bias=False)\n                  (ref): Linear(in_features=16, out_features=512, bias=False)\n                )\n                (lora_embedding_A): ParameterDict()\n                (lora_embedding_B): ParameterDict()\n                (lora_magnitude_vector): ModuleDict()\n              )\n              (o_proj): lora.Linear(\n                (base_layer): Linear(in_features=2048, out_features=2048, bias=False)\n                (lora_dropout): ModuleDict(\n                  (default): Dropout(p=0, inplace=False)\n                  (ref): Dropout(p=0, inplace=False)\n                )\n                (lora_A): ModuleDict(\n                  (default): Linear(in_features=2048, out_features=16, bias=False)\n                  (ref): Linear(in_features=2048, out_features=16, bias=False)\n                )\n                (lora_B): ModuleDict(\n                  (default): Linear(in_features=16, out_features=2048, bias=False)\n                  (ref): Linear(in_features=16, out_features=2048, bias=False)\n                )\n                (lora_embedding_A): ParameterDict()\n                (lora_embedding_B): ParameterDict()\n                (lora_magnitude_vector): ModuleDict()\n              )\n            )\n            (mlp): Cohere2MLP(\n              (gate_proj): lora.Linear(\n                (base_layer): Linear(in_features=2048, out_features=11008, bias=False)\n                (lora_dropout): ModuleDict(\n                  (default): Dropout(p=0, inplace=False)\n                  (ref): Dropout(p=0, inplace=False)\n                )\n                (lora_A): ModuleDict(\n                  (default): Linear(in_features=2048, out_features=16, bias=False)\n                  (ref): Linear(in_features=2048, out_features=16, bias=False)\n                )\n                (lora_B): ModuleDict(\n                  (default): Linear(in_features=16, out_features=11008, bias=False)\n                  (ref): Linear(in_features=16, out_features=11008, bias=False)\n                )\n                (lora_embedding_A): ParameterDict()\n                (lora_embedding_B): ParameterDict()\n                (lora_magnitude_vector): ModuleDict()\n              )\n              (up_proj): lora.Linear(\n                (base_layer): Linear(in_features=2048, out_features=11008, bias=False)\n                (lora_dropout): ModuleDict(\n                  (default): Dropout(p=0, inplace=False)\n                  (ref): Dropout(p=0, inplace=False)\n                )\n                (lora_A): ModuleDict(\n                  (default): Linear(in_features=2048, out_features=16, bias=False)\n                  (ref): Linear(in_features=2048, out_features=16, bias=False)\n                )\n                (lora_B): ModuleDict(\n                  (default): Linear(in_features=16, out_features=11008, bias=False)\n                  (ref): Linear(in_features=16, out_features=11008, bias=False)\n                )\n                (lora_embedding_A): ParameterDict()\n                (lora_embedding_B): ParameterDict()\n                (lora_magnitude_vector): ModuleDict()\n              )\n              (down_proj): lora.Linear(\n                (base_layer): Linear(in_features=11008, out_features=2048, bias=False)\n                (lora_dropout): ModuleDict(\n                  (default): Dropout(p=0, inplace=False)\n                  (ref): Dropout(p=0, inplace=False)\n                )\n                (lora_A): ModuleDict(\n                  (default): Linear(in_features=11008, out_features=16, bias=False)\n                  (ref): Linear(in_features=11008, out_features=16, bias=False)\n                )\n                (lora_B): ModuleDict(\n                  (default): Linear(in_features=16, out_features=2048, bias=False)\n                  (ref): Linear(in_features=16, out_features=2048, bias=False)\n                )\n                (lora_embedding_A): ParameterDict()\n                (lora_embedding_B): ParameterDict()\n                (lora_magnitude_vector): ModuleDict()\n              )\n              (act_fn): SiLUActivation()\n            )\n            (input_layernorm): Cohere2LayerNorm()\n          )\n        )\n        (norm): Cohere2LayerNorm()\n        (rotary_emb): Cohere2RotaryEmbedding()\n      )\n      (lm_head): Linear(in_features=2048, out_features=262144, bias=False)\n    )\n  )\n)",
+  "dataset_name": "unknown",
+  "output_dir": "outputs/dpo-v3b",
+  "use_rollouts": false,
+  "agentic_mode": false,
+  "tools": [],
+  "train_size": 146,
+  "eval_size": 0,
+  "final_loss": 0.3867750261959277,
+  "total_steps": 38,
+  "training_history": [],
+  "metrics": {
+    "train_runtime": 667.4204,
+    "train_samples_per_second": 0.438,
+    "train_steps_per_second": 0.057,
+    "total_flos": 1.3748895158894592e+16,
+    "train_loss": 0.3867750261959277,
+    "entropy": 0.07676730967230266,
+    "num_tokens": 17798.0,
+    "logits/chosen": -0.8697836405664987,
+    "logits/rejected": -1.0453596006401145,
+    "mean_token_accuracy": 1.0,
+    "rewards/chosen": 0.35959866642951965,
+    "rewards/rejected": -2.3923202753067017,
+    "rewards/accuracies": 1.0,
+    "rewards/margins": 2.7519189251793756,
+    "logps/chosen": -0.11542076534695095,
+    "logps/rejected": -28.74974717034234,
+    "epoch": 2.0
+  },
+  "config_kwargs": {
+    "model": "<callable: PeftModelForCausalLM>",
+    "processing_class": "<callable: TokenizersBackend>",
+    "train_dataset": "Dataset({\n    features: ['prompt', 'chosen', 'rejected'],\n    num_rows: 146\n})",
+    "output_dir": "outputs/dpo-v3b",
+    "num_train_epochs": 2.0,
+    "max_steps": -1,
+    "learning_rate": 2e-05,
+    "lr_scheduler_type": "cosine",
+    "warmup_steps": 5,
+    "beta": 0.1,
+    "loss_type": [
+      "sigmoid",
+      "sft"
+    ],
+    "loss_weights": [
+      1.0,
+      1.0
+    ],
+    "per_device_train_batch_size": 1,
+    "gradient_accumulation_steps": 4,
+    "max_length": 2048,
+    "precompute_ref_log_probs": true,
+    "gradient_checkpointing": true,
+    "gradient_checkpointing_kwargs": {
+      "use_reentrant": false
+    },
+    "fp16": true,
+    "bf16": false,
+    "logging_steps": 5,
+    "save_strategy": "no",
+    "report_to": "none",
+    "ddp_find_unused_parameters": false
+  }
+}
