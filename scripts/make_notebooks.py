@@ -438,9 +438,11 @@ run(f"{sys.executable} scripts/merge_lora.py --base {base_dir} --adapter {adapte
     ("markdown", "## 2. Convert to GGUF and quantize (llama.cpp, in its own environment)"),
     ("code", """
 run(f"rm -rf {WORK}/llama.cpp && git clone -q --depth 1 https://github.com/ggml-org/llama.cpp {WORK}/llama.cpp")
-# the converter pins its own torch/transformers versions, so it gets a separate virtual environment
-run(f"{sys.executable} -m venv {WORK}/conv && "
-    f"{WORK}/conv/bin/pip install -q -r {WORK}/llama.cpp/requirements/requirements-convert_hf_to_gguf.txt")
+# the converter pins its own torch/transformers versions, so it gets a separate virtual environment,
+# made with uv because Kaggle's Python 3.13 has no ensurepip (`python -m venv` fails there)
+run("pip install -q uv")
+run(f"uv venv -q --python 3.12 {WORK}/conv && "
+    f"uv pip install -q --python {WORK}/conv/bin/python -r {WORK}/llama.cpp/requirements/requirements-convert_hf_to_gguf.txt")
 run(f"{WORK}/conv/bin/python {WORK}/llama.cpp/convert_hf_to_gguf.py {WORK}/merged "
     f"--outfile {WORK}/oya-f16.gguf --outtype f16")
 
@@ -549,6 +551,8 @@ PROMPT_STYLE = "compact"       # must match how RUN_NAME was trained
 EVAL_HUMAN = True              # native-speaker test set (needs human_eval/requests.txt filled in)
 EVAL_DEV = False               # also the 416-task development set (about 35 minutes)
 EVAL_BASELINE = True           # also score the untrained model with the same prompt
+EVAL_HUMAN2 = True             # the second native-speaker set, typed by the speaker (human_eval/requests2.txt)
+OTHER_RUNS = []                # more adapters on the same sets, e.g. ["dpo-v3"] (attach that notebook too)
 BATCH_SIZE = 16
 HF_ADAPTER_REPO = None         # e.g. "your-hf-username/oya-tiny-aya-sft-v2" if not attached from Kaggle
 
@@ -573,31 +577,35 @@ from naija_agent.hf_policy import HFPolicy
 from naija_agent.publish import Publisher
 from naija_agent.scoring import compare
 
-ADAPTER_DIR = find_adapter(RUN_NAME, HF_ADAPTER_REPO, token=HF_TOKEN)
-print("adapter:", ADAPTER_DIR, "| GPUs:", torch.cuda.device_count())
+from naija_agent.human import load_human_tasks
+
+ADAPTERS = {r: find_adapter(r, HF_ADAPTER_REPO if r == RUN_NAME else None, token=HF_TOKEN)
+            for r in [RUN_NAME] + OTHER_RUNS}
+print("adapters:", ADAPTERS, "| GPUs:", torch.cuda.device_count())
 
 sets = []
 if EVAL_HUMAN:
     if os.path.exists("data/tasks_human.jsonl"):
-        sets.append(("human", "data/tasks_human.jsonl"))
+        sets.append(("human", load_tasks("data/tasks_human.jsonl")))
     else:
         print("no native-speaker requests yet (human_eval/requests.txt is empty)")
+if EVAL_HUMAN2 and os.path.exists("human_eval/requests2.txt"):
+    sets.append(("human2", load_human_tasks("human_eval/requests2.txt")))
 if EVAL_DEV:
-    sets.append(("dev", "data/tasks_test.jsonl"))
+    sets.append(("dev", load_tasks("data/tasks_test.jsonl")))
 
-for name, path in sets:
-    tasks = load_tasks(path)
-    jobs = [{"name": "fine-tuned", "out_dir": f"runs/{RUN_NAME}-{name}",
-             "make_policy": lambda d: HFPolicy(MODEL_ID, adapter=ADAPTER_DIR, device=d),
-             "config": {"model": MODEL_ID, "adapter": RUN_NAME, "set": name}}]
+for name, tasks in sets:
+    jobs = [{"name": r, "out_dir": f"runs/{r}-{name}",
+             "make_policy": lambda d, a=a: HFPolicy(MODEL_ID, adapter=a, device=d),
+             "config": {"model": MODEL_ID, "adapter": r, "set": name}} for r, a in ADAPTERS.items()]
     if EVAL_BASELINE:
         jobs.append({"name": "untrained", "out_dir": f"runs/baseline-{PROMPT_STYLE}-{name}",
                      "make_policy": lambda d: HFPolicy(MODEL_ID, device=d),
                      "config": {"model": MODEL_ID, "adapter": None, "set": name}})
     metrics = evaluate_parallel(tasks, jobs, batch_size=BATCH_SIZE)
-    if EVAL_BASELINE:
-        table = compare({"untrained": metrics["untrained"], "fine-tuned": metrics["fine-tuned"]},
-                        title=f"{RUN_NAME} on the {name} set ({len(tasks)} tasks, {PROMPT_STYLE} prompt)")
+    if len(jobs) > 1:
+        table = compare({j["name"]: metrics[j["name"]] for j in reversed(jobs)},
+                        title=f"The {name} set ({len(tasks)} tasks, {PROMPT_STYLE} prompt)")
         path_md = f"runs/{RUN_NAME}-{name}/comparison.md"
         open(path_md, "w").write(table)
         print(table)
