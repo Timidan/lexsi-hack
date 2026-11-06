@@ -38,8 +38,13 @@ def main() -> None:
 
     remove_old_torchao()
     import torch
+    import trl.trainer.dpo_trainer as trl_dpo
     from agenttune.core.backend_factory import create_agentic_trainer
-    from datasets import Dataset
+
+    # TRL logs the mean token entropy by copying the full logits (2 sequences x ~1.5k tokens x Tiny Aya's 262k
+    # vocabulary, about 3 GB); on a 16 GB T4 that copy alone ran out of memory. It is only a metric: log 0.
+    trl_dpo.entropy_from_logits = lambda logits, chunk_size=128: logits.new_zeros(logits.shape[:-1])
+    from datasets import load_dataset
     from peft import PeftModel
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -48,8 +53,8 @@ def main() -> None:
         a.dtype = ("bf16" if torch.cuda.is_bf16_supported(including_emulation=False) else "fp16") if cuda else "fp32"
     dtype = {"fp16": torch.float16, "bf16": torch.bfloat16, "fp32": torch.float32}[a.dtype]
 
-    rows = [json.loads(line) for line in open(a.pairs, encoding="utf-8") if line.strip()]
-    data = Dataset.from_list([{k: r[k] for k in ("prompt", "chosen", "rejected")} for r in rows])
+    # from a file, not from_list: precomputing the reference scores caches them next to the dataset's own file
+    data = load_dataset("json", data_files=a.pairs, split="train").select_columns(["prompt", "chosen", "rejected"])
     tok = AutoTokenizer.from_pretrained(a.model)
     device = {"": int(os.environ.get("LOCAL_RANK", 0))} if cuda else None
     model = AutoModelForCausalLM.from_pretrained(a.model, dtype=dtype, device_map=device)
@@ -60,6 +65,9 @@ def main() -> None:
         num_train_epochs=a.epochs, max_steps=a.max_steps, learning_rate=a.lr, lr_scheduler_type="cosine",
         warmup_steps=5, beta=a.beta, loss_type=["sigmoid", "sft"], loss_weights=[1.0, a.sft_weight],
         per_device_train_batch_size=1, gradient_accumulation_steps=a.grad_accum, max_length=a.max_len,
+        # the reference (frozen v2) scores every pair once before training, instead of inside every step,
+        # where its full logits sat in GPU memory next to the trained model's
+        precompute_ref_log_probs=True,
         gradient_checkpointing=True, gradient_checkpointing_kwargs={"use_reentrant": False},
         fp16=a.dtype == "fp16", bf16=a.dtype == "bf16", logging_steps=5, save_strategy="no", report_to="none",
         ddp_find_unused_parameters=False)

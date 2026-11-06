@@ -641,7 +641,7 @@ Starts from the SFT adapter `sft-v2`: attach it with **Add Input â†’ Your Work â
    chosen turns, continuing the v2 LoRA adapter (`scripts/train_dpo.py`).
 3. Scores v3 and v2 side by side, one GPU each, on the native-speaker sets and the 416-task development set.
 
-Results go to the repo's `results` branch. About 2 hours on T4 x2.
+Results go to the repo's `results` branch. On T4 x2: about 4 hours with sampling, 1 hour when reusing published pairs.
 """ + SETUP_HELP),
     ("code", """
 # ---- settings ----
@@ -653,8 +653,9 @@ PER_CELL = 40                  # fresh tasks per (category, language): 1,040 tas
 SAMPLES = 4                    # samples per step, temperature 1.0
 SEED = 2027                    # 2026 built the SFT data
 MAX_PAIRS = 1200               # bounds training time
-EPOCHS, LR, BETA = 2.0, 2e-5, 0.1
-GRAD_ACCUM = 8                 # per GPU
+REUSE_PAIRS = True             # take the pairs an earlier run published to `results` (sampling takes ~3 hours)
+EPOCHS, LR, BETA = 2.0, 5e-5, 0.1
+GRAD_ACCUM = 4                 # per GPU: 222 pairs on 2 GPUs -> about 56 steps
 BATCH_SIZE = 16
 AGENTTUNE = "git+https://github.com/Lexsi-Labs/AgentTune@d4db4c12d52342227c4113a70183d0f64aa2f345"
 
@@ -695,18 +696,23 @@ print("start from:", BASE_ADAPTER, "| GPUs:", NGPU)
 """),
     ("markdown", "## 1. The model's own mistakes, as preference pairs"),
     ("code", """
-shards = [f"CUDA_VISIBLE_DEVICES={g} {sys.executable} scripts/make_pairs.py --adapter {BASE_ADAPTER} "
-          f"--per-cell {PER_CELL} --samples {SAMPLES} --seed {SEED} --batch {BATCH_SIZE} "
-          f"--shard {g}/{NGPU} --out {ADAPTER_DIR}/pairs-{g}.jsonl" for g in range(NGPU)]
-run("; ".join(f"({c}) & p{g}=$!" for g, c in enumerate(shards)) + "; "      # one shard per GPU, at once
-    + " && ".join(f"wait $p{g}" for g in range(NGPU)))
-
-rows = [json.loads(l) for g in range(NGPU) for l in open(f"{ADAPTER_DIR}/pairs-{g}.jsonl", encoding="utf-8")]
-random.Random(SEED).shuffle(rows)
-rows = rows[:MAX_PAIRS]
-with open(PAIRS, "w", encoding="utf-8") as f:
-    for r in rows:
-        f.write(json.dumps(r, ensure_ascii=False) + "\\n")
+reused = REUSE_PAIRS and run(f"git fetch -q --depth 1 origin results && "
+                             f"git show FETCH_HEAD:runs/{RUN_NAME}/pairs.jsonl > {PAIRS}", check=False) == 0
+if reused:
+    print("reusing the pairs an earlier run published")
+    rows = [json.loads(l) for l in open(PAIRS, encoding="utf-8")]
+else:
+    shards = [f"CUDA_VISIBLE_DEVICES={g} {sys.executable} scripts/make_pairs.py --adapter {BASE_ADAPTER} "
+              f"--per-cell {PER_CELL} --samples {SAMPLES} --seed {SEED} --batch {BATCH_SIZE} "
+              f"--shard {g}/{NGPU} --out {ADAPTER_DIR}/pairs-{g}.jsonl" for g in range(NGPU)]
+    run("; ".join(f"({c}) & p{g}=$!" for g, c in enumerate(shards)) + "; "      # one shard per GPU, at once
+        + " && ".join(f"wait $p{g}" for g in range(NGPU)))
+    rows = [json.loads(l) for g in range(NGPU) for l in open(f"{ADAPTER_DIR}/pairs-{g}.jsonl", encoding="utf-8")]
+    random.Random(SEED).shuffle(rows)
+    rows = rows[:MAX_PAIRS]
+    with open(PAIRS, "w", encoding="utf-8") as f:
+        for r in rows:
+            f.write(json.dumps(r, ensure_ascii=False) + "\\n")
 from collections import Counter
 stats = {"pairs": len(rows), "by_category": Counter(r["category"] for r in rows),
          "by_lang": Counter(r["lang"] for r in rows), "by_turn": Counter(r["turn"] for r in rows)}
