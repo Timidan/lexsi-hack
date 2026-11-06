@@ -22,6 +22,7 @@ import spaces  # before anything that loads torch: ZeroGPU patches CUDA on impor
 
 import json
 import os
+import re
 from pathlib import Path
 
 import gradio as gr
@@ -32,7 +33,9 @@ except ImportError:
     import sys
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from naija_agent.lang import strip_diacritics
 from naija_agent.prompting import ParseError, format_result_turn, parse_tool_calls, system_message
+from naija_agent.scoring import ASK_WORDS
 from naija_agent.world import PAYMENT_TOOLS, Contact, World, account_key
 
 DATA = Path(os.environ.get("OYA_DATA_DIR", Path(__file__).parent / "data"))
@@ -112,6 +115,14 @@ def model_reply(messages: list[dict]) -> str:
 
 # ─── live agent ───────────────────────────────────────────────────────────────
 
+ASKS = re.compile("|".join(ASK_WORDS.values()))
+
+
+def asks(reply: str) -> bool:
+    """Oya asked for something: a question mark, or a request for a number, amount, meter, plan, network or bank."""
+    return "?" in reply or bool(ASKS.search(strip_diacritics(reply).lower()))
+
+
 def _fmt_call(name, args) -> str:
     return f"`{name}({json.dumps(args, ensure_ascii=False)})`"
 
@@ -157,7 +168,7 @@ def run_agent(user_text: str, chat: list, state: dict, reply_fn=model_reply):
         {"role": "system", "content": system_message()}]
     messages = messages + [{"role": "user", "content": user_text}]
     chat = chat + [{"role": "user", "content": user_text}]
-    state = {**state, "pending": None}
+    state = {**state, "pending": None, "paid": False}
     yield chat, wallet_markdown(world), state, gr.update(visible=False)
     yield from agent_loop(messages, chat, state, reply_fn)
 
@@ -176,7 +187,7 @@ def confirm_payment(approve: bool, chat: list, state: dict, reply_fn=model_reply
         return
     results = _execute(calls, world, chat)
     messages = state["messages"] + [{"role": "user", "content": format_result_turn(results)}]
-    state = {**state, "pending": None}
+    state = {**state, "pending": None, "paid": True}
     yield chat, wallet_markdown(world), state, gr.update(visible=False)
     yield from agent_loop(messages, chat, state, reply_fn)
 
@@ -202,7 +213,7 @@ def agent_loop(messages: list, chat: list, state: dict, reply_fn=model_reply):
             chat.append({"role": "assistant", "content": f"```\n{reply}\n```\n→ {res['error']}",
                          "metadata": {"title": "⚠️ malformed tool call"}})
             messages.append({"role": "user", "content": format_result_turn([("unknown", res)])})
-            yield chat, wallet_markdown(world), state
+            yield chat, wallet_markdown(world), state, gr.update(visible=False)
             continue
         if calls is None:
             final = reply
@@ -217,7 +228,7 @@ def agent_loop(messages: list, chat: list, state: dict, reply_fn=model_reply):
         messages.append({"role": "user", "content": format_result_turn(_execute(calls, world, chat))})
         yield chat, wallet_markdown(world), state, gr.update(visible=False)
     chat.append({"role": "assistant", "content": final or "_(no answer after the step limit)_"})
-    state = {**state, "messages": messages, "awaiting_answer": bool(final and final.rstrip().endswith("?"))}
+    state = {**state, "messages": messages, "awaiting_answer": bool(final) and not state.get("paid") and asks(final)}
     yield chat, wallet_markdown(world), state, gr.update(visible=False)
 
 
