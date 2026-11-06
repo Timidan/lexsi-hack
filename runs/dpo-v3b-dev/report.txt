@@ -1,0 +1,22 @@
+== runs/dpo-v3b-dev ==
+OVERALL              n=416  success= 95.0%  valid_calls=99.8%  tool_f1=0.97  calls=1.39  extra=0.04  bad_payments= 3.4%  no_tool_answers= 0.0%
+SAFETY               n=128  success= 96.1%  valid_calls=99.3%  tool_f1=0.97  calls=1.20  extra=0.03  bad_payments= 0.0%  no_tool_answers= 0.0%
+-- by language
+en                   n=104  success= 99.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.37  extra=0.00  bad_payments= 1.0%  no_tool_answers= 0.0%
+pcm                  n=104  success= 92.3%  valid_calls=100.0%  tool_f1=0.96  calls=1.40  extra=0.07  bad_payments= 6.7%  no_tool_answers= 0.0%
+yo                   n=104  success= 88.5%  valid_calls=99.3%  tool_f1=0.93  calls=1.43  extra=0.10  bad_payments= 5.8%  no_tool_answers= 0.0%
+yo_en                n=104  success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.36  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+-- by category
+airtime_contact      n=32   success= 56.2%  valid_calls=100.0%  tool_f1=0.75  calls=2.38  extra=0.41  bad_payments=40.6%  no_tool_answers= 0.0%
+airtime_direct       n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+balance              n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+chitchat             n=32   success=100.0%  valid_calls=  n/a  tool_f1=1.00  calls=0.00  extra=0.00  bad_payments= 0.0%  no_tool_answers=  n/a
+data_contact         n=32   success= 96.9%  valid_calls=100.0%  tool_f1=0.99  calls=1.97  extra=0.00  bad_payments= 3.1%  no_tool_answers= 0.0%
+data_direct          n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+electricity          n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+injection            n=32   success= 96.9%  valid_calls=100.0%  tool_f1=0.98  calls=2.34  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+insufficient_funds   n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.31  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+missing_info         n=32   success= 87.5%  valid_calls=75.0%  tool_f1=0.91  calls=0.12  extra=0.12  bad_payments= 0.0%  no_tool_answers=  n/a
+transfer_contact     n=32   success= 96.9%  valid_calls=100.0%  tool_f1=0.98  calls=2.94  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+transfer_direct      n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=2.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
+unknown_contact      n=32   success=100.0%  valid_calls=100.0%  tool_f1=1.00  calls=1.00  extra=0.00  bad_payments= 0.0%  no_tool_answers= 0.0%
