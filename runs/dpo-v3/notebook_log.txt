@@ -192,3 +192,339 @@ Computing reference log probs for train dataset:  46%|████▌     | 51/1
 Computing reference log probs for train dataset:  47%|████▋     | 52/111 [01:44<02:05,  2.13s/it]
 Computing reference log probs for train dataset:  48%|████▊     | 53/111 [01:46<02:00,  2.09s/it]
 Computing reference log probs for train dataset:  49%|████▊     | 54/111 [01:48<02:01,  2.14s/it]
+Computing reference log probs for train dataset:  50%|████▉     | 55/111 [01:50<01:55,  2.07s/it]
+Computing reference log probs for train dataset:  50%|█████     | 56/111 [01:52<01:52,  2.04s/it]
+Computing reference log probs for train dataset:  51%|█████▏    | 57/111 [01:54<01:49,  2.02s/it]
+Computing reference log probs for train dataset:  52%|█████▏    | 58/111 [01:56<01:55,  2.17s/it]
+Computing reference log probs for train dataset:  53%|█████▎    | 59/111 [01:58<01:50,  2.13s/it]
+Computing reference log probs for train dataset:  54%|█████▍    | 60/111 [02:00<01:44,  2.04s/it]
+Computing reference log probs for train dataset:  55%|█████▍    | 61/111 [02:02<01:40,  2.01s/it]
+Computing reference log probs for train dataset:  56%|█████▌    | 62/111 [02:04<01:40,  2.05s/it]
+Computing reference log probs for train dataset:  57%|█████▋    | 63/111 [02:06<01:37,  2.04s/it]
+Computing reference log probs for train dataset:  58%|█████▊    | 64/111 [02:08<01:33,  1.99s/it]
+Computing reference log probs for train dataset:  59%|█████▊    | 65/111 [02:10<01:34,  2.05s/it]
+Computing reference log probs for train dataset:  59%|█████▉    | 66/111 [02:12<01:29,  1.99s/it]
+Computing reference log probs for train dataset:  60%|██████    | 67/111 [02:15<01:33,  2.12s/it]
+Computing reference log probs for train dataset:  61%|██████▏   | 68/111 [02:16<01:28,  2.05s/it]
+Computing reference log probs for train dataset:  62%|██████▏   | 69/111 [02:19<01:29,  2.13s/it]
+Computing reference log probs for train dataset:  63%|██████▎   | 70/111 [02:21<01:26,  2.10s/it]
+Computing reference log probs for train dataset:  64%|██████▍   | 71/111 [02:23<01:21,  2.05s/it]
+Computing reference log probs for train dataset:  65%|██████▍   | 72/111 [02:25<01:19,  2.05s/it]
+Computing reference log probs for train dataset:  66%|██████▌   | 73/111 [02:27<01:16,  2.02s/it]
+Computing reference log probs for train dataset:  67%|██████▋   | 74/111 [02:29<01:13,  1.99s/it]
+Computing reference log probs for train dataset:  68%|██████▊   | 75/111 [02:31<01:12,  2.00s/it]
+Computing reference log probs for train dataset:  68%|██████▊   | 76/111 [02:33<01:09,  1.99s/it]
+Computing reference log probs for train dataset:  69%|██████▉   | 77/111 [02:35<01:07,  1.98s/it]
+Computing reference log probs for train dataset:  70%|███████   | 78/111 [02:37<01:06,  2.01s/it]
+Computing reference log probs for train dataset:  71%|███████   | 79/111 [02:39<01:07,  2.10s/it]
+Computing reference log probs for train dataset:  72%|███████▏  | 80/111 [02:41<01:03,  2.06s/it]
+Computing reference log probs for train dataset:  73%|███████▎  | 81/111 [02:43<01:04,  2.17s/it]
+Computing reference log probs for train dataset:  74%|███████▍  | 82/111 [02:45<01:01,  2.11s/it]
+Computing reference log probs for train dataset:  75%|███████▍  | 83/111 [02:47<00:57,  2.07s/it]
+Computing reference log probs for train dataset:  76%|███████▌  | 84/111 [02:49<00:54,  2.04s/it]
+Computing reference log probs for train dataset:  77%|███████▋  | 85/111 [02:51<00:52,  2.02s/it]
+Computing reference log probs for train dataset:  77%|███████▋  | 86/111 [02:53<00:50,  2.00s/it]
+Computing reference log probs for train dataset:  78%|███████▊  | 87/111 [02:55<00:50,  2.09s/it]
+Computing reference log probs for train dataset:  79%|███████▉  | 88/111 [02:57<00:47,  2.06s/it]
+Computing reference log probs for train dataset:  80%|████████  | 89/111 [02:59<00:44,  2.03s/it]
+Computing reference log probs for train dataset:  81%|████████  | 90/111 [03:01<00:42,  2.02s/it]
+Computing reference log probs for train dataset:  82%|████████▏ | 91/111 [03:03<00:40,  2.00s/it]
+Computing reference log probs for train dataset:  83%|████████▎ | 92/111 [03:06<00:38,  2.05s/it]
+Computing reference log probs for train dataset:  84%|████████▍ | 93/111 [03:08<00:38,  2.11s/it]
+Computing reference log probs for train dataset:  85%|████████▍ | 94/111 [03:10<00:35,  2.10s/it]
+Computing reference log probs for train dataset:  86%|████████▌ | 95/111 [03:12<00:32,  2.06s/it]
+Computing reference log probs for train dataset:  86%|████████▋ | 96/111 [03:14<00:30,  2.02s/it]
+Computing reference log probs for train dataset:  87%|████████▋ | 97/111 [03:16<00:29,  2.10s/it]
+Computing reference log probs for train dataset:  88%|████████▊ | 98/111 [03:18<00:26,  2.05s/it]
+Computing reference log probs for train dataset:  89%|████████▉ | 99/111 [03:20<00:24,  2.01s/it]
+Computing reference log probs for train dataset:  90%|█████████ | 100/111 [03:22<00:21,  1.99s/it]
+Computing reference log probs for train dataset:  91%|█████████ | 101/111 [03:24<00:19,  1.97s/it]
+Computing reference log probs for train dataset:  92%|█████████▏| 102/111 [03:26<00:17,  1.96s/it]
+Computing reference log probs for train dataset:  93%|█████████▎| 103/111 [03:28<00:15,  1.95s/it]
+Computing reference log probs for train dataset:  94%|█████████▎| 104/111 [03:30<00:13,  1.93s/it]
+Computing reference log probs for train dataset:  95%|█████████▍| 105/111 [03:31<00:11,  1.95s/it]
+Computing reference log probs for train dataset:  95%|█████████▌| 106/111 [03:34<00:10,  2.20s/it]
+Computing reference log probs for train dataset:  96%|█████████▋| 107/111 [03:36<00:08,  2.16s/it]
+Computing reference log probs for train dataset:  97%|█████████▋| 108/111 [03:39<00:06,  2.19s/it]
+Computing reference log probs for train dataset:  98%|█████████▊| 109/111 [03:41<00:04,  2.26s/it]
+Computing reference log probs for train dataset:  99%|█████████▉| 110/111 [03:43<00:02,  2.17s/it]
+Computing reference log probs for train dataset: 100%|██████████| 111/111 [03:45<00:00,  2.10s/it]
+Computing reference log probs for train dataset: 100%|██████████| 111/111 [03:45<00:00,  2.03s/it]
+
+Caching reference log probs for train dataset:   0%|          | 0/222 [00:00<?, ? examples/s]
+Caching reference log probs for train dataset: 100%|██████████| 222/222 [00:00<00:00, 17562.63 examples/s]
+[transformers] The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 6}.
+[transformers] The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 6}.
+
+  0%|          | 0/56 [00:00<?, ?it/s][rank0]: Traceback (most recent call last):
+[rank0]:   File "/kaggle/working/lexsi-hack/scripts/train_dpo.py", line 81, in <module>
+[rank0]:     main()
+[rank0]:     ~~~~^^
+[rank0]:   File "/kaggle/working/lexsi-hack/scripts/train_dpo.py", line 74, in main
+[rank0]:     stats = trainer.train()
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/agenttune/backends/trl/agentic/dpo/agentic_dpo.py", line 616, in train
+[rank0]:     self._train_result = self.trainer.train()
+[rank0]:                          ~~~~~~~~~~~~~~~~~~^^
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1559, in train
+[rank0]:     return inner_training_loop(
+[rank0]:         args=args,
+[rank0]:     ...<2 lines>...
+[rank0]:         ignore_keys_for_eval=ignore_keys_for_eval,
+[rank0]:     )
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1643, in _inner_training_loop
+[rank0]:     self._run_epoch(
+[rank0]:     ~~~~~~~~~~~~~~~^
+[rank0]:         model=model,
+[rank0]:         ^^^^^^^^^^^^
+[rank0]:     ...<9 lines>...
+[rank0]:         steps_trained_in_current_epoch=steps_trained_in_current_epoch,
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:     )
+[rank0]:     ^
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1889, in _run_epoch
+[rank0]:     tr_loss_step = self.training_step(model, inputs, num_items_in_batch)
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/trl/trainer/dpo_trainer.py", line 1603, in training_step
+[rank0]:     return super().training_step(*args, **kwargs)
+[rank0]:            ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 2098, in training_step
+[rank0]:     self.accelerator.backward(loss, **kwargs)
+[rank0]:     ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/accelerate/accelerator.py", line 2857, in backward
+[rank0]:     self.scaler.scale(loss).backward(**kwargs)
+[rank0]:     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/torch/_tensor.py", line 631, in backward
+[rank0]:     torch.autograd.backward(
+[rank0]:     ~~~~~~~~~~~~~~~~~~~~~~~^
+[rank0]:         self, gradient, retain_graph, create_graph, inputs=inputs
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:     )
+[rank0]:     ^
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/torch/autograd/__init__.py", line 381, in backward
+[rank0]:     _engine_run_backward(
+[rank0]:     ~~~~~~~~~~~~~~~~~~~~^
+[rank0]:         tensors,
+[rank0]:         ^^^^^^^^
+[rank0]:     ...<5 lines>...
+[rank0]:         accumulate_grad=True,
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:     )
+[rank0]:     ^
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/torch/autograd/graph.py", line 869, in _engine_run_backward
+[rank0]:     return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+[rank0]:            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:         t_outputs, *args, **kwargs
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:     )  # Calls into the C++ engine to run the backward pass
+[rank0]:     ^
+[rank0]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.59 GiB. GPU 0 has a total capacity of 14.56 GiB of which 1.98 GiB is free. Including non-PyTorch memory, this process has 12.48 GiB memory in use. Process 342 has 102.00 MiB memory in use. Of the allocated memory 12.17 GiB is allocated by PyTorch, and 94.15 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/kaggle/working/lexsi-hack/scripts/train_dpo.py", line 81, in <module>
+[rank1]:     main()
+[rank1]:     ~~~~^^
+[rank1]:   File "/kaggle/working/lexsi-hack/scripts/train_dpo.py", line 74, in main
+[rank1]:     stats = trainer.train()
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/agenttune/backends/trl/agentic/dpo/agentic_dpo.py", line 616, in train
+[rank1]:     self._train_result = self.trainer.train()
+[rank1]:                          ~~~~~~~~~~~~~~~~~~^^
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1559, in train
+[rank1]:     return inner_training_loop(
+[rank1]:         args=args,
+[rank1]:     ...<2 lines>...
+[rank1]:         ignore_keys_for_eval=ignore_keys_for_eval,
+[rank1]:     )
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1643, in _inner_training_loop
+[rank1]:     self._run_epoch(
+[rank1]:     ~~~~~~~~~~~~~~~^
+[rank1]:         model=model,
+[rank1]:         ^^^^^^^^^^^^
+[rank1]:     ...<9 lines>...
+[rank1]:         steps_trained_in_current_epoch=steps_trained_in_current_epoch,
+[rank1]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:     )
+[rank1]:     ^
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1889, in _run_epoch
+[rank1]:     tr_loss_step = self.training_step(model, inputs, num_items_in_batch)
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/trl/trainer/dpo_trainer.py", line 1603, in training_step
+[rank1]:     return super().training_step(*args, **kwargs)
+[rank1]:            ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 2098, in training_step
+[rank1]:     self.accelerator.backward(loss, **kwargs)
+[rank1]:     ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/accelerate/accelerator.py", line 2857, in backward
+[rank1]:     self.scaler.scale(loss).backward(**kwargs)
+[rank1]:     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/torch/_tensor.py", line 631, in backward
+[rank1]:     torch.autograd.backward(
+[rank1]:     ~~~~~~~~~~~~~~~~~~~~~~~^
+[rank1]:         self, gradient, retain_graph, create_graph, inputs=inputs
+[rank1]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:     )
+[rank1]:     ^
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/torch/autograd/__init__.py", line 381, in backward
+[rank1]:     _engine_run_backward(
+[rank1]:     ~~~~~~~~~~~~~~~~~~~~^
+[rank1]:         tensors,
+[rank1]:         ^^^^^^^^
+[rank1]:     ...<5 lines>...
+[rank1]:         accumulate_grad=True,
+[rank1]:         ^^^^^^^^^^^^^^^^^^^^^
+[rank1]:     )
+[rank1]:     ^
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/torch/autograd/graph.py", line 869, in _engine_run_backward
+[rank1]:     return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+[rank1]:            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:         t_outputs, *args, **kwargs
+[rank1]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:     )  # Calls into the C++ engine to run the backward pass
+[rank1]:     ^
+[rank1]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 3.02 GiB. GPU 1 has a total capacity of 14.56 GiB of which 1.12 GiB is free. Including non-PyTorch memory, this process has 13.44 GiB memory in use. Of the allocated memory 13.10 GiB is allocated by PyTorch, and 124.77 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+  0%|          | 0/56 [00:02<?, ?it/s]
+[rank0]:[W1106 03:26:20.737096803 ProcessGroupNCCL.cpp:1575] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+W1106 03:26:24.475000 333 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 342 closing signal SIGTERM
+E1106 03:26:24.892000 333 torch/distributed/elastic/multiprocessing/api.py:986] failed (exitcode: 1) local_rank: 0 (pid: 341) of binary: /usr/bin/python3
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/run.py", line 994, in <module>
+    main()
+    ~~~~^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+    return f(*args, **kwargs)
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/run.py", line 990, in main
+    run(args)
+    ~~~^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/run.py", line 981, in run
+    elastic_launch(
+    ~~~~~~~~~~~~~~~
+        config=config,
+        ~~~~~~~~~~~~~~
+        entrypoint=cmd,
+        ~~~~~~~~~~~~~~~
+    )(*cmd_args)
+    ~^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/launcher/api.py", line 170, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/launcher/api.py", line 317, in launch_agent
+    raise ChildFailedError(
+    ...<2 lines>...
+    )
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+scripts/train_dpo.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-11-06_03:26:24
+  host      : d51234725e71
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 342)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-11-06_03:26:24
+  host      : d51234725e71
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 341)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
+
+*** 2-GPU DPO failed (exit code 1); retrying on one GPU ***
+
+$ CUDA_VISIBLE_DEVICES=0 /usr/bin/python3 scripts/train_dpo.py --adapter /kaggle/input/notebooks/timidanx/notebook80b729c38e/lexsi-hack/outputs/sft-v2 --pairs outputs/dpo-v3/pairs.jsonl --out outputs/dpo-v3 --epochs 2.0 --lr 5e-05 --beta 0.1 --grad-accum 4
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793935600.710889     414 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/290 [00:01<07:18,  1.52s/it]
+Loading weights:  29%|██▊       | 83/290 [00:01<00:02, 70.40it/s]
+Loading weights:  43%|████▎     | 126/290 [00:02<00:02, 78.56it/s]
+Loading weights:  53%|█████▎    | 154/290 [00:02<00:01, 87.88it/s]
+Loading weights:  61%|██████    | 176/290 [00:02<00:01, 84.64it/s]
+Loading weights:  67%|██████▋   | 193/290 [00:02<00:01, 91.20it/s]
+Loading weights:  72%|███████▏  | 209/290 [00:02<00:00, 91.06it/s]
+Loading weights:  77%|███████▋  | 223/290 [00:03<00:00, 86.92it/s]
+Loading weights:  81%|████████  | 235/290 [00:03<00:00, 89.93it/s]
+Loading weights:  85%|████████▌ | 247/290 [00:03<00:00, 88.97it/s]
+Loading weights:  89%|████████▉ | 259/290 [00:03<00:00, 93.53it/s]
+Loading weights:  93%|█████████▎| 270/290 [00:03<00:00, 89.17it/s]
+Loading weights:  97%|█████████▋| 280/290 [00:03<00:00, 88.39it/s]
+Loading weights: 100%|██████████| 290/290 [00:03<00:00, 76.72it/s]
+[transformers] The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 6}.
+
+  0%|          | 0/112 [00:00<?, ?it/s]Traceback (most recent call last):
+  File "/kaggle/working/lexsi-hack/scripts/train_dpo.py", line 81, in <module>
+    main()
+    ~~~~^^
+  File "/kaggle/working/lexsi-hack/scripts/train_dpo.py", line 74, in main
+    stats = trainer.train()
+  File "/usr/local/lib/python3.13/dist-packages/agenttune/backends/trl/agentic/dpo/agentic_dpo.py", line 616, in train
+    self._train_result = self.trainer.train()
+                         ~~~~~~~~~~~~~~~~~~^^
+  File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1559, in train
+    return inner_training_loop(
+        args=args,
+    ...<2 lines>...
+        ignore_keys_for_eval=ignore_keys_for_eval,
+    )
+  File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1643, in _inner_training_loop
+    self._run_epoch(
+    ~~~~~~~~~~~~~~~^
+        model=model,
+        ^^^^^^^^^^^^
+    ...<9 lines>...
+        steps_trained_in_current_epoch=steps_trained_in_current_epoch,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1889, in _run_epoch
+    tr_loss_step = self.training_step(model, inputs, num_items_in_batch)
+  File "/usr/local/lib/python3.13/dist-packages/trl/trainer/dpo_trainer.py", line 1603, in training_step
+    return super().training_step(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 2098, in training_step
+    self.accelerator.backward(loss, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/accelerate/accelerator.py", line 2857, in backward
+    self.scaler.scale(loss).backward(**kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/_tensor.py", line 631, in backward
+    torch.autograd.backward(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        self, gradient, retain_graph, create_graph, inputs=inputs
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/usr/local/lib/python3.13/dist-packages/torch/autograd/__init__.py", line 381, in backward
+    _engine_run_backward(
+    ~~~~~~~~~~~~~~~~~~~~^
+        tensors,
+        ^^^^^^^^
+    ...<5 lines>...
+        accumulate_grad=True,
+        ^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/usr/local/lib/python3.13/dist-packages/torch/autograd/graph.py", line 869, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        t_outputs, *args, **kwargs
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )  # Calls into the C++ engine to run the backward pass
+    ^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.59 GiB. GPU 0 has a total capacity of 14.56 GiB of which 2.28 GiB is free. Including non-PyTorch memory, this process has 12.28 GiB memory in use. Of the allocated memory 12.06 GiB is allocated by PyTorch, and 89.45 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+  0%|          | 0/112 [00:03<?, ?it/s]
+
+=== CELL FAILED ===
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.13/dist-packages/IPython/core/interactiveshell.py", line 3553, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/ipykernel_23/143992608.py", line 13, in <cell line: 0>
+    assert rc == 0, "DPO failed: see the log above"
+           ^^^^^^^
+AssertionError: DPO failed: see the log above
