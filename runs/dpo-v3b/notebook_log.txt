@@ -290,3 +290,24 @@ Caching reference log probs for train dataset: 100%|█████████�
  79%|███████▉  | 30/38 [08:52<02:25, 18.16s/it]
  82%|████████▏ | 31/38 [09:09<02:05, 17.95s/it]
  84%|████████▍ | 32/38 [09:28<01:49, 18.19s/it]
+ 87%|████████▋ | 33/38 [09:48<01:33, 18.73s/it]
+ 89%|████████▉ | 34/38 [10:06<01:13, 18.31s/it]
+ 92%|█████████▏| 35/38 [10:25<00:55, 18.59s/it]
+                                               
+{'loss': '0.2406', 'grad_norm': '1.476', 'learning_rate': '7.163e-07', 'entropy': '0.08567', 'num_tokens': '1.673e+04', 'logits/chosen': '-0.8371', 'logits/rejected': '-1.091', 'mean_token_accuracy': '0.9953', 'rewards/chosen': '0.2496', 'rewards/rejected': '-2.454', 'rewards/accuracies': '0.95', 'rewards/margins': '2.704', 'logps/chosen': '-1.148', 'logps/rejected': '-29.15', 'epoch': '1.877'}
+
+ 92%|█████████▏| 35/38 [10:25<00:55, 18.59s/it]
+ 95%|█████████▍| 36/38 [10:44<00:37, 18.77s/it]
+ 97%|█████████▋| 37/38 [11:02<00:18, 18.45s/it]
+100%|██████████| 38/38 [11:06<00:00, 14.34s/it]
+                                               
+{'train_runtime': '667.4', 'train_samples_per_second': '0.438', 'train_steps_per_second': '0.057', 'train_loss': '0.3868', 'entropy': '0.07677', 'num_tokens': '1.78e+04', 'logits/chosen': '-0.8698', 'logits/rejected': '-1.045', 'mean_token_accuracy': '1', 'rewards/chosen': '0.3596', 'rewards/rejected': '-2.392', 'rewards/accuracies': '1', 'rewards/margins': '2.752', 'logps/chosen': '-0.1154', 'logps/rejected': '-28.75', 'epoch': '2'}
+
+100%|██████████| 38/38 [11:06<00:00, 14.34s/it]
+100%|██████████| 38/38 [11:06<00:00, 17.55s/it]
+{"train_size": 146, "final_loss": 0.3867750261959277, "total_steps": 38, "metrics": {"train_runtime": 667.4204, "train_samples_per_second": 0.438, "train_steps_per_second": 0.057, "total_flos": 1.3748895158894592e+16, "train_loss": 0.3867750261959277, "entropy": 0.07676730967230266, "num_tokens": 17798.0, "logits/chosen": -0.8697836405664987, "logits/rejected": -1.0453596006401145, "mean_token_accuracy": 1.0, "rewards/chosen": 0.35959866642951965, "rewards/rejected": -2.3923202753067017, "rewards/accuracies": 1.0, "rewards/margins": 2.7519189251793756, "logps/chosen": -0.11542076534695095, "logps/rejected": -28.74974717034234, "epoch": 2.0}}
+[rank0]:[W1106 05:49:26.936106560 ProcessGroupNCCL.cpp:1575] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+evaluating ['v3', 'v2'] in parallel, one GPU each
+6/30 tasks done (92s)
+15/30 tasks done (145s)
+24/30 tasks done (195s)
