@@ -638,7 +638,7 @@ Starts from the SFT adapter `sft-v2`: attach it with **Add Input â†’ Your Work â
    (`DPO_REQUESTS` in `naija_agent/lang.py`; not the development set or the native-speaker requests), one shard per
    GPU, and keeps its mistakes as preference pairs, judged with the scorer's own rules (`naija_agent/pairs.py`).
 2. Trains with Lexsi Labs' **AgentTune** (`create_agentic_trainer("dpo")`, TRL backend): DPO plus a plain loss on the
-   chosen turns, continuing the v2 LoRA adapter (`scripts/train_dpo.py`).
+   chosen turns, continuing the v2 LoRA adapter on a 4-bit frozen base (QLoRA, to fit a T4) (`scripts/train_dpo.py`).
 3. Scores v3 and v2 side by side, one GPU each, on the native-speaker sets and the 416-task development set.
 
 Results go to the repo's `results` branch. On T4 x2: about 4 hours with sampling, 1 hour when reusing published pairs.
@@ -728,8 +728,10 @@ Publisher(RUN_NAME).publish({"pairs.jsonl": PAIRS, "pair_stats.json": f"{ADAPTER
     ("code", """
 import gc
 gc.collect(); torch.cuda.empty_cache()
+# 4-bit frozen base (QLoRA) and pairs up to 1,600 tokens: full precision ran out of memory on a 16 GB T4,
+# because the logits over Tiny Aya's 262k-word vocabulary (and their fp32 copy) take several GB per pair
 args = (f"--adapter {BASE_ADAPTER} --pairs {PAIRS} --out {ADAPTER_DIR} --epochs {EPOCHS} --lr {LR} "
-        f"--beta {BETA} --grad-accum {GRAD_ACCUM}")
+        f"--beta {BETA} --grad-accum {GRAD_ACCUM} --load-in-4bit --max-len 1600")
 rc = 1
 if NGPU >= 2:
     rc = run(f"{sys.executable} -m torch.distributed.run --standalone --nproc_per_node={NGPU} scripts/train_dpo.py {args}",

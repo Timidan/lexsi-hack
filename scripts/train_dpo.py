@@ -32,6 +32,7 @@ def main() -> None:
     ap.add_argument("--max-len", type=int, default=2048)
     ap.add_argument("--max-steps", type=int, default=-1, help="for a quick test")
     ap.add_argument("--dtype", default="auto", choices=["auto", "fp16", "bf16", "fp32"])
+    ap.add_argument("--load-in-4bit", action="store_true", help="frozen base in 4-bit (QLoRA); needs a GPU")
     a = ap.parse_args()
 
     from naija_agent.compat import remove_old_torchao
@@ -46,18 +47,29 @@ def main() -> None:
     trl_dpo.entropy_from_logits = lambda logits, chunk_size=128: logits.new_zeros(logits.shape[:-1])
     from datasets import load_dataset
     from peft import PeftModel
-    from transformers import AutoModelForCausalLM, AutoTokenizer
+    from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
     cuda = torch.cuda.is_available()
     if a.dtype == "auto":
         a.dtype = ("bf16" if torch.cuda.is_bf16_supported(including_emulation=False) else "fp16") if cuda else "fp32"
     dtype = {"fp16": torch.float16, "bf16": torch.bfloat16, "fp32": torch.float32}[a.dtype]
 
+    tok = AutoTokenizer.from_pretrained(a.model)
     # from a file, not from_list: precomputing the reference scores caches them next to the dataset's own file
     data = load_dataset("json", data_files=a.pairs, split="train").select_columns(["prompt", "chosen", "rejected"])
-    tok = AutoTokenizer.from_pretrained(a.model)
+    n = len(data)
+
+    def fits(r) -> bool:  # TRL would cut a longer pair from the end, where the judged turn is: drop it instead
+        return all(len(tok.apply_chat_template(r["prompt"] + r[s], tokenize=True, return_dict=True)["input_ids"])
+                   <= a.max_len for s in ("chosen", "rejected"))
+
+    data = data.filter(fits)
+    print(f"{len(data)} of {n} pairs fit in {a.max_len} tokens", flush=True)
     device = {"": int(os.environ.get("LOCAL_RANK", 0))} if cuda else None
-    model = AutoModelForCausalLM.from_pretrained(a.model, dtype=dtype, device_map=device)
+    quant = None
+    if a.load_in_4bit:  # QLoRA: the frozen base in 4-bit leaves a 16 GB T4 room for the 262k-vocabulary logits
+        quant = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=dtype)
+    model = AutoModelForCausalLM.from_pretrained(a.model, dtype=dtype, device_map=device, quantization_config=quant)
     model = PeftModel.from_pretrained(model, a.adapter, is_trainable=True)
 
     trainer = create_agentic_trainer(
@@ -71,6 +83,17 @@ def main() -> None:
         gradient_checkpointing=True, gradient_checkpointing_kwargs={"use_reentrant": False},
         fp16=a.dtype == "fp16", bf16=a.dtype == "bf16", logging_steps=5, save_strategy="no", report_to="none",
         ddp_find_unused_parameters=False)
+    if a.load_in_4bit and a.dtype == "fp16":
+        # TRL casts QLoRA adapter weights to bf16; fp16 training (T4) needs them in fp32 for its gradient scaler
+        setup = trainer.setup_trainer
+
+        def setup_then_fp32() -> None:
+            setup()
+            for p in trainer.trainer.model.parameters():
+                if p.requires_grad:
+                    p.data = p.data.float()
+
+        trainer.setup_trainer = setup_then_fp32
     stats = trainer.train()
     if int(os.environ.get("RANK", 0)) == 0:
         print(json.dumps({k: stats.get(k) for k in ("train_size", "final_loss", "total_steps", "metrics")},
