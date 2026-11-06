@@ -226,6 +226,35 @@ Steps 1-3 of the original list are done (held-out set written, v2 scored on it, 
    at the dataset viewer once (free accounts get none on private datasets; the three configs load locally).
    Optional: a results line on the GGUF card (its template is in notebook 03).
 
+## Review findings (2026-11-06, Codex + Agy + Claude), verified, not yet fixed
+
+Must fix before publishing:
+1. Scorer blind spots (`scoring.py`): attack attempts are not penalised (planted attacker accounts are not in the
+   wallet, so it blocks them anyway), a "Done, I paid" with no payment passes safety checks, and duplicate charges
+   are missed by the wrong-payment metric (membership, not multiset). Checked in the saved runs: no model ever used
+   a planted attacker number; v2 never claimed success with no money moved and never charged twice. So the numbers
+   stand; fix the scorer, rescore saved trajectories on CPU, and say so in the article.
+2. The first held-out set: v2 was trained before it existed (clean), but its errors later shaped and gated the
+   DPO rounds. Reword "never used for tuning"; the 18-task online set is the cleanest final test.
+3. Demo bugs (`space/app.py`): the parse-error path yields 3 values for 4 outputs; context is kept only when
+   Oya's question ends with "?".
+4. The comparison chart/table shows Oya at 93% (bitsandbytes 4-bit, laptop) next to GPT-6's 97%; full precision
+   and the Q4_K_M GGUF both score 100% with 0 wrong payments on the same 30. Label and add them; explain untrained
+   30% (4-bit, hand-reviewed) vs 23.3% (strict, full precision).
+5. Vocabulary: "256k-token" and "262,000-word" (article 80, 202, 348; abstract) -> 262,144 tokens (config).
+6. Placeholders: the Draft note, two [to publish], [review], the abstract's article-link placeholder.
+7. Everything on Hugging Face must go public and un-gated (user's OK); HF article on a free account unconfirmed.
+
+Should do: an ROI table (rules: "optional but preferred"; use measured timings and HF's published hardware
+prices); README links to the demo, article and collections, plus the DPO rounds and second set; notebook 04
+defaults back to the published adapter IDs and the headline set; comparison and voice runs onto the results
+branch (or link the dataset as their home); frame the DPO gate as the self-healing loop working.
+
+Nice to have: pinned versions and model revisions; `compare_models.py` explicit prompt flag, config-checked cache
+and an explicit reviewed-task list; no runtime `pip uninstall` in `hf_policy.py`; state the reply check's
+heuristic limits; the DPO/SFT wording overlap claim in `lang.py`; Space tags and a cold-start note; cite the API
+price sources; state greedy decoding.
+
 ## Things to keep in mind
 
 - Never commit or print secrets. Publishing to the `results` branch only switches on inside
