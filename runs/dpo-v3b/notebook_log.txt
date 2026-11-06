@@ -230,3 +230,34 @@ Computing reference log probs for train dataset: 100%|████████�
 
 Caching reference log probs for train dataset:   0%|          | 0/146 [00:00<?, ? examples/s]
 Caching reference log probs for train dataset: 100%|██████████| 146/146 [00:00<00:00, 9380.79 examples/s]
+[transformers] The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 6}.
+[transformers] The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 6}.
+
+  0%|          | 0/38 [00:00<?, ?it/s]
+  3%|▎         | 1/38 [00:17<10:56, 17.74s/it]
+  5%|▌         | 2/38 [00:34<10:15, 17.09s/it]
+  8%|▊         | 3/38 [00:52<10:21, 17.74s/it]
+ 11%|█         | 4/38 [01:09<09:47, 17.27s/it]
+ 13%|█▎        | 5/38 [01:27<09:38, 17.52s/it]
+                                              
+{'loss': '0.7556', 'grad_norm': '5.26', 'learning_rate': '1.6e-05', 'entropy': '0.1031', 'num_tokens': '2273', 'logits/chosen': '-0.7623', 'logits/rejected': '-1.015', 'mean_token_accuracy': '0.9806', 'rewards/chosen': '0.007659', 'rewards/rejected': '-0.04205', 'rewards/accuracies': '0.65', 'rewards/margins': '0.04971', 'logps/chosen': '-1.834', 'logps/rejected': '-6.452', 'epoch': '0.274'}
+
+ 13%|█▎        | 5/38 [01:27<09:38, 17.52s/it]
+ 16%|█▌        | 6/38 [01:45<09:31, 17.85s/it]
+ 18%|█▊        | 7/38 [02:03<09:06, 17.63s/it]
+ 21%|██        | 8/38 [02:21<08:52, 17.74s/it]
+ 24%|██▎       | 9/38 [02:38<08:28, 17.52s/it]
+ 26%|██▋       | 10/38 [02:56<08:19, 17.85s/it]
+                                               
+{'loss': '0.5521', 'grad_norm': '4.353', 'learning_rate': '1.928e-05', 'entropy': '0.1151', 'num_tokens': '4759', 'logits/chosen': '-0.879', 'logits/rejected': '-1.083', 'mean_token_accuracy': '0.9781', 'rewards/chosen': '0.1618', 'rewards/rejected': '-0.3359', 'rewards/accuracies': '0.925', 'rewards/margins': '0.4976', 'logps/chosen': '-1.663', 'logps/rejected': '-9.04', 'epoch': '0.5479'}
+
+ 26%|██▋       | 10/38 [02:56<08:19, 17.85s/it]
+ 29%|██▉       | 11/38 [03:14<07:57, 17.70s/it]
+ 32%|███▏      | 12/38 [03:31<07:38, 17.64s/it]
+ 34%|███▍      | 13/38 [03:50<07:31, 18.08s/it]
+ 37%|███▋      | 14/38 [04:11<07:33, 18.88s/it]
+ 39%|███▉      | 15/38 [04:28<07:03, 18.41s/it]
+                                               
+{'loss': '0.3949', 'grad_norm': '3.375', 'learning_rate': '1.655e-05', 'entropy': '0.07652', 'num_tokens': '7222', 'logits/chosen': '-0.8185', 'logits/rejected': '-1.042', 'mean_token_accuracy': '0.9897', 'rewards/chosen': '0.1816', 'rewards/rejected': '-0.82', 'rewards/accuracies': '0.975', 'rewards/margins': '1.002', 'logps/chosen': '-1.078', 'logps/rejected': '-13.52', 'epoch': '0.8219'}
+
+ 39%|███▉      | 15/38 [04:28<07:03, 18.41s/it]
