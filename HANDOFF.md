@@ -90,6 +90,12 @@ Prompt format = AgentTune's Tiny Aya tool fallback (`naija_agent/prompting.py`).
 - **Training** (`scripts/train_dpo.py`): AgentTune `create_agentic_trainer("dpo", backend="trl")` = TRL 1.7.1
   DPOTrainer, loss sigmoid + sft (RPO-style), continuing the v2 LoRA; TRL keeps a frozen "ref" copy of it as the
   reference (saved under `outputs/dpo-v3/ref/`, ignore it). Result loads like v2 (`HFPolicy(adapter=...)`).
+  On a 16 GB T4 it needs: reference scores precomputed once, TRL's entropy metric skipped, the **frozen base in
+  4-bit (QLoRA)**, adapter weights back to fp32 after TRL casts them to bf16, and pairs up to 1,600 tokens (203 of
+  the 222). Full precision ran out of memory: logits over the 262k vocabulary, plus Accelerate's fp32 copy.
+- **Runs of `05 dpo-v3`:** v1 sampled the **222 pairs** (on `results`: `runs/dpo-v3/pairs.jsonl`; 54 missing info,
+  45 unknown contact, 23 balance, 20 injection, ...; 115 Pidgin, 107 Yoruba) then ran out of memory in training;
+  v2 (reused pairs, fp16) ran out of memory in the backward pass; v3 (QLoRA) started 2026-11-06 ~05:00 WAT.
 - **Kaggle:** notebook `05_dpo.ipynb`, imported as **`05 dpo-v3`** (kaggle.com/code/timidanx/05-dpo-v3), started
   2026-11-06 00:43 WAT: sampling on both GPUs, DPO (torchrun, 1-GPU fallback), then v3 vs v2 on dev (416) and the
   first native-speaker set. Log: `runs/dpo-v3/notebook_log.txt` on the `results` branch.
