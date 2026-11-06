@@ -296,3 +296,31 @@ Caching reference log probs for train dataset: 100%|█████████�
 
  18%|█▊        | 10/56 [03:10<14:06, 18.41s/it]
  20%|█▉        | 11/56 [03:29<13:50, 18.46s/it]
+ 21%|██▏       | 12/56 [03:48<13:39, 18.62s/it]
+ 23%|██▎       | 13/56 [04:06<13:18, 18.56s/it]
+ 25%|██▌       | 14/56 [04:26<13:08, 18.77s/it]
+ 27%|██▋       | 15/56 [04:44<12:43, 18.61s/it]
+                                               
+{'loss': '0.6855', 'grad_norm': '3.825', 'learning_rate': '4.626e-05', 'entropy': '0.1614', 'num_tokens': '8594', 'logits/chosen': '-0.7049', 'logits/rejected': '-1.099', 'mean_token_accuracy': '0.9742', 'rewards/chosen': '-0.003359', 'rewards/rejected': '-2.457', 'rewards/accuracies': '0.9', 'rewards/margins': '2.454', 'logps/chosen': '-6.689', 'logps/rejected': '-33.47', 'epoch': '0.5405'}
+
+ 27%|██▋       | 15/56 [04:44<12:43, 18.61s/it]
+ 29%|██▊       | 16/56 [05:02<12:21, 18.53s/it]
+ 30%|███       | 17/56 [05:21<12:11, 18.76s/it]
+ 32%|███▏      | 18/56 [05:41<11:57, 18.88s/it]
+ 34%|███▍      | 19/56 [06:01<11:58, 19.43s/it]
+ 36%|███▌      | 20/56 [06:21<11:47, 19.65s/it]
+                                               
+{'loss': '0.2941', 'grad_norm': '6.202', 'learning_rate': '4.127e-05', 'entropy': '0.1402', 'num_tokens': '1.185e+04', 'logits/chosen': '-0.7454', 'logits/rejected': '-1.201', 'mean_token_accuracy': '0.9913', 'rewards/chosen': '0.6398', 'rewards/rejected': '-3.493', 'rewards/accuracies': '0.975', 'rewards/margins': '4.132', 'logps/chosen': '-3.251', 'logps/rejected': '-41.85', 'epoch': '0.7207'}
+
+ 36%|███▌      | 20/56 [06:21<11:47, 19.65s/it]
+ 38%|███▊      | 21/56 [06:40<11:14, 19.28s/it]
+ 39%|███▉      | 22/56 [06:58<10:44, 18.95s/it]
+ 41%|████      | 23/56 [07:16<10:17, 18.70s/it]
+ 43%|████▎     | 24/56 [07:35<09:55, 18.60s/it]
+ 45%|████▍     | 25/56 [07:55<09:52, 19.13s/it]
+                                               
+{'loss': '0.2732', 'grad_norm': '1.289', 'learning_rate': '3.474e-05', 'entropy': '0.166', 'num_tokens': '1.466e+04', 'logits/chosen': '-0.7939', 'logits/rejected': '-1.074', 'mean_token_accuracy': '0.9894', 'rewards/chosen': '0.4681', 'rewards/rejected': '-3.077', 'rewards/accuracies': '0.95', 'rewards/margins': '3.545', 'logps/chosen': '-2.146', 'logps/rejected': '-36.38', 'epoch': '0.9009'}
+
+ 45%|████▍     | 25/56 [07:55<09:52, 19.13s/it]
+ 46%|████▋     | 26/56 [08:13<09:22, 18.75s/it]
+ 48%|████▊     | 27/56 [08:30<08:49, 18.25s/it]
