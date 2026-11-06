@@ -97,7 +97,12 @@ Prompt format = AgentTune's Tiny Aya tool fallback (`naija_agent/prompting.py`).
   as TRL's original to the last digit, 7x faster. Full precision, all 222 pairs.
 - **Runs of `05 dpo-v3`:** v1 sampled the **222 pairs** (on `results`: `runs/dpo-v3/pairs.jsonl`; 54 missing info,
   45 unknown contact, 23 balance, 20 injection, ...; 115 Pidgin, 107 Yoruba) then ran out of memory in training,
-  as did v2 (fp16) and v3 (4-bit base); v4 (judged-turn loss) started 2026-11-06 ~05:30 WAT.
+  as did v2 (fp16) and v3 (4-bit base); v4 (judged-turn loss) trained fine (56 steps, 17 min, final reward
+  accuracy 1.0) but **failed the gate**: on the 30 native-speaker requests task success 96.7% (v2 100%), reply
+  check 60% (v2 83%), 1 wrong payment (airtime to Mama sent as a bank transfer). Cause: it answered 10 of 15
+  Yoruba requests in Pidgin, because 75 of the 222 pairs rejected a Yoruba reply to a Pidgin request and only 1
+  the reverse. **Round 2 = `dpo-v3b`** (same notebook, version 5): those 76 pairs left out
+  (`naija_agent.pairs.wrong_language`, 146 kept), learning rate 2e-5. v2 stays final unless v3b passes.
 - **Kaggle:** notebook `05_dpo.ipynb`, imported as **`05 dpo-v3`** (kaggle.com/code/timidanx/05-dpo-v3), started
   2026-11-06 00:43 WAT: sampling on both GPUs, DPO (torchrun, 1-GPU fallback), then v3 vs v2 on dev (416) and the
   first native-speaker set. Log: `runs/dpo-v3/notebook_log.txt` on the `results` branch.
