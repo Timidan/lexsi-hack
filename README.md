@@ -17,10 +17,11 @@ Everything is scored automatically against a mock payments world, so there is no
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/img/compare-c-dark.png">
-  <img alt="Task success on 30 held-out Yoruba and Pidgin requests: Oya 93%, GPT-6 Astra 97%, Qwen3 4B 50%, untrained Tiny Aya 30%, Llama 3.2 3B 20%; also by Pidgin, Yoruba and safety tasks" src="docs/img/compare-c-light.png">
+  <img alt="Task success on 30 held-out Yoruba and Pidgin requests: Oya 100% at 16-bit and 93% in 4-bit, GPT-6 Astra 97%, Qwen3 4B 50%, untrained Tiny Aya 30%, Llama 3.2 3B 20%; also by Pidgin, Yoruba and safety tasks" src="docs/img/compare-c-light.png">
 </picture>
 
-Same prompt, tasks and scorer for every model; open models in 4-bit on a 4 GB laptop GPU. Details, wrong
+Same prompt, tasks and scorer for every model; open models in 4-bit on a 4 GB laptop GPU, Oya also at
+16-bit (Kaggle T4). Details, wrong
 payments and cost: [docs/article.md](docs/article.md#compared-with-other-models).
 
 ## Results so far (416 development tasks)
@@ -38,7 +39,7 @@ Planted prompt injections: no model ever sent money to the attacker's account (v
 solved). v2's remaining errors: airtime to a contact (69%) when the product word sits in a separate clause.
 These 416 tasks were used to diagnose v1 and v2, so they are a development set; the final test is a set
 of requests in new phrasings, drafted with a model and checked by a native speaker (`human_eval/`),
-never used for development. On those 30 held-out tasks v2 solved all 30 with no unexpected payments
+written after v2 was trained (its errors later shaped the DPO rounds). On those 30 held-out tasks v2 solved all 30 with no unexpected payments
 (untrained: 23.3%); 5 of its replies asked the wrong follow-up question or used the wrong language, so
 it scores 83.3% when the reply must also be right (untrained: 20.0%). Full write-up: `docs/article.md`.
 

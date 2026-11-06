@@ -1,5 +1,22 @@
 [
   {
+    "name": "oya-16bit",
+    "label": "Oya (Tiny Aya + our LoRA)",
+    "size": "3.35B",
+    "runs_on": "Kaggle T4, 16-bit",
+    "n": 30,
+    "success": 1.0,
+    "reviewed_success": 1.0,
+    "polite_asks": 0,
+    "safety": 1.0,
+    "success_right_reply": 0.8333333333333334,
+    "wrong_payment": 0.0,
+    "tool_f1": 1.0,
+    "pidgin": 1.0,
+    "yoruba": 1.0,
+    "usd_per_1000_requests": 0.0
+  },
+  {
     "name": "oya",
     "label": "Oya (Tiny Aya + our LoRA)",
     "size": "3.35B",
@@ -14,6 +31,23 @@
     "tool_f1": 0.9333333333333333,
     "pidgin": 0.9333333333333333,
     "yoruba": 0.9333333333333333,
+    "usd_per_1000_requests": 0.0
+  },
+  {
+    "name": "oya-gguf",
+    "label": "Oya (Tiny Aya + our LoRA)",
+    "size": "3.35B",
+    "runs_on": "4 CPUs, GGUF Q4_K_M",
+    "n": 30,
+    "success": 1.0,
+    "reviewed_success": 1.0,
+    "polite_asks": 0,
+    "safety": 1.0,
+    "success_right_reply": 0.9,
+    "wrong_payment": 0.0,
+    "tool_f1": 1.0,
+    "pidgin": 1.0,
+    "yoruba": 1.0,
     "usd_per_1000_requests": 0.0
   },
   {

@@ -5,9 +5,9 @@
 *Lexsi Labs AI Safety & Alignment Hackathon · Track 3: Agentic Fine-tuning*
 *Model: Cohere Labs Tiny Aya (3.35B) + LoRA · Toolkits: Lexsi Labs AgentTune and AuditKIT*
 
-> **Draft.** Sections 1-9 follow the hackathon's required article structure. Development-set numbers are from
-> runs `sft-v1` and `sft-v2`; held-out test numbers are from run `sft-v2-human`. Items marked **[to publish]**
-> are filled in when the Hugging Face collections go public.
+> Sections 1-9 follow the hackathon's required article structure. Development-set numbers are from runs
+> `sft-v1` and `sft-v2`; held-out numbers are from runs `sft-v2-human` and `sft-v2-human2`. Every run's logs and
+> scores are in the [dataset](https://huggingface.co/datasets/timidan/oya-wallet-agent-data).
 
 ## TL;DR
 
@@ -28,9 +28,9 @@ model says happened.
 On a separate held-out set of 30 Yoruba and Pidgin tasks, v2 moved money correctly on all 30 and never
 paid anyone it should not have (untrained: 23.3% success). Counting only replies that are also in the
 right language and ask for the right missing detail, it scores 83.3% (untrained: 20.0%). On the same 30
-tasks, run in 4-bit on a laptop, Oya solves 93%: within one task of OpenAI's GPT-6 Astra and GPT-6.1 Sol
-(97%), and ahead of open models its size (Qwen3 4B 50%, Phi-4 mini 33%, Llama 3.2 3B 20%), at no
-per-request cost. On a second held-out set built from native-written Yoruba and Pidgin text found online
+tasks OpenAI's GPT-6 Astra and GPT-6.1 Sol solve 97%; Oya solves 100% at 16-bit and 93% in 4-bit on a laptop,
+where open models its size solve 20-50% (Qwen3 4B 50%, Phi-4 mini 33%, Llama 3.2 3B 20%), at no per-request
+cost. On a second held-out set built from native-written Yoruba and Pidgin text found online
 (18 tasks), v2 again solved every task (untrained: 27.8%).
 
 We also ran Track 3's self-healing loop twice with AgentTune's DPO trainer, on preference pairs built from
@@ -77,7 +77,7 @@ AuditKIT reads.
 - **AgentTune: the DPO trainer.** v1 and v2 were trained with our own loop on Transformers and PEFT. The
   two self-healing rounds (section 7) were trained with AgentTune's `create_agentic_trainer("dpo")` on its TRL
   backend, with `precompute_ref_log_probs` and a small subclass that scores only the judged turn, which a
-  16 GB T4 needs for Tiny Aya's 262,000-word vocabulary.
+  16 GB T4 needs for Tiny Aya's 262,144-token vocabulary.
 - **AuditKIT: an independent second opinion.** `auditkit.agent_eval` reads our trajectories with
   `episodes_from_agenttune`, builds an `AgentCase` per task (allowed tools and the reference tool route), checks
   the final wallet ledger with `FinalStateAssertion`, and adds its `tool_call_f1` and `tool_call_validity`
@@ -134,9 +134,11 @@ training, so the test measures generalization to new wording, not memorized sent
 
 **Held-out test set.** We used the 416-task set to diagnose v1's errors, so from v2 on it is a *development*
 set. The final test is a set of requests for 13 fixed scenarios, **drafted with a model in phrasings that
-appear nowhere in the training templates and checked by a native Yoruba and Pidgin speaker**. It was
-never used for training or tuning. It is not fully independent: a model drafted both the training
-templates and these requests, so requests typed from scratch by many speakers would be a harder test.
+appear nowhere in the training templates and checked by a native Yoruba and Pidgin speaker**. v2 was
+trained before this set was written, so v2's scores on it are clean. We later used v2's mistakes on it to
+design the two DPO rounds and to judge them, so for those rounds it served as a development set. It is not
+fully independent either: a model drafted both the training templates and these requests. The second set
+below, built from native-written text after all training was done, is the cleanest final test.
 Results are in section 7.
 
 **Second held-out set, from native-written text online.** To test phrasing no model drafted, we built 14
@@ -151,7 +153,7 @@ the speech models' transcripts are published.
 
 ## 5. Model artifacts (public Hugging Face collection)
 
-**[to publish]** [Oya: wallet agent models](https://huggingface.co/collections/timidan/oya-wallet-agent-models-6aedf0affb712ba373e3a17d), CC-BY-NC 4.0 (following Tiny Aya). It holds:
+[Oya: wallet agent models](https://huggingface.co/collections/timidan/oya-wallet-agent-models-6aedf0affb712ba373e3a17d), CC-BY-NC 4.0 (following Tiny Aya). It holds:
 
 - the LoRA adapter (`sft-v2`) with its training log and loss curve,
 - the merged model as a 4-bit GGUF (Q4_K_M), which runs on a CPU,
@@ -162,7 +164,7 @@ the speech models' transcripts are published.
 
 ## 6. Data artifacts (public Hugging Face collection)
 
-**[to publish]** [Oya: wallet agent data](https://huggingface.co/collections/timidan/oya-wallet-agent-data-6aedf0b20bfbdecdb654e23c): one dataset, [timidan/oya-wallet-agent-data](https://huggingface.co/datasets/timidan/oya-wallet-agent-data),
+[Oya: wallet agent data](https://huggingface.co/collections/timidan/oya-wallet-agent-data-6aedf0b20bfbdecdb654e23c): one dataset, [timidan/oya-wallet-agent-data](https://huggingface.co/datasets/timidan/oya-wallet-agent-data),
 CC-BY 4.0 (model outputs inside it stay under their providers' terms). It holds:
 
 - the training chats (2,080 training, 104 validation) and the task files (416 development tasks, 30 held-out
@@ -199,7 +201,7 @@ Before fine-tuning, Tiny Aya already produced well-formed calls for simple, full
 - LoRA r=16, alpha=32, dropout 0.05 on all linear layers (30M trainable parameters, 0.9%).
 - Loss on the assistant's own turns only (tool calls and replies, including the end-of-turn markers);
   system prompt, user messages and tool results are context only. Logits are computed only at trained
-  positions, which keeps Tiny Aya's 256k-token vocabulary within a T4's memory.
+  positions, which keeps Tiny Aya's 262,144-token vocabulary within a T4's memory.
 - 1 epoch, effective batch 16, learning rate 2e-4 with warmup and cosine decay, 130 steps.
 - Validation loss fell from 1.94 to 0.005 and had mostly converged by step 80.
 
@@ -355,7 +357,7 @@ Neither round passed the gate, so v2 is still Oya. The gate is the part that wor
   turn (rejected). 222 pairs (`naija_agent/pairs.py`).
 - **Retrain.** AgentTune's `create_agentic_trainer("dpo")` on its TRL backend: DPO plus a plain loss on the
   chosen turn, continuing v2's LoRA adapter with a frozen copy of it as the reference. TRL scores every token
-  of the 1,500-token chat over Tiny Aya's 262,000-word vocabulary, which does not fit a 16 GB T4 even on a
+  of the 1,500-token chat over Tiny Aya's 262,144-token vocabulary, which does not fit a 16 GB T4 even on a
   4-bit base; a 20-line subclass scores only from the judged turn on (same loss to the last digit on a test
   model, 7 times faster).
 - **Gate.** The new adapter replaces v2 only if it does better on the requests, with no new wrong payments
@@ -387,13 +389,16 @@ Neither round passed the gate, so v2 is still Oya. The gate is the part that wor
 The same 30 held-out tasks, the same prompt and the same scorer, given to OpenAI's current models through
 the API and to open models of Oya's size. Every open model, Oya included, runs in 4-bit on a 4 GB laptop GPU
 (RTX 3050); the OpenAI models run with low reasoning effort and read the same text prompt (no native function
-calling).
+calling). Oya also appears in its two serving formats: 16-bit (scored on Kaggle's T4) and the Q4_K_M GGUF
+(4 CPUs).
 
 ![Task success on 30 held-out Yoruba and Pidgin requests](img/compare-c-light.png)
 
 | Model | Size | Runs on | Task success | Safety tasks | Tasks with a wrong payment | Cost per 1,000 requests |
 |---|---|---|---|---|---|---|
-| **Oya** | 3.35B | laptop GPU, 4-bit | **93%** | 83% | 3% | $0, self-hosted |
+| **Oya, 16-bit** | 3.35B | Kaggle T4, 16-bit | **100%** | 100% | 0% | $0, self-hosted |
+| **Oya, GGUF Q4_K_M** | 3.35B | 4 CPUs, llama.cpp | **100%** | 100% | 0% | $0, self-hosted |
+| Oya, 4-bit | 3.35B | laptop GPU, 4-bit | 93% | 83% | 3% | $0, self-hosted |
 | GPT-6 Astra | not disclosed | OpenAI API | 97% | 100% | 0% | ~$26.75 |
 | GPT-6.1 Sol | not disclosed | OpenAI API | 97% | 100% | 0% | ~$5.24 |
 | GPT-6 Luna | not disclosed | OpenAI API | 63% | 75% | 0% | ~$0.26 |
@@ -402,8 +407,10 @@ calling).
 | Tiny Aya untrained | 3.35B | laptop GPU, 4-bit | 30% | 17% | 23% | $0, self-hosted |
 | Llama 3.2 3B | 3.2B | laptop GPU, 4-bit | 20% | 17% | 20% | $0, self-hosted |
 
-- **Oya is within one task of GPT-6 Astra and GPT-6.1 Sol** (93% against 97%), and far ahead of open models
-  its size: Qwen3 4B 50%, Phi-4 mini 33%, Llama 3.2 3B 20%, untrained Tiny Aya 30%.
+- **At 16-bit and as the GGUF, Oya solves all 30, against 97% for GPT-6 Astra and GPT-6.1 Sol.** In 4-bit on
+  a laptop it is within one task of them (93%) and far ahead of open models its size: Qwen3 4B 50%, Phi-4
+  mini 33%, Llama 3.2 3B 20%, untrained Tiny Aya 30%. (Untrained Tiny Aya scores 23.3% in the held-out table
+  above: that is 16-bit with the strict scorer, this is 4-bit with polite asks counted.)
 - **The open models move money they should not.** Wrong payments on 10-23% of tasks: asked to pay "Kunle"
   (not in the contacts) ₦10,000, Phi-4 mini bought ₦10,000 of airtime for 08031234567, the example number
   in the tool description; Llama 3.2 3B sent airtime and data to that same example number instead of
@@ -507,7 +514,7 @@ GPU (4 GB), Oya runs in 4-bit here, so the typed row is rerun in 4-bit too.
 - The wallet is simulated: one user, no network errors, no fraud signals, no multi-turn negotiation.
 - Small talk and replies are template-like, because the training replies are.
 - Yoruba and Pidgin text was drafted with model help. The Yoruba sentences added for v2 were checked by a
-  native speaker; review of the rest is in progress. **[review]**
+  native speaker; the rest has not had a full native-speaker review.
 
 ## 8. With more credits: approach, and before and after results
 

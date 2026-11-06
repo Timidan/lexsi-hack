@@ -26,6 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from naija_agent.evaluate import evaluate, load_tasks  # noqa: E402
+from naija_agent.scoring import reply_ok  # noqa: E402
 from naija_agent.tasks import SAFETY_CATEGORIES  # noqa: E402
 
 TASKS = ROOT / "data" / "tasks_human.jsonl"
@@ -39,6 +40,12 @@ OPEN = {
     "qwen3-4b": ("Qwen3 4B Instruct", "4.0B", "unsloth/Qwen3-4B-Instruct-2507-bnb-4bit", None),
     "phi-4-mini": ("Phi-4 mini", "3.8B", "unsloth/Phi-4-mini-instruct-bnb-4bit", None),
     "llama-3.2-3b": ("Llama 3.2 3B", "3.2B", "unsloth/Llama-3.2-3B-Instruct-bnb-4bit", None),
+}
+# name: (label, size, runs on, run dir under runs/) for Oya formats scored on the same 30 tasks by the notebooks
+# (results branch: runs/sft-v2-human, runs/gguf-sft-v2-Q4_K_M-human)
+SCORED = {
+    "oya-16bit": ("Oya (Tiny Aya + our LoRA)", "3.35B", "Kaggle T4, 16-bit", "sft-v2-human"),
+    "oya-gguf": ("Oya (Tiny Aya + our LoRA)", "3.35B", "4 CPUs, GGUF Q4_K_M", "gguf-sft-v2-Q4_K_M-human"),
 }
 # name: (label, USD per 1M input tokens, per 1M output tokens)
 API = {
@@ -120,23 +127,30 @@ def reviewed_rate(scores: list[dict]) -> float:
 
 def table(names: list[str]) -> None:
     rows, data = [], []
+    tasks = {t.id: t for t in load_tasks(TASKS)}
     for name in names:
-        m = json.loads((ROOT / "runs" / f"compare-{name}" / "metrics.json").read_text())
+        run_dir = ROOT / "runs" / (SCORED[name][3] if name in SCORED else f"compare-{name}")
+        m = json.loads((run_dir / "metrics.json").read_text())
         o, s = m["overall"], m["safety"]
-        scores = [json.loads(line) for line in open(ROOT / "runs" / f"compare-{name}" / "scores.jsonl", encoding="utf-8")]
+        scores = [json.loads(line) for line in open(run_dir / "scores.jsonl", encoding="utf-8")]
+        for r in scores:  # the current reply check, also for runs saved before it existed
+            r["reply_ok"] = reply_ok(tasks[r["task_id"]], r["final"])
         reviewed = reviewed_rate(scores)
         if name in API:
             label, pin, pout = API[name]
-            u = json.loads((ROOT / "runs" / f"compare-{name}" / "usage.json").read_text())
+            u = json.loads((run_dir / "usage.json").read_text())
             cost = (u["prompt_tokens"] * pin + u["completion_tokens"] * pout) / 1e6 / o["n"] * 1000
             size, where = "not disclosed", "OpenAI API"
+        elif name in SCORED:
+            label, size, where, _ = SCORED[name]
+            cost = 0.0
         else:
             label, size, cost, where = OPEN[name][0], OPEN[name][1], 0.0, "laptop GPU, 4-bit"
         row = {"name": name, "label": label, "size": size, "runs_on": where, "n": o["n"],
                "success": o["success_rate"], "reviewed_success": reviewed,
                "polite_asks": sum(polite_ask(r) for r in scores),
                "safety": reviewed_rate([r for r in scores if r["category"] in SAFETY_CATEGORIES]),
-               "success_right_reply": o["strict_success_rate"],
+               "success_right_reply": sum(r["success"] and r["reply_ok"] for r in scores) / len(scores),
                "wrong_payment": o["unexpected_payment_rate"], "tool_f1": o["tool_f1"],
                "pidgin": reviewed_rate([r for r in scores if r["lang"] == "pcm"]),
                "yoruba": reviewed_rate([r for r in scores if r["lang"] == "yo"]),

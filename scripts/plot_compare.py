@@ -29,8 +29,9 @@ ROOT = Path(__file__).resolve().parents[1]
 WIDTH = 800
 MARGIN = 24
 FONT = 8.5  # 11.8 px at the intended 800 px display width.
-C_MODELS = ("oya", "gpt-6-astra", "qwen3-4b", "tiny-aya", "llama-3.2-3b")
+C_MODELS = ("oya-16bit", "oya", "gpt-6-astra", "qwen3-4b", "tiny-aya", "llama-3.2-3b")
 C_LOGOS = {
+    "oya-16bit": "icon/oya-icon.svg",
     "oya": "icon/oya-icon.svg",
     "gpt-6-astra": "logos/openai.svg",
     "qwen3-4b": "logos/qwen.svg",
@@ -44,22 +45,25 @@ THEMES = {
                  ink="#f0efec", secondary="#c3c2b7", grid="#2c2c2a", baseline="#383835"),
 }
 SUBTITLE = (
-    "Same prompt, same tasks, same scorer. Open models run in 4-bit on a 4 GB "
-    "laptop GPU; OpenAI models via the API."
+    "Same prompt, tasks and scorer. Open models in 4-bit on a 4 GB laptop GPU, Oya also 16-bit; OpenAI via API."
 )
 FOOTNOTE = (
     "Task success counts polite requests without a question mark as asking "
-    "({polite} such replies, all checked by hand). Oya at full precision: 100% (Kaggle). "
+    "({polite} such replies, all checked by hand). "
     "API cost from third-party list prices. {n} tasks is a small sample."
 )
 
 
 def is_open(row):
-    return row["runs_on"] == "laptop GPU, 4-bit"
+    return row["runs_on"] != "OpenAI API"
+
+
+def is_oya(row):
+    return row["name"].startswith("oya")
 
 
 def label(row):
-    return "Oya" if row["name"] == "oya" else row["label"]
+    return {"oya-16bit": "Oya, 16-bit", "oya": "Oya, 4-bit", "oya-gguf": "Oya, GGUF"}.get(row["name"], row["label"])
 
 
 def percent(value):
@@ -67,7 +71,7 @@ def percent(value):
 
 
 def runs_where(row):
-    return f"{row['size']} · 4-bit laptop GPU" if is_open(row) else "OpenAI API"
+    return f"{row['size']} · {row['runs_on']}" if is_open(row) else "OpenAI API"
 
 
 def cost(row):
@@ -161,13 +165,13 @@ def axes(fig, theme, left, top, width, height, horizontal):
 
 def design_a(rows, theme, n):
     opens = sorted((r for r in rows if is_open(r)),
-                   key=lambda r: (r["name"] != "oya", -r["reviewed_success"], r["label"]))
+                   key=lambda r: (not is_oya(r), -r["reviewed_success"], r["label"]))
     apis = sorted((r for r in rows if not is_open(r)),
                   key=lambda r: (-r["reviewed_success"], r["label"]))
     ordered = opens + apis
     # Extra room is reserved for wrapped names, without changing font size.
     probe = plt.figure(figsize=(8, 2), dpi=100)
-    names = [wrap(probe, label(r), 175, bold=r["name"] == "oya") for r in ordered]
+    names = [wrap(probe, label(r), 175, bold=is_oya(r)) for r in ordered]
     plt.close(probe)
     row_height = max(52, 20 + max(len(s.splitlines()) for s in names) * 17 + 16)
     gap = 22 if opens and apis else 0
@@ -184,7 +188,7 @@ def design_a(rows, theme, n):
         ax.set_ylim(plot_height, 0)
     for i, (row, name) in enumerate(zip(ordered, names)):
         y = (i + 0.5) * row_height + (gap if i >= len(opens) else 0)
-        ours = row["name"] == "oya"
+        ours = is_oya(row)
         text(fig, theme, 24, top + y - 18, name, bold=ours)
         text(fig, theme, 24, top + y - 18 + 17 * len(name.splitlines()),
              runs_where(row),
@@ -203,11 +207,11 @@ def design_a(rows, theme, n):
 
 
 def design_b(rows, theme, n):
-    ordered = sorted(rows, key=lambda r: (-r["reviewed_success"], r["name"] != "oya", r["label"]))
+    ordered = sorted(rows, key=lambda r: (-r["reviewed_success"], not is_oya(r), r["label"]))
     left, width, top, plot_height = 170, 606, 154, 258
     cell = width / len(ordered)
     probe = plt.figure(figsize=(8, 2), dpi=100)
-    names = [wrap(probe, label(r), cell - 8, bold=r["name"] == "oya") for r in ordered]
+    names = [wrap(probe, label(r), cell - 8, bold=is_oya(r)) for r in ordered]
     details = [wrap(probe, runs_where(r), cell - 8) for r in ordered]
     costs = [wrap(probe, cost(r), cell - 8) for r in ordered]
     plt.close(probe)
@@ -221,7 +225,7 @@ def design_b(rows, theme, n):
     ax = axes(fig, theme, left, top, width, plot_height, False)
     ax.set_xlim(-0.5, len(ordered) - 0.5)
     for i, (row, name, detail, price) in enumerate(zip(ordered, names, details, costs)):
-        ours = row["name"] == "oya"
+        ours = is_oya(row)
         value = row["reviewed_success"] * 100
         ax.bar(i, value, width=0.36, color=theme["accent" if ours else "gray"], linewidth=0)
         ax.annotate(percent(row["reviewed_success"]), (i, value), xytext=(0, 7),
@@ -270,7 +274,7 @@ def design_c(rows, theme, n):
     probe = plt.figure(figsize=(8, 2), dpi=100)
     renderer = probe.canvas.get_renderer()
     name_height = max(probe.text(0, 0, label(row), fontsize=label_size,
-                                weight="bold" if row["name"] == "oya" else "normal",
+                                weight="bold" if is_oya(row) else "normal",
                                 rotation=45, rotation_mode="anchor", ha="right", va="top")
                       .get_window_extent(renderer).height for row in ordered)
     title = wrap(probe, f"Task success on {n} held-out Yoruba and Pidgin requests",
@@ -300,7 +304,7 @@ def design_c(rows, theme, n):
     for group_index, (group_name, key) in enumerate(groups):
         start = group_index * (group_width + group_gap)
         for i, row in enumerate(ordered):
-            ours = row["name"] == "oya"
+            ours = is_oya(row)
             x = start + (i + 0.5) * cell
             value = row[key] * 100
             lo, hi = x - bar_width / 2, x + bar_width / 2
@@ -332,7 +336,7 @@ def design_c(rows, theme, n):
             value_offset = padding if inside else logo_size + 2 * padding
             ax.annotate(percent(row[key]), (x, value), xytext=(0, value_offset * 72 / 100),
                         textcoords="offset points", ha="center", va="bottom",
-                        fontsize=label_size, color=theme["ink"],
+                        fontsize=label_size - 1, color=theme["ink"],  # six bars a group: keep neighbours apart
                         weight="bold" if ours else "normal", clip_on=False)
             name = text(fig, theme, left + x, names_top, label(row), size=label_size,
                         bold=ours, muted=not ours, ha="right")
@@ -358,7 +362,7 @@ def main():
         for key in ("reviewed_success", "wrong_payment", "pidgin", "yoruba", "safety"):
             if not 0 <= row[key] <= 1:
                 raise ValueError(f"Invalid {key} for {row['name']}")
-        if row["runs_on"] not in ("OpenAI API", "laptop GPU, 4-bit"):
+        if row["runs_on"] not in ("OpenAI API", "laptop GPU, 4-bit", "Kaggle T4, 16-bit", "4 CPUs, GGUF Q4_K_M"):
             raise ValueError(f"Unknown run environment for {row['name']}")
     plt.rcParams.update({"font.family": "DejaVu Sans", "svg.fonttype": "none",
                          "text.parse_math": False, "axes.unicode_minus": False})

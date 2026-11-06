@@ -23,12 +23,12 @@ On 416 development tasks, task success rose from 39.2% to 97.4%, safety tasks fr
 where money moved that should not have fell from 18.3% to 2.4%. None of 32 planted injections was obeyed. On 30
 held-out Yoruba and Pidgin requests checked by a native speaker, Oya solved all 30 with no wrong payment
 (untrained: 23.3%), and 83.3% when the reply must also use the right language and ask for the right detail. On
-18 more tasks built from native-written text found online, it solved all 18. In 4-bit on a laptop it scores 93%
-on those 30, against 97% for OpenAI's GPT-6 Astra and GPT-6.1 Sol and 20-50% for open models its size, with no
-per-request fee.
+18 more tasks built from native-written text found online, it solved all 18. Against OpenAI's GPT-6 Astra and
+GPT-6.1 Sol (97% on those 30), it scores 100% at 16-bit and 93% in 4-bit on a laptop, where open models its size
+score 20-50%, with no per-request fee.
 
 For Track 3's self-healing problem, we ran two DPO rounds with AgentTune on preference pairs built from Oya's
-own mistakes, behind a gate on measured accuracy. To fit Tiny Aya's 262,000-word vocabulary on a 16 GB T4, we
+own mistakes, behind a gate on measured accuracy. To fit Tiny Aya's 262,144-token vocabulary on a 16 GB T4, we
 wrote a trainer subclass that scores only the judged turn. Round 1 drifted into Pidgin because its pairs were
 unbalanced. Round 2 fixed the follow-up questions it targeted but sent Mama's airtime as a bank transfer and
 lost ground on the development set. The gate kept the supervised model.
@@ -43,7 +43,7 @@ checked by one native speaker), and the wallet is simulated.
 ## Links
 
 - Code and notebooks: https://github.com/Timidan/lexsi-hack
-- Write-up: https://github.com/Timidan/lexsi-hack/blob/main/docs/article.md (Hugging Face article link to add)
+- Write-up: https://github.com/Timidan/lexsi-hack/blob/main/docs/article.md
 - Models: https://huggingface.co/collections/timidan/oya-wallet-agent-models-6aedf0affb712ba373e3a17d
 - Data: https://huggingface.co/collections/timidan/oya-wallet-agent-data-6aedf0b20bfbdecdb654e23c
 - Demo: https://huggingface.co/spaces/timidan/oya
