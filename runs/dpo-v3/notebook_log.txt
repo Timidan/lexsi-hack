@@ -82,3 +82,396 @@ Loading weights: 100%|██████████| 290/290 [00:07<00:00, 40.0
 [shard 0/2] 1222/1222 steps, 91 pairs (10581s)
 {"shard": "0/2", "tasks": 520, "steps": 1222, "pairs": 91, "by_category": {"insufficient_funds": 4, "balance": 13, "injection": 9, "unknown_contact": 19, "missing_info": 20, "airtime_contact": 3, "transfer_direct": 5, "chitchat": 7, "transfer_contact": 9, "data_contact": 1, "electricity": 1}, "by_lang": {"pcm": 46, "yo": 45}}
 [shard 1/2] 1152/1245 steps, 113 pairs (10832s)
+[shard 1/2] 1245/1245 steps, 131 pairs (11728s)
+{"shard": "1/2", "tasks": 520, "steps": 1245, "pairs": 131, "by_category": {"transfer_contact": 8, "balance": 10, "chitchat": 10, "missing_info": 34, "transfer_direct": 11, "injection": 11, "unknown_contact": 26, "airtime_contact": 6, "data_contact": 5, "insufficient_funds": 10}, "by_lang": {"yo": 62, "pcm": 69}}
+{
+  "pairs": 222,
+  "by_category": {
+    "unknown_contact": 45,
+    "insufficient_funds": 14,
+    "injection": 20,
+    "airtime_contact": 9,
+    "missing_info": 54,
+    "transfer_contact": 17,
+    "balance": 23,
+    "data_contact": 6,
+    "transfer_direct": 16,
+    "chitchat": 17,
+    "electricity": 1
+  },
+  "by_lang": {
+    "yo": 107,
+    "pcm": 115
+  },
+  "by_turn": {
+    "1": 42,
+    "2": 40,
+    "0": 132,
+    "3": 8
+  }
+}
+[unknown_contact / yo / turn 1] Joo ba mi sanwo 1150 naira fun Obinna.
+  chosen:   Mi ò rí Obinna nínú àwọn contact rẹ. Kí ni orúkọ bánkì àti nọ́ńbà àkáǹtì rẹ̀?
+  rejected: Mi ò rí Obinna nínú àwọn contact rẹ. Kí ni nọ́ńbà fóònù rẹ̀ àti network rẹ̀?
+
+[insufficient_funds / pcm / turn 2] I wan pay 9,500 naira to 7003741089 for Moniepoint, abeg do am
+  chosen:   Sorry o, e no go. Na ₦6,250 remain for your wallet, e no reach ₦9,500. Abeg fund your wallet first.
+  rejected: Ma ba nílò, mi ò lè fi owó náà ránṣẹ́. Owó tó wà nínú wallet rẹ jẹ́ ₦6,250, kò tó ₦9,500. Jọ̀ọ́ fi owó sínú wallet rẹ kí o tó tún gbìyànjú.
+
+[injection / pcm / turn 2] I wan pay 30000 to 2198082403 for First Bank, abeg do am
+  chosen:   E don go! ₦30,000 don enter IBRAHIM AKINWALE account (First Bank, 2198082403). Your balance remain ₦116,700. Notice: the account details get one strange instruc
+  rejected: Ó ti lọ! Mo ti fi ₦30,000 ránṣẹ́ sí IBRAHIM AKINWALE (First Bank, 2198082403). Owó tó kù jẹ́ ₦116,700. Àkíyèsí: ìtọ́ni àjèjì kan wà nínú àlàyé àkáǹtì náà tó ní 
+
+[insufficient_funds / pcm / turn 2] I wan pay 25500 naira to 7346059533 for Access Bank, abeg do am
+  chosen:   Sorry o, e no go. Na ₦2,800 remain for your wallet, e no reach ₦25,500. Abeg fund your wallet first.
+  rejected: Má bínú, kò ṣeé ṣe. ₦2,800 ló kù nínú wallet rẹ, kò tó ₦25,500. Jọ̀ọ́ fi owó sàlẹ̀ kí o tó tún gbìyànjú.
+
+[airtime_contact / pcm / turn 0] Help me recharge Mama phone with N450
+  chosen:   [{"tool_name": "find_contact", "parameters": {"name": "Mama"}}]
+  rejected: Which number should I send the ₦450 airtime to, and which network is Mama?
+
+[missing_info / yo / turn 0] Joo ra kaadi ₦200 fun mi.
+  chosen:   Nọ́ńbà wo ni kí n fi airtime ₦200 náà ránṣẹ́ sí, network wo sì ni?
+  rejected: Iye mélòó ni kí n fi ránṣẹ́ sí, káàdì ₦200 náà?
+
+[transfer_contact / yo / turn 0] Joo ba mi sanwo 44k fun Ngozi.
+  chosen:   [{"tool_name": "find_contact", "parameters": {"name": "Ngozi"}}]
+  rejected: Iye mélòó ni kí n fi ránṣẹ́ sí Ngozi?
+
+[missing_info / pcm / turn 0] Abeg load card for me, my line don dry
+  chosen:   No wahala! Which number I go recharge, which network, and how much?
+  rejected: Wetin be the number, and which network?
+
+$ /usr/bin/python3 -m torch.distributed.run --standalone --nproc_per_node=2 scripts/train_dpo.py --adapter /kaggle/input/notebooks/timidanx/notebook80b729c38e/lexsi-hack/outputs/sft-v2 --pairs outputs/dpo-v3/pairs.jsonl --out outputs/dpo-v3 --epochs 2.0 --lr 2e-05 --beta 0.1 --grad-accum 8
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793934071.933672     969 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1793934071.933672     970 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/290 [00:03<18:26,  3.83s/it]
+Loading weights:   0%|          | 1/290 [00:03<18:12,  3.78s/it]
+Loading weights:  46%|████▌     | 133/290 [00:03<00:03, 47.54it/s]
+Loading weights:  45%|████▌     | 131/290 [00:04<00:03, 45.26it/s]
+Loading weights:  56%|█████▌    | 163/290 [00:04<00:02, 46.98it/s]
+Loading weights:  63%|██████▎   | 183/290 [00:05<00:02, 47.25it/s]
+Loading weights:  70%|███████   | 204/290 [00:05<00:01, 48.88it/s]
+Loading weights:  68%|██████▊   | 197/290 [00:05<00:02, 46.14it/s]
+Loading weights:  72%|███████▏  | 208/290 [00:05<00:01, 48.40it/s]
+Loading weights:  76%|███████▌  | 219/290 [00:05<00:01, 47.40it/s]
+Loading weights:  79%|███████▉  | 229/290 [00:05<00:01, 48.21it/s]
+Loading weights:  84%|████████▍ | 245/290 [00:06<00:00, 48.53it/s]
+Loading weights:  82%|████████▏ | 237/290 [00:06<00:01, 50.91it/s]
+Loading weights:  84%|████████▍ | 244/290 [00:06<00:00, 49.01it/s]
+Loading weights:  87%|████████▋ | 252/290 [00:06<00:00, 49.24it/s]
+Loading weights:  94%|█████████▍| 272/290 [00:06<00:00, 49.72it/s]
+Loading weights:  89%|████████▉ | 259/290 [00:06<00:00, 48.92it/s]
+Loading weights:  92%|█████████▏| 267/290 [00:06<00:00, 52.67it/s]
+Loading weights: 100%|██████████| 290/290 [00:06<00:00, 41.56it/s]
+
+Loading weights:  95%|█████████▍| 275/290 [00:06<00:00, 51.29it/s]
+Loading weights:  98%|█████████▊| 285/290 [00:06<00:00, 59.14it/s]
+Loading weights: 100%|██████████| 290/290 [00:06<00:00, 41.51it/s]
+
+Tokenizing train dataset:   0%|          | 0/222 [00:00<?, ? examples/s]
+Tokenizing train dataset:   5%|▍         | 10/222 [00:00<00:02, 85.33 examples/s]
+Tokenizing train dataset:   9%|▉         | 20/222 [00:00<00:02, 91.82 examples/s]
+Tokenizing train dataset:  14%|█▍        | 31/222 [00:00<00:01, 96.95 examples/s]
+Tokenizing train dataset:  19%|█▉        | 43/222 [00:00<00:01, 100.88 examples/s]
+Tokenizing train dataset:  25%|██▍       | 55/222 [00:00<00:01, 103.27 examples/s]
+Tokenizing train dataset:  30%|███       | 67/222 [00:00<00:01, 104.52 examples/s]
+Tokenizing train dataset:  36%|███▌      | 79/222 [00:00<00:01, 104.00 examples/s]
+Tokenizing train dataset:  41%|████      | 91/222 [00:00<00:01, 104.54 examples/s]
+Tokenizing train dataset:  48%|████▊     | 107/222 [00:01<00:01, 100.93 examples/s]
+Tokenizing train dataset:  53%|█████▎    | 118/222 [00:01<00:01, 100.79 examples/s]
+Tokenizing train dataset:  58%|█████▊    | 129/222 [00:01<00:00, 100.78 examples/s]
+Tokenizing train dataset:  65%|██████▌   | 145/222 [00:01<00:00, 99.70 examples/s] 
+Tokenizing train dataset:  71%|███████   | 157/222 [00:01<00:00, 101.65 examples/s]
+Tokenizing train dataset:  78%|███████▊  | 173/222 [00:01<00:00, 100.36 examples/s]
+Tokenizing train dataset:  83%|████████▎ | 184/222 [00:01<00:00, 101.07 examples/s]
+Tokenizing train dataset:  88%|████████▊ | 195/222 [00:01<00:00, 100.52 examples/s]
+Tokenizing train dataset:  93%|█████████▎| 207/222 [00:02<00:00, 101.83 examples/s]
+Tokenizing train dataset:  98%|█████████▊| 218/222 [00:02<00:00, 100.99 examples/s]
+Tokenizing train dataset: 100%|██████████| 222/222 [00:02<00:00, 95.74 examples/s] 
+[transformers] The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 6}.
+
+Tokenizing train dataset:   0%|          | 0/222 [00:00<?, ? examples/s]
+Tokenizing train dataset:   5%|▍         | 10/222 [00:00<00:02, 83.42 examples/s]
+Tokenizing train dataset:   9%|▉         | 20/222 [00:00<00:02, 86.74 examples/s]
+Tokenizing train dataset:  14%|█▎        | 30/222 [00:00<00:02, 89.95 examples/s]
+Tokenizing train dataset:  18%|█▊        | 41/222 [00:00<00:01, 93.53 examples/s]
+Tokenizing train dataset:  23%|██▎       | 52/222 [00:00<00:01, 94.92 examples/s]
+Tokenizing train dataset:  28%|██▊       | 63/222 [00:00<00:01, 97.55 examples/s]
+Tokenizing train dataset:  33%|███▎      | 74/222 [00:00<00:01, 98.76 examples/s]
+Tokenizing train dataset:  39%|███▊      | 86/222 [00:00<00:01, 99.62 examples/s]
+Tokenizing train dataset:  44%|████▍     | 98/222 [00:01<00:01, 101.18 examples/s]
+Tokenizing train dataset:  51%|█████     | 113/222 [00:01<00:01, 97.52 examples/s]
+Tokenizing train dataset:  55%|█████▌    | 123/222 [00:01<00:01, 97.33 examples/s]
+Tokenizing train dataset:  60%|██████    | 134/222 [00:01<00:00, 97.18 examples/s]
+Tokenizing train dataset:  65%|██████▍   | 144/222 [00:01<00:00, 97.36 examples/s]
+Tokenizing train dataset:  70%|██████▉   | 155/222 [00:01<00:00, 97.92 examples/s]
+Tokenizing train dataset:  75%|███████▍  | 166/222 [00:01<00:00, 97.40 examples/s]
+Tokenizing train dataset:  80%|███████▉  | 177/222 [00:01<00:00, 97.24 examples/s]
+Tokenizing train dataset:  85%|████████▌ | 189/222 [00:01<00:00, 98.74 examples/s]
+Tokenizing train dataset:  91%|█████████ | 201/222 [00:02<00:00, 100.67 examples/s]
+Tokenizing train dataset:  95%|█████████▌| 212/222 [00:02<00:00, 101.45 examples/s]
+Tokenizing train dataset: 100%|██████████| 222/222 [00:02<00:00, 94.20 examples/s] 
+[transformers] The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 6}.
+
+  0%|          | 0/28 [00:00<?, ?it/s][rank0]: Traceback (most recent call last):
+[rank0]:   File "/kaggle/working/lexsi-hack/scripts/train_dpo.py", line 73, in <module>
+[rank0]:     main()
+[rank0]:     ~~~~^^
+[rank0]:   File "/kaggle/working/lexsi-hack/scripts/train_dpo.py", line 66, in main
+[rank0]:     stats = trainer.train()
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/agenttune/backends/trl/agentic/dpo/agentic_dpo.py", line 616, in train
+[rank0]:     self._train_result = self.trainer.train()
+[rank0]:                          ~~~~~~~~~~~~~~~~~~^^
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1559, in train
+[rank0]:     return inner_training_loop(
+[rank0]:         args=args,
+[rank0]:     ...<2 lines>...
+[rank0]:         ignore_keys_for_eval=ignore_keys_for_eval,
+[rank0]:     )
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1643, in _inner_training_loop
+[rank0]:     self._run_epoch(
+[rank0]:     ~~~~~~~~~~~~~~~^
+[rank0]:         model=model,
+[rank0]:         ^^^^^^^^^^^^
+[rank0]:     ...<9 lines>...
+[rank0]:         steps_trained_in_current_epoch=steps_trained_in_current_epoch,
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:     )
+[rank0]:     ^
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1889, in _run_epoch
+[rank0]:     tr_loss_step = self.training_step(model, inputs, num_items_in_batch)
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/trl/trainer/dpo_trainer.py", line 1603, in training_step
+[rank0]:     return super().training_step(*args, **kwargs)
+[rank0]:            ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 2062, in training_step
+[rank0]:     loss = self.compute_loss(model, inputs, num_items_in_batch=num_items_in_batch)
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/trl/trainer/dpo_trainer.py", line 1590, in compute_loss
+[rank0]:     return self._compute_loss(model, inputs, return_outputs)
+[rank0]:            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/trl/trainer/dpo_trainer.py", line 1483, in _compute_loss
+[rank0]:     per_token_entropy = entropy_from_logits(shift_logits.detach())
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/trl/trainer/utils.py", line 511, in entropy_from_logits
+[rank0]:     flat_logits = logits.reshape(-1, num_classes)
+[rank0]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.59 GiB. GPU 0 has a total capacity of 14.56 GiB of which 1.98 GiB is free. Including non-PyTorch memory, this process has 12.48 GiB memory in use. Process 970 has 102.00 MiB memory in use. Of the allocated memory 12.19 GiB is allocated by PyTorch, and 74.88 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/kaggle/working/lexsi-hack/scripts/train_dpo.py", line 73, in <module>
+[rank1]:     main()
+[rank1]:     ~~~~^^
+[rank1]:   File "/kaggle/working/lexsi-hack/scripts/train_dpo.py", line 66, in main
+[rank1]:     stats = trainer.train()
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/agenttune/backends/trl/agentic/dpo/agentic_dpo.py", line 616, in train
+[rank1]:     self._train_result = self.trainer.train()
+[rank1]:                          ~~~~~~~~~~~~~~~~~~^^
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1559, in train
+[rank1]:     return inner_training_loop(
+[rank1]:         args=args,
+[rank1]:     ...<2 lines>...
+[rank1]:         ignore_keys_for_eval=ignore_keys_for_eval,
+[rank1]:     )
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1643, in _inner_training_loop
+[rank1]:     self._run_epoch(
+[rank1]:     ~~~~~~~~~~~~~~~^
+[rank1]:         model=model,
+[rank1]:         ^^^^^^^^^^^^
+[rank1]:     ...<9 lines>...
+[rank1]:         steps_trained_in_current_epoch=steps_trained_in_current_epoch,
+[rank1]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:     )
+[rank1]:     ^
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1889, in _run_epoch
+[rank1]:     tr_loss_step = self.training_step(model, inputs, num_items_in_batch)
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/trl/trainer/dpo_trainer.py", line 1603, in training_step
+[rank1]:     return super().training_step(*args, **kwargs)
+[rank1]:            ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 2062, in training_step
+[rank1]:     loss = self.compute_loss(model, inputs, num_items_in_batch=num_items_in_batch)
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/trl/trainer/dpo_trainer.py", line 1590, in compute_loss
+[rank1]:     return self._compute_loss(model, inputs, return_outputs)
+[rank1]:            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/trl/trainer/dpo_trainer.py", line 1281, in _compute_loss
+[rank1]:     ref_outputs = self.model(**model_kwargs)
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/accelerate/utils/operations.py", line 943, in forward
+[rank1]:     return model_forward(*args, **kwargs)
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/accelerate/utils/operations.py", line 931, in __call__
+[rank1]:     return convert_to_fp32(self.model_forward(*args, **kwargs))
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/accelerate/utils/operations.py", line 910, in convert_to_fp32
+[rank1]:     return recursively_apply(_convert_to_fp32, tensor, test_type=_is_fp16_bf16_tensor)
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/accelerate/utils/operations.py", line 120, in recursively_apply
+[rank1]:     k: recursively_apply(
+[rank1]:        ~~~~~~~~~~~~~~~~~^
+[rank1]:         func, v, *args, test_type=test_type, error_on_other_type=error_on_other_type, **kwargs
+[rank1]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:     )
+[rank1]:     ^
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/accelerate/utils/operations.py", line 127, in recursively_apply
+[rank1]:     return func(data, *args, **kwargs)
+[rank1]:   File "/usr/local/lib/python3.13/dist-packages/accelerate/utils/operations.py", line 902, in _convert_to_fp32
+[rank1]:     return tensor.float()
+[rank1]:            ~~~~~~~~~~~~^^
+[rank1]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 3.02 GiB. GPU 1 has a total capacity of 14.56 GiB of which 2.65 GiB is free. Including non-PyTorch memory, this process has 11.91 GiB memory in use. Of the allocated memory 11.59 GiB is allocated by PyTorch, and 107.48 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+  0%|          | 0/28 [00:04<?, ?it/s]
+[rank0]:[W1106 03:01:51.435554804 ProcessGroupNCCL.cpp:1575] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+W1106 03:01:53.578000 961 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 970 closing signal SIGTERM
+E1106 03:01:54.044000 961 torch/distributed/elastic/multiprocessing/api.py:986] failed (exitcode: 1) local_rank: 0 (pid: 969) of binary: /usr/bin/python3
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/run.py", line 994, in <module>
+    main()
+    ~~~~^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+    return f(*args, **kwargs)
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/run.py", line 990, in main
+    run(args)
+    ~~~^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/run.py", line 981, in run
+    elastic_launch(
+    ~~~~~~~~~~~~~~~
+        config=config,
+        ~~~~~~~~~~~~~~
+        entrypoint=cmd,
+        ~~~~~~~~~~~~~~~
+    )(*cmd_args)
+    ~^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/launcher/api.py", line 170, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/launcher/api.py", line 317, in launch_agent
+    raise ChildFailedError(
+    ...<2 lines>...
+    )
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+scripts/train_dpo.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-11-06_03:01:54
+  host      : 47ba52ee46e0
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 970)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-11-06_03:01:53
+  host      : 47ba52ee46e0
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 969)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
+
+*** 2-GPU DPO failed (exit code 1); retrying on one GPU ***
+
+$ CUDA_VISIBLE_DEVICES=0 /usr/bin/python3 scripts/train_dpo.py --adapter /kaggle/input/notebooks/timidanx/notebook80b729c38e/lexsi-hack/outputs/sft-v2 --pairs outputs/dpo-v3/pairs.jsonl --out outputs/dpo-v3 --epochs 2.0 --lr 2e-05 --beta 0.1 --grad-accum 8
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793934119.830950    1009 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/290 [00:01<07:50,  1.63s/it]
+Loading weights:  31%|███▏      | 91/290 [00:01<00:02, 71.85it/s]
+Loading weights:  47%|████▋     | 135/290 [00:02<00:01, 82.26it/s]
+Loading weights:  57%|█████▋    | 164/290 [00:02<00:01, 83.87it/s]
+Loading weights:  64%|██████▍   | 185/290 [00:02<00:01, 90.38it/s]
+Loading weights:  70%|███████   | 203/290 [00:02<00:00, 88.82it/s]
+Loading weights:  75%|███████▌  | 218/290 [00:03<00:00, 93.89it/s]
+Loading weights:  80%|████████  | 232/290 [00:03<00:00, 91.64it/s]
+Loading weights:  84%|████████▍ | 245/290 [00:03<00:00, 89.17it/s]
+Loading weights:  89%|████████▉ | 259/290 [00:03<00:00, 92.26it/s]
+Loading weights:  95%|█████████▍| 275/290 [00:03<00:00, 90.33it/s]
+Loading weights: 100%|██████████| 290/290 [00:03<00:00, 77.63it/s]
+
+Tokenizing train dataset:   0%|          | 0/222 [00:00<?, ? examples/s]
+Tokenizing train dataset:   4%|▍         | 9/222 [00:00<00:02, 81.23 examples/s]
+Tokenizing train dataset:   9%|▊         | 19/222 [00:00<00:02, 89.62 examples/s]
+Tokenizing train dataset:  14%|█▎        | 30/222 [00:00<00:02, 94.97 examples/s]
+Tokenizing train dataset:  18%|█▊        | 41/222 [00:00<00:01, 97.89 examples/s]
+Tokenizing train dataset:  23%|██▎       | 52/222 [00:00<00:01, 98.94 examples/s]
+Tokenizing train dataset:  28%|██▊       | 63/222 [00:00<00:01, 99.81 examples/s]
+Tokenizing train dataset:  33%|███▎      | 74/222 [00:00<00:01, 99.56 examples/s]
+Tokenizing train dataset:  38%|███▊      | 84/222 [00:00<00:01, 98.19 examples/s]
+Tokenizing train dataset:  43%|████▎     | 95/222 [00:00<00:01, 97.13 examples/s]
+Tokenizing train dataset:  47%|████▋     | 105/222 [00:01<00:01, 95.91 examples/s]
+Tokenizing train dataset:  52%|█████▏    | 115/222 [00:01<00:01, 96.14 examples/s]
+Tokenizing train dataset:  57%|█████▋    | 127/222 [00:01<00:00, 97.63 examples/s]
+Tokenizing train dataset:  62%|██████▏   | 138/222 [00:01<00:00, 97.50 examples/s]
+Tokenizing train dataset:  67%|██████▋   | 148/222 [00:01<00:00, 96.43 examples/s]
+Tokenizing train dataset:  71%|███████   | 158/222 [00:01<00:00, 96.62 examples/s]
+Tokenizing train dataset:  76%|███████▌  | 168/222 [00:01<00:00, 96.00 examples/s]
+Tokenizing train dataset:  80%|████████  | 178/222 [00:01<00:00, 95.35 examples/s]
+Tokenizing train dataset:  85%|████████▍ | 188/222 [00:01<00:00, 95.63 examples/s]
+Tokenizing train dataset:  89%|████████▉ | 198/222 [00:02<00:00, 95.29 examples/s]
+Tokenizing train dataset:  94%|█████████▍| 209/222 [00:02<00:00, 96.24 examples/s]
+Tokenizing train dataset:  99%|█████████▊| 219/222 [00:02<00:00, 95.14 examples/s]
+Tokenizing train dataset: 100%|██████████| 222/222 [00:02<00:00, 92.36 examples/s]
+[transformers] The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 6}.
+
+  0%|          | 0/56 [00:00<?, ?it/s]Traceback (most recent call last):
+  File "/kaggle/working/lexsi-hack/scripts/train_dpo.py", line 73, in <module>
+    main()
+    ~~~~^^
+  File "/kaggle/working/lexsi-hack/scripts/train_dpo.py", line 66, in main
+    stats = trainer.train()
+  File "/usr/local/lib/python3.13/dist-packages/agenttune/backends/trl/agentic/dpo/agentic_dpo.py", line 616, in train
+    self._train_result = self.trainer.train()
+                         ~~~~~~~~~~~~~~~~~~^^
+  File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1559, in train
+    return inner_training_loop(
+        args=args,
+    ...<2 lines>...
+        ignore_keys_for_eval=ignore_keys_for_eval,
+    )
+  File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1643, in _inner_training_loop
+    self._run_epoch(
+    ~~~~~~~~~~~~~~~^
+        model=model,
+        ^^^^^^^^^^^^
+    ...<9 lines>...
+        steps_trained_in_current_epoch=steps_trained_in_current_epoch,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 1889, in _run_epoch
+    tr_loss_step = self.training_step(model, inputs, num_items_in_batch)
+  File "/usr/local/lib/python3.13/dist-packages/trl/trainer/dpo_trainer.py", line 1603, in training_step
+    return super().training_step(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/transformers/trainer.py", line 2062, in training_step
+    loss = self.compute_loss(model, inputs, num_items_in_batch=num_items_in_batch)
+  File "/usr/local/lib/python3.13/dist-packages/trl/trainer/dpo_trainer.py", line 1590, in compute_loss
+    return self._compute_loss(model, inputs, return_outputs)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/trl/trainer/dpo_trainer.py", line 1483, in _compute_loss
+    per_token_entropy = entropy_from_logits(shift_logits.detach())
+  File "/usr/local/lib/python3.13/dist-packages/trl/trainer/utils.py", line 511, in entropy_from_logits
+    flat_logits = logits.reshape(-1, num_classes)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.59 GiB. GPU 0 has a total capacity of 14.56 GiB of which 2.28 GiB is free. Including non-PyTorch memory, this process has 12.28 GiB memory in use. Of the allocated memory 12.08 GiB is allocated by PyTorch, and 72.16 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+  0%|          | 0/56 [00:04<?, ?it/s]
+
+=== CELL FAILED ===
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.13/dist-packages/IPython/core/interactiveshell.py", line 3553, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/ipykernel_22/143992608.py", line 13, in <cell line: 0>
+    assert rc == 0, "DPO failed: see the log above"
+           ^^^^^^^
+AssertionError: DPO failed: see the log above
