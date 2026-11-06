@@ -228,8 +228,7 @@ Steps 1-3 of the original list are done (held-out set written, v2 scored on it, 
    instead." The user chose the README route: `README.md` is now the whole write-up.
 6. **Published 2026-11-06** (user's OK): the two collections, the four model repos, the dataset and the Space
    are public and un-gated, and every page loads logged out; a scan before publishing found no audio or video
-   and no token-like strings. The dataset viewer was still processing its three configs right after publishing:
-   look once more. A `gradio_client` script with no token got "exceeded your ZeroGPU runs limit" after 3 model
+   and no token-like strings. The dataset viewer works (preview, search and filter, checked the same day). A `gradio_client` script with no token got "exceeded your ZeroGPU runs limit" after 3 model
    calls; a logged-out browser visitor is identified differently (X-IP-Token) and was not verified, because
    automated input did not reach the Space's iframe: try it by hand in a private tab. Then the user sends the submission form; its abstract is
    `docs/abstract.md` (488 words between `## Abstract` and `## Links`; keep it in step with the README's numbers). The dataset is rebuilt by `OYA_PROMPT=compact python scripts/build_data.py --train-per-cell 40`
