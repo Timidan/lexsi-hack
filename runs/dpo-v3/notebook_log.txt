@@ -352,3 +352,36 @@ Caching reference log probs for train dataset: 100%|█████████�
  73%|███████▎  | 41/56 [12:46<04:35, 18.38s/it]
  75%|███████▌  | 42/56 [13:06<04:21, 18.70s/it]
  77%|███████▋  | 43/56 [13:24<04:03, 18.69s/it]
+ 79%|███████▊  | 44/56 [13:42<03:40, 18.37s/it]
+ 80%|████████  | 45/56 [13:59<03:18, 18.04s/it]
+                                               
+{'loss': '0.09948', 'grad_norm': '3.254', 'learning_rate': '6.525e-06', 'entropy': '0.2189', 'num_tokens': '2.601e+04', 'logits/chosen': '-0.8645', 'logits/rejected': '-1.192', 'mean_token_accuracy': '0.9948', 'rewards/chosen': '0.6155', 'rewards/rejected': '-5.769', 'rewards/accuracies': '0.95', 'rewards/margins': '6.385', 'logps/chosen': '-0.9807', 'logps/rejected': '-62.77', 'epoch': '1.613'}
+
+ 80%|████████  | 45/56 [13:59<03:18, 18.04s/it]
+ 82%|████████▏ | 46/56 [14:18<03:01, 18.17s/it]
+ 84%|████████▍ | 47/56 [14:36<02:44, 18.29s/it]
+ 86%|████████▌ | 48/56 [14:54<02:25, 18.19s/it]
+ 88%|████████▊ | 49/56 [15:13<02:09, 18.43s/it]
+ 89%|████████▉ | 50/56 [15:32<01:52, 18.69s/it]
+                                               
+{'loss': '0.07586', 'grad_norm': '2.903', 'learning_rate': '2.288e-06', 'entropy': '0.2208', 'num_tokens': '2.916e+04', 'logits/chosen': '-0.696', 'logits/rejected': '-1.026', 'mean_token_accuracy': '0.9936', 'rewards/chosen': '0.7886', 'rewards/rejected': '-6.073', 'rewards/accuracies': '1', 'rewards/margins': '6.861', 'logps/chosen': '-1.489', 'logps/rejected': '-68.17', 'epoch': '1.793'}
+
+ 89%|████████▉ | 50/56 [15:32<01:52, 18.69s/it]
+ 91%|█████████ | 51/56 [15:53<01:36, 19.22s/it]
+ 93%|█████████▎| 52/56 [16:12<01:16, 19.24s/it]
+ 95%|█████████▍| 53/56 [16:32<00:58, 19.35s/it]
+ 96%|█████████▋| 54/56 [16:56<00:41, 20.81s/it]
+ 98%|█████████▊| 55/56 [17:13<00:19, 19.82s/it]
+                                               
+{'loss': '0.0705', 'grad_norm': '0.8216', 'learning_rate': '1.895e-07', 'entropy': '0.1823', 'num_tokens': '3.189e+04', 'logits/chosen': '-0.731', 'logits/rejected': '-1.102', 'mean_token_accuracy': '0.9986', 'rewards/chosen': '0.6539', 'rewards/rejected': '-5.423', 'rewards/accuracies': '1', 'rewards/margins': '6.077', 'logps/chosen': '-0.4932', 'logps/rejected': '-59.92', 'epoch': '1.973'}
+
+ 98%|█████████▊| 55/56 [17:13<00:19, 19.82s/it]
+100%|██████████| 56/56 [17:26<00:00, 17.72s/it]
+                                               
+{'train_runtime': '1047', 'train_samples_per_second': '0.424', 'train_steps_per_second': '0.053', 'train_loss': '0.2891', 'entropy': '0.1782', 'num_tokens': '3.231e+04', 'logits/chosen': '-0.9895', 'logits/rejected': '-1.229', 'mean_token_accuracy': '1', 'rewards/chosen': '1.483', 'rewards/rejected': '-5.014', 'rewards/accuracies': '1', 'rewards/margins': '6.497', 'logps/chosen': '-0.3639', 'logps/rejected': '-53.28', 'epoch': '2'}
+
+100%|██████████| 56/56 [17:26<00:00, 17.72s/it]
+100%|██████████| 56/56 [17:26<00:00, 18.69s/it]
+{"train_size": 222, "final_loss": 0.28911636856251527, "total_steps": 56, "metrics": {"train_runtime": 1047.2449, "train_samples_per_second": 0.424, "train_steps_per_second": 0.053, "total_flos": 2.1641663059329024e+16, "train_loss": 0.28911636856251527, "entropy": 0.1782306581735611, "num_tokens": 32306.0, "logits/chosen": -0.9895371016482493, "logits/rejected": -1.2294178447187187, "mean_token_accuracy": 1.0, "rewards/chosen": 1.4830573201179504, "rewards/rejected": -5.013868490854899, "rewards/accuracies": 1.0, "rewards/margins": 6.496925989786784, "logps/chosen": -0.3639254570007324, "logps/rejected": -53.27865854899088, "epoch": 2.0}}
+[rank0]:[W1106 04:29:53.183742513 ProcessGroupNCCL.cpp:1575] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+evaluating ['v3', 'v2'] in parallel, one GPU each
