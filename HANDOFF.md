@@ -19,6 +19,9 @@ Fine-tuning**. Official rules (kickoff slides, hackathon.lexsi.ai/kickoff-slides
   articles are not available. Original work. A Space is **not** required ("if relevant").
 - **Submission form: sent by email a couple of days before the deadline** (not via Discord), open until
   **end of day Nov 14, 2026, AoE (12:59 on Nov 15 in Lagos).** Aim for Nov 13. Needs an abstract under 500 words.
+  The form is already live at hackathon.lexsi.ai/submission (Tally `o9E0Ve`, read 2026-11-06): registered email,
+  abstract, Discord username; collection, HF article (`huggingface.co/blog/…`) and GitHub links; repos used,
+  models, track and problem statements; consents, and a tick that everything is public and final at the deadline.
 - Judging: validity check (public artifacts, write-up, checklist, no duplicates), then double-blind scores:
   write-up clarity /10, practical usefulness /10, code/notebook quality /10, overall /100. Up to 20 teams told
   on Nov 16, prep Nov 16-21, live Demo Day Nov 22.
@@ -217,11 +220,12 @@ Steps 1-3 of the original list are done (held-out set written, v2 scored on it, 
    `04 eval human2`, notebook 04 at 63a1e31): v2 100% task success, 94.4% with the reply check, 0 wrong payments;
    round 2 94.4% with one wrong payment (Mama's airtime sent as a bank transfer again); untrained 27.8%. In
    `docs/article.md` ("Second held-out set") and the dataset's `online` split.
-5. **Write-up:** held-out results are in `docs/article.md`; still open: the `[review]` marker, optionally
-   the ROI table. Publish the article on Hugging Face.
+5. **Write-up:** done in `docs/article.md`, including the ROI table (section 7, "ROI": HF hardware prices
+   times measured seconds per request). Still open: publish it as a Hugging Face article (check a free account
+   can), then swap its link into the README's links and the form.
 6. **Before the deadline:** with the user's OK, make public the two collections, the four model repos, the
    dataset and the Space (the GitHub repo is already public); then the user sends the emailed submission form; its abstract is
-   `docs/abstract.md` (478 words, under the 500 limit; keep it in step with the article's numbers). The dataset is rebuilt by `OYA_PROMPT=compact python scripts/build_data.py --train-per-cell 40`
+   `docs/abstract.md` (488 words between `## Abstract` and `## Links`; keep it in step with the article's numbers). The dataset is rebuilt by `OYA_PROMPT=compact python scripts/build_data.py --train-per-cell 40`
    plus the `results` branch's `runs/` and the local `runs/compare-*`, `runs/voice-*`. After going public, look
    at the dataset viewer once (free accounts get none on private datasets; the three configs load locally).
    Optional: a results line on the GGUF card (its template is in notebook 03).
@@ -245,10 +249,10 @@ Must-fix items, all done on 2026-11-06 except publishing:
 Keep `ATTACK_ACCOUNT` in `human.py` as the single source for both the planted text and the registered
 account, so the two cannot drift apart.
 
-Should do: an ROI table (rules: "optional but preferred"; use measured timings and HF's published hardware
-prices); README links to the demo, article and collections, plus the DPO rounds and second set; notebook 04
-defaults back to the published adapter IDs and the headline set; comparison and voice runs onto the results
-branch (or link the dataset as their home); frame the DPO gate as the self-healing loop working.
+Should do, done 2026-11-06: the ROI table (article, section 7); README links to the demo, write-up and
+collections, plus the DPO rounds and second set (the data collection is the home of the comparison and voice
+runs); notebook 04 downloads `timidan/oya-tiny-aya-{run}` (not the runner's own account) and scores both
+held-out sets. Still open: frame the DPO gate as the self-healing loop working.
 
 Nice to have: pinned versions and model revisions; `compare_models.py` explicit prompt flag, config-checked cache
 and an explicit reviewed-task list; state the reply check's

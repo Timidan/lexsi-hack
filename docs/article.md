@@ -29,14 +29,16 @@ On a separate held-out set of 30 Yoruba and Pidgin tasks, v2 moved money correct
 paid anyone it should not have (untrained: 23.3% success). Counting only replies that are also in the
 right language and ask for the right missing detail, it scores 83.3% (untrained: 20.0%). On the same 30
 tasks OpenAI's GPT-6 Astra and GPT-6.1 Sol solve 97%; Oya solves 100% at 16-bit and 93% in 4-bit on a laptop,
-where open models its size solve 20-50% (Qwen3 4B 50%, Phi-4 mini 33%, Llama 3.2 3B 20%), at no per-request
-cost. On a second held-out set built from native-written Yoruba and Pidgin text found online
+where open models its size solve 20-50% (Qwen3 4B 50%, Phi-4 mini 33%, Llama 3.2 3B 20%), with no per-request
+fee. On a second held-out set built from native-written Yoruba and Pidgin text found online
 (18 tasks), v2 again solved every task (untrained: 27.8%).
 
 We also ran Track 3's self-healing loop twice with AgentTune's DPO trainer, on preference pairs built from
 Oya's own mistakes. Both rounds fixed some follow-up questions but regressed elsewhere, and the gate kept v2.
 
-Training cost: Kaggle's free GPUs (two T4s, 75 minutes for v2). Total spend: $0.
+Training cost: Kaggle's free GPUs (two T4s, 75 minutes for v2). Total spend: $0. On rented hardware, training v2
+would cost about $1, and serving it about $0.18 per 1,000 requests on a CPU, against $5.24 for GPT-6.1 Sol
+(section 7, "ROI").
 
 ## 1. Problem statement and approach
 
@@ -423,7 +425,7 @@ calling). Oya also appears in its two serving formats: 16-bit (scored on Kaggle'
   precision asked). The Q4_K_M GGUF made none (see "What else we tested").
 - **Cost.** About $27 per 1,000 requests for GPT-6 Astra, $5 for GPT-6.1 Sol and $0.26 for GPT-6 Luna (measured
   tokens times list prices reported by third-party pricing pages); Oya runs on a laptop GPU or on Hugging Face's
-  free ZeroGPU, with no per-request fee.
+  free ZeroGPU, with no per-request fee. The hardware is priced in the next section.
 - **How "task success" was counted.** 7 replies asked for the missing
   details politely without a question mark ("Abeg send im bank name and 10-digit account number"); our scorer
   looks for a question mark, so these were read by hand and counted as asking. Without that adjustment GPT-6
@@ -431,6 +433,34 @@ calling). Oya also appears in its two serving formats: 16-bit (scored on Kaggle'
 - **Caveats:** 30 tasks; one run per model; open models in 4-bit (Oya scores 100% on this set at full
   precision, and as the Q4_K_M GGUF); the OpenAI models might do better with native function
   calling.
+
+### ROI: renting hardware against paying per token
+
+"$0, self-hosted" above means no API bill; the hardware still costs money. Here it is priced at
+[Hugging Face's hourly rates for Spaces hardware](https://huggingface.co/docs/hub/spaces-gpus) (read
+2026-11-06). A request is one task, which took the OpenAI models 2.2-2.3 model calls and 2,200-2,300 tokens.
+Seconds per request are the wall time of the 30-task held-out run divided by 30, with the model already loaded.
+
+| How it runs | Billed | Price | Seconds per request | Cost per 1,000 requests | Always on, per month | Task success |
+|---|---|---|---|---|---|---|
+| Oya, GGUF Q4_K_M on CPU Upgrade (8 vCPU) | by the hour | $0.03 an hour | 21.2, one at a time, measured on 4 CPUs | $0.18 | $22 | 100% |
+| Oya, 16-bit on a T4 small | by the hour | $0.40 an hour | 8.3, sixteen at a time | $0.92 | $292 | 100% |
+| Oya on ZeroGPU (the demo) | visitors' daily GPU allowance | free | about 17, 13 of them on the GPU | $0 within the allowance | $0 | not scored (bf16) |
+| GPT-6 Astra | by the token | $10 / $50 per 1M tokens in / out | – | $26.75 | – | 97% |
+| GPT-6.1 Sol | by the token | $2 / $10 | – | $5.24 | – | 97% |
+| GPT-6 Luna | by the token | $0.10 / $0.50 | – | $0.26 | – | 63% |
+
+- **Break-even.** Kept on all month, the CPU machine costs less than GPT-6.1 Sol from about 140 requests a day
+  and less than GPT-6 Astra from about 30; one at a time it can serve about 4,000 a day. GPT-6 Luna stays
+  cheaper below about 2,700 a day, but it solved 63% of the tasks. A T4 breaks even with GPT-6.1 Sol at about
+  1,800 requests a day.
+- **Training.** v2 took 2.5 T4-hours (75 minutes on two T4s): free on Kaggle, $1.00 at the T4 rate above, the
+  cost of about 190 GPT-6.1 Sol requests.
+- **Speed.** The CPU is the cheapest option and the slowest, at 21 seconds per request. The T4 number is
+  throughput with sixteen conversations at once, not the wait for a single request, which we did not time.
+- **Not measured.** Per-call latency and tokens per second were not logged (section 8). The API costs use list
+  prices for uncached input; any prompt-caching discount would lower them, because most of every request is
+  the same system prompt.
 
 ### Voice input (exploratory)
 
@@ -530,7 +560,7 @@ no run has seen.
 |---|---|---|
 | Train against the simulator on the model's own new mistakes (AgentTune's GRPO with tool rollouts), or more DPO rounds with thousands of pairs balanced across languages and mistake types plus replayed correct turns | two offline DPO rounds on 146-222 pairs: better follow-up questions, but routing and Yoruba regressions on the development set (section 7) | to be measured |
 | Collect a larger test set typed and spoken from scratch by several native speakers | 26 requests from one speaker, and 14 adapted from native-written text online | to be measured |
-| Measure throughput and latency with AuditKIT's `LatencyStats` and `Throughput` for a full cost comparison (GPU hours, tokens per second) | cost per 1,000 requests only | to be measured |
+| Measure throughput and latency with AuditKIT's `LatencyStats` and `Throughput` for a full cost comparison (GPU hours, tokens per second) | seconds per request from whole runs, priced in section 7 ("ROI"); per-call latency and tokens per second not logged | to be measured |
 
 ## 9. Teammates
 
@@ -544,7 +574,7 @@ https://github.com/Timidan/lexsi-hack
 1. `notebooks/01_setup_and_baseline.ipynb`: environment check and untrained baseline.
 2. `notebooks/02_train_and_eval.ipynb`: LoRA training (one or two GPUs) and before/after scoring.
 3. `notebooks/03_publish_demo.ipynb`: merge, convert to a 4-bit GGUF, publish the demo Space (on free ZeroGPU).
-4. `notebooks/04_eval_only.ipynb`: score a trained adapter on the held-out set.
+4. `notebooks/04_eval_only.ipynb`: score the published adapter (or your own) on both held-out sets.
    `scripts/rescore.py` recomputes the reply check from saved scores, without a GPU.
 5. `scripts/voice_bench.py`: the voice comparison (transcripts in `human_eval/voice/`; the audio stays
    private).
