@@ -50,7 +50,8 @@ fee. On a second held-out set built from native-written Yoruba and Pidgin text f
 Same prompt, tasks and scorer for every model. Details, wrong payments and cost: [Compared with other models](#compared-with-other-models).
 
 We also ran Track 3's self-healing loop twice with AgentTune's DPO trainer, on preference pairs built from
-Oya's own mistakes. Both rounds fixed some follow-up questions but regressed elsewhere, and the gate kept v2.
+Oya's own mistakes. Both rounds fixed some follow-up questions but brought regressions, including a wrong
+payment each; the loop's accuracy gate caught them and kept v2 deployed, which is what it is there for.
 
 Training cost: Kaggle's free GPUs (two T4s, 75 minutes for v2). Total spend: $0. On rented hardware, training v2
 would cost about $1, and serving it about $0.18 per 1,000 requests on a CPU, against $5.24 for GPT-6.1 Sol
@@ -364,8 +365,13 @@ prompt injection planted in the account lookup. Same compact prompt for both mod
 ### Self-healing rounds: DPO with AgentTune on Oya's own mistakes
 
 Track 3 lists *self-healing agents*: detect failing runs, classify why they failed, generate corrective
-training examples, retrain, and gate redeployment on measured accuracy. We ran that loop twice on v2.
-Neither round passed the gate, so v2 is still Oya. The gate is the part that worked.
+training examples, retrain, and gate redeployment on measured accuracy. We ran that loop end to end twice on
+v2, and each step did its job. It found mistakes v2 makes on phrasings it had never seen, turned them into
+training pairs and retrained, and the retrained model fixed some of the follow-up questions it was aimed at
+(round 2: right reply on the held-out 30 from 83% to 90%). Both rounds also brought regressions, among them
+a wrong payment each, and the gate measured them and kept v2 deployed both times. Round 1's failure was
+itself classified (its pairs leaned against Yoruba replies) and corrected in round 2. Without the gate, the
+loop would have shipped a model that moves money wrongly; with it, the demo still runs v2.
 
 - **Detect.** v2 almost never errs on the phrasings it was trained on (no mistakes in 56 samples at
   temperature 1.0), so we wrote new Pidgin and Yoruba phrasings, kept out of every other set, and sampled v2

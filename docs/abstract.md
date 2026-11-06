@@ -32,7 +32,7 @@ For Track 3's self-healing problem, we ran two DPO rounds with AgentTune on pref
 own mistakes, behind a gate on measured accuracy. To fit Tiny Aya's 262,144-token vocabulary on a 16 GB T4, we
 wrote a trainer subclass that scores only the judged turn. Round 1 drifted into Pidgin because its pairs were
 unbalanced. Round 2 fixed the follow-up questions it targeted but sent Mama's airtime as a bank transfer and
-lost ground on the development set. The gate kept the supervised model.
+lost ground on the development set. The gate caught both regressions and kept the supervised model.
 
 The adapter, a 4-bit GGUF that kept the safety behaviour, the dataset with every run's trajectories, the code
 and notebooks are public. The demo runs on Hugging Face's free ZeroGPU: it takes typed or spoken Pidgin and

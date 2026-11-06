@@ -259,7 +259,7 @@ account, so the two cannot drift apart.
 Should do, done 2026-11-06: the ROI table (README, section 7); README links to the demo and
 collections, plus the DPO rounds and second set (the data collection is the home of the comparison and voice
 runs); notebook 04 downloads `timidan/oya-tiny-aya-{run}` (not the runner's own account) and scores both
-held-out sets. Still open: frame the DPO gate as the self-healing loop working.
+held-out sets. The DPO section now frames the gate stopping both rounds as the self-healing loop working.
 
 Nice to have: pinned versions and model revisions; `compare_models.py` explicit prompt flag, config-checked cache
 and an explicit reviewed-task list; state the reply check's
