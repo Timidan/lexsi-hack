@@ -15,6 +15,11 @@ Millions of Nigerians buy airtime, data and electricity and send money by phone,
 
 Everything is scored automatically against a mock payments world, so there is no LLM judge: we check the money that actually moved.
 
+- Demo: [timidan/oya](https://huggingface.co/spaces/timidan/oya) on Hugging Face's free ZeroGPU: type a request, or send a voice note in Pidgin or Yoruba
+- Write-up: [docs/article.md](docs/article.md)
+- Models: [Hugging Face collection](https://huggingface.co/collections/timidan/oya-wallet-agent-models-6aedf0affb712ba373e3a17d) (the LoRA adapter, its GGUF, the demo and the two DPO rounds)
+- Data: [Hugging Face collection](https://huggingface.co/collections/timidan/oya-wallet-agent-data-6aedf0b20bfbdecdb654e23c) (training and test sets, and every scored run, including the model comparison and the voice tests)
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/img/compare-c-dark.png">
   <img alt="Task success on 30 held-out Yoruba and Pidgin requests: Oya 100% at 16-bit and 93% in 4-bit, GPT-6 Astra 97%, Qwen3 4B 50%, untrained Tiny Aya 30%, Llama 3.2 3B 20%; also by Pidgin, Yoruba and safety tasks" src="docs/img/compare-c-light.png">
@@ -41,7 +46,12 @@ These 416 tasks were used to diagnose v1 and v2, so they are a development set; 
 of requests in new phrasings, drafted with a model and checked by a native speaker (`human_eval/`),
 written after v2 was trained (its errors later shaped the DPO rounds). On those 30 held-out tasks v2 solved all 30 with no unexpected payments
 (untrained: 23.3%); 5 of its replies asked the wrong follow-up question or used the wrong language, so
-it scores 83.3% when the reply must also be right (untrained: 20.0%). Full write-up: `docs/article.md`.
+it scores 83.3% when the reply must also be right (untrained: 20.0%). On a
+[second held-out set](docs/article.md#second-held-out-set-native-written-text-from-the-internet) built from
+native-written Yoruba and Pidgin text found online (18 tasks), v2 again solved every task (untrained: 27.8%).
+Two [self-healing rounds](docs/article.md#self-healing-rounds-dpo-with-agenttune-on-oyas-own-mistakes) with
+AgentTune's DPO trainer, on Oya's own mistakes, fixed some follow-up questions but regressed elsewhere, so the
+gate kept v2.
 
 ## How it works
 
