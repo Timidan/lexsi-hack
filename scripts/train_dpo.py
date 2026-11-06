@@ -18,6 +18,42 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 
+def judged_turn_trainer():
+    """TRL's DPOTrainer, scoring only the tokens from the first judged one on.
+
+    TRL scores every token of the chat: for Tiny Aya that is ~1.5k tokens x a 262k-word vocabulary, in fp32,
+    with gradients, which a 16 GB T4 cannot hold even with a 4-bit base. Chosen and rejected share the prompt and
+    the judged turn is at the end, so cutting the chat to that window leaves TRL's loss unchanged."""
+    import torch
+    from trl import DPOTrainer
+    from trl.trainer.dpo_trainer import selective_log_softmax, use_adapter
+
+    def window(inputs):
+        start = max(int(inputs["completion_mask"].float().argmax(dim=1).min()), 1)  # first judged token
+        return start, inputs["input_ids"].shape[1] - start + 1                      # logits from start - 1
+
+    class JudgedTurnDPOTrainer(DPOTrainer):
+        def _compute_loss(self, model, inputs, return_outputs):
+            assert self.precompute_ref_logps, "the reference must be scored up front (precompute_ref_log_probs)"
+            start, keep = window(inputs)
+            out = model(input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"],
+                        logits_to_keep=keep, use_cache=False)
+            cut = {k: v[:, start - 1:] if k in ("input_ids", "attention_mask", "completion_mask") else v
+                   for k, v in inputs.items()}
+            return super()._compute_loss(lambda **_: out, cut, return_outputs)
+
+        def compute_ref_log_probs(self, inputs):
+            start, keep = window(inputs)
+            peft = self.accelerator.unwrap_model(self.model)
+            with torch.no_grad(), use_adapter(peft, adapter_name="ref" if "ref" in peft.peft_config else None):
+                logits = self.model(input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"],
+                                    logits_to_keep=keep, use_cache=False).logits[:, :-1]
+            logps = selective_log_softmax(logits, inputs["input_ids"][:, start:]) * inputs["completion_mask"][:, start:]
+            return logps.sum(dim=1).chunk(2, dim=0)
+
+    return JudgedTurnDPOTrainer
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="CohereLabs/tiny-aya-global")
@@ -32,23 +68,19 @@ def main() -> None:
     ap.add_argument("--max-len", type=int, default=2048)
     ap.add_argument("--max-steps", type=int, default=-1, help="for a quick test")
     ap.add_argument("--dtype", default="auto", choices=["auto", "fp16", "bf16", "fp32"])
-    ap.add_argument("--load-in-4bit", action="store_true", help="frozen base in 4-bit (QLoRA); needs a GPU")
     a = ap.parse_args()
 
     from naija_agent.compat import remove_old_torchao
 
     remove_old_torchao()
     import torch
-    import trl.trainer.dpo_trainer as trl_dpo
+    import trl
     from agenttune.core.backend_factory import create_agentic_trainer
-
-    # TRL logs the mean token entropy by copying the full logits (2 sequences x ~1.5k tokens x Tiny Aya's 262k
-    # vocabulary, about 3 GB); on a 16 GB T4 that copy alone ran out of memory. It is only a metric: log 0.
-    trl_dpo.entropy_from_logits = lambda logits, chunk_size=128: logits.new_zeros(logits.shape[:-1])
     from datasets import load_dataset
     from peft import PeftModel
-    from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+    from transformers import AutoModelForCausalLM, AutoTokenizer
 
+    trl.DPOTrainer = judged_turn_trainer()   # AgentTune's TRL backend builds `trl.DPOTrainer`
     cuda = torch.cuda.is_available()
     if a.dtype == "auto":
         a.dtype = ("bf16" if torch.cuda.is_bf16_supported(including_emulation=False) else "fp16") if cuda else "fp32"
@@ -66,10 +98,7 @@ def main() -> None:
     data = data.filter(fits)
     print(f"{len(data)} of {n} pairs fit in {a.max_len} tokens", flush=True)
     device = {"": int(os.environ.get("LOCAL_RANK", 0))} if cuda else None
-    quant = None
-    if a.load_in_4bit:  # QLoRA: the frozen base in 4-bit leaves a 16 GB T4 room for the 262k-vocabulary logits
-        quant = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=dtype)
-    model = AutoModelForCausalLM.from_pretrained(a.model, dtype=dtype, device_map=device, quantization_config=quant)
+    model = AutoModelForCausalLM.from_pretrained(a.model, dtype=dtype, device_map=device)
     model = PeftModel.from_pretrained(model, a.adapter, is_trainable=True)
 
     trainer = create_agentic_trainer(
@@ -77,23 +106,10 @@ def main() -> None:
         num_train_epochs=a.epochs, max_steps=a.max_steps, learning_rate=a.lr, lr_scheduler_type="cosine",
         warmup_steps=5, beta=a.beta, loss_type=["sigmoid", "sft"], loss_weights=[1.0, a.sft_weight],
         per_device_train_batch_size=1, gradient_accumulation_steps=a.grad_accum, max_length=a.max_len,
-        # the reference (frozen v2) scores every pair once before training, instead of inside every step,
-        # where its full logits sat in GPU memory next to the trained model's
-        precompute_ref_log_probs=True,
+        precompute_ref_log_probs=True,   # the frozen v2 scores every pair once, before training
         gradient_checkpointing=True, gradient_checkpointing_kwargs={"use_reentrant": False},
         fp16=a.dtype == "fp16", bf16=a.dtype == "bf16", logging_steps=5, save_strategy="no", report_to="none",
         ddp_find_unused_parameters=False)
-    if a.load_in_4bit and a.dtype == "fp16":
-        # TRL casts QLoRA adapter weights to bf16; fp16 training (T4) needs them in fp32 for its gradient scaler
-        setup = trainer.setup_trainer
-
-        def setup_then_fp32() -> None:
-            setup()
-            for p in trainer.trainer.model.parameters():
-                if p.requires_grad:
-                    p.data = p.data.float()
-
-        trainer.setup_trainer = setup_then_fp32
     stats = trainer.train()
     if int(os.environ.get("RANK", 0)) == 0:
         print(json.dumps({k: stats.get(k) for k in ("train_size", "final_loss", "total_steps", "metrics")},
