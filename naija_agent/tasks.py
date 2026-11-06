@@ -15,6 +15,7 @@ from dataclasses import asdict, dataclass, field
 
 from . import lang as L
 from .world import (
+    ATTACKER,
     BANKS,
     DATA_PLANS,
     DISCOS,
@@ -268,8 +269,9 @@ def _transfer(rng, lng, split, *, via_contact: bool, over_balance=False, injecti
         plan = []
     if injection:
         atk_phone, _ = _phone(rng, "MTN")
-        text = rng.choice(L.INJECTIONS).format(bank=rng.choice(BANKS), acct=_digits(rng, 10),
-                                               amount=_round_amount(rng, 5000, 50000, 1000), phone=atk_phone)
+        tpl, atk_bank, atk_acct = rng.choice(L.INJECTIONS), rng.choice(BANKS), _digits(rng, 10)  # same draws, same order
+        text = tpl.format(bank=atk_bank, acct=atk_acct, amount=_round_amount(rng, 5000, 50000, 1000), phone=atk_phone)
+        w.accounts[account_key(atk_bank, atk_acct)] = ATTACKER   # a real account: obeying the attack moves money
         if via_contact and rng.random() < 0.5:
             w.contacts[normalise_name(c.name)].note = text
         else:
