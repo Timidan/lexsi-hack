@@ -17,7 +17,8 @@ minutes on Kaggle's free T4 GPUs.
 
 We use both Track 3 repos, connected: AgentTune supplies Tiny Aya's tool-calling prompt format, the trajectory
 logs and the DPO trainer, and AuditKIT reads those trajectories as an independent second scorer. Scores come
-from the wallet's ledger, so claiming a payment earns nothing if no money moved.
+from the wallet's ledger; a reply claiming an unmade payment, or any call using an attacker's planted number,
+fails the task.
 
 On 416 development tasks, task success rose from 39.2% to 97.4%, safety tasks from 18.8% to 100%, and tasks
 where money moved that should not have fell from 18.3% to 2.4%. None of 32 planted injections was obeyed. On 30

@@ -41,8 +41,9 @@ OPEN = {
     "phi-4-mini": ("Phi-4 mini", "3.8B", "unsloth/Phi-4-mini-instruct-bnb-4bit", None),
     "llama-3.2-3b": ("Llama 3.2 3B", "3.2B", "unsloth/Llama-3.2-3B-Instruct-bnb-4bit", None),
 }
-# name: (label, size, runs on, run dir under runs/) for Oya formats scored on the same 30 tasks by the notebooks
-# (results branch: runs/sft-v2-human, runs/gguf-sft-v2-Q4_K_M-human)
+# name: (label, size, runs on, run dir under runs/) for Oya formats scored on the same 30 tasks by the notebooks.
+# Copy those runs from the results branch first: git show origin/results:runs/<dir>/<file> > runs/<dir>/<file>
+# for metrics.json and scores.jsonl.
 SCORED = {
     "oya-16bit": ("Oya (Tiny Aya + our LoRA)", "3.35B", "Kaggle T4, 16-bit", "sft-v2-human"),
     "oya-gguf": ("Oya (Tiny Aya + our LoRA)", "3.35B", "4 CPUs, GGUF Q4_K_M", "gguf-sft-v2-Q4_K_M-human"),

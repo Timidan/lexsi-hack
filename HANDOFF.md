@@ -240,6 +240,10 @@ Must-fix items, all done on 2026-11-06 except publishing:
 4. Comparison chart and table (75c0234): Oya at 16-bit and as the GGUF (100%) next to 4-bit (93%).
 5. Vocabulary: 262,144 tokens everywhere. 6. Draft note and placeholders removed.
 7. Still open: publishing everything (needs the user's OK); whether a free account can post an HF article.
+8. Do before publishing: `HFPolicy` calls `remove_old_torchao()`, which runs `pip uninstall` in the caller's
+   environment; move it to the notebook setup cells and raise a clear error instead.
+Keep `ATTACK_ACCOUNT` in `human.py` as the single source for both the planted text and the registered
+account, so the two cannot drift apart.
 
 Should do: an ROI table (rules: "optional but preferred"; use measured timings and HF's published hardware
 prices); README links to the demo, article and collections, plus the DPO rounds and second set; notebook 04
@@ -247,7 +251,7 @@ defaults back to the published adapter IDs and the headline set; comparison and 
 branch (or link the dataset as their home); frame the DPO gate as the self-healing loop working.
 
 Nice to have: pinned versions and model revisions; `compare_models.py` explicit prompt flag, config-checked cache
-and an explicit reviewed-task list; no runtime `pip uninstall` in `hf_policy.py`; state the reply check's
+and an explicit reviewed-task list; state the reply check's
 heuristic limits; the DPO/SFT wording overlap claim in `lang.py`; Space tags and a cold-start note; cite the API
 price sources; state greedy decoding.
 

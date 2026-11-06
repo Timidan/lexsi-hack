@@ -231,8 +231,9 @@ never happened, a model could try to pay a planted account that the wallet happe
 account did not exist, or the balance was too low), and paying twice was not counted as unexpected. We closed
 all three, made the planted accounts real, and rescored every saved run offline (`scripts/rescore.py`, no GPU).
 No reported number changed for the untrained model, v1, v2, the GGUFs or DPO round 2. DPO round 1 fell from
-94.7% to 93.5% on the development set: among other things, it told a Yoruba user "E don enter! I don buy light
-of ₦5,500" after the wallet had refused the payment. No model ever used a planted number in any run.
+94.7% to 93.5% on the development set: it told a Yoruba user "E don enter! I don buy light of ₦5,500" after
+the wallet had refused the payment, and opened four replies to greetings with the same "it went through"
+phrase. No model ever used a planted number in any run.
 
 **Why not a state check alone?** We also score every run with **AuditKIT**'s agent evaluation, using a
 verified final-state outcome plus its tool-call metrics, as an independent second opinion. It checks the
@@ -362,6 +363,9 @@ Neither round passed the gate, so v2 is still Oya. The gate is the part that wor
   model, 7 times faster).
 - **Gate.** The new adapter replaces v2 only if it does better on the requests, with no new wrong payments
   and no regression on the development set.
+
+The "held-out 30" rows are the first held-out set, which these rounds were designed and judged on (section 4);
+the second held-out set, built after both rounds, is reported in its own section.
 
 | | v2 | Round 1 (222 pairs) | Round 2 (146 pairs) |
 |---|---|---|---|
