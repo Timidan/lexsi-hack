@@ -85,18 +85,26 @@ def wallet_markdown(w: World) -> str:
 
 # ─── model ────────────────────────────────────────────────────────────────────
 
-_chat = None
+_chat, _chat_lock = None, threading.Lock()   # one llama.cpp model, one generation at a time
 
 
 def model_reply(messages: list[dict]) -> str:
     global _chat
     if not GGUF_REPO:
         raise gr.Error("The live model is not configured on this Space (OYA_GGUF_REPO).")
-    if _chat is None:
-        from naija_agent.llama_backend import LlamaChat
+    with _chat_lock:
+        if _chat is None:
+            from naija_agent.llama_backend import LlamaChat
 
-        _chat = LlamaChat(repo_id=GGUF_REPO, filename=GGUF_FILE)
-    return _chat.reply(messages)
+            _chat = LlamaChat(repo_id=GGUF_REPO, filename=GGUF_FILE)
+        return _chat.reply(messages)
+
+
+def warm_up() -> None:
+    """Load the model and process the system prompt once at startup: llama.cpp keeps it cached, so later
+    requests only process their own turns (on 2 CPUs the 1,300-token prompt alone takes minutes)."""
+    if GGUF_REPO:
+        model_reply([{"role": "system", "content": system_message()}, {"role": "user", "content": "Hello"}])
 
 
 # ─── live agent ───────────────────────────────────────────────────────────────
@@ -410,6 +418,7 @@ def build_ui():
 
 
 if __name__ == "__main__":
-    # download and load the speech models in the background, so the first Transcribe does not wait for them
-    threading.Thread(target=lambda: [transcriber(n) for n, _ in VOICE_MODELS.values()], daemon=True).start()
+    # warm the agent model, then load the speech models, in the background, so first requests do not wait for them
+    threading.Thread(target=lambda: (warm_up(), [transcriber(n) for n, _ in VOICE_MODELS.values()]),
+                     daemon=True).start()
     build_ui().queue().launch(favicon_path=str(Path(__file__).parent / "favicon.png"))

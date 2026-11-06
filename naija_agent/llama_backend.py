@@ -51,7 +51,8 @@ class LlamaChat:
     def reply(self, messages: list[dict]) -> str:
         if self.mode == "chat_completion":
             try:
-                out = self.llm.create_chat_completion(messages=messages, temperature=0.0, max_tokens=self.max_tokens)
+                out = self.llm.create_chat_completion(messages=messages, temperature=0.0, max_tokens=self.max_tokens,
+                                                      stop=STOP)
                 return (out["choices"][0]["message"]["content"] or "").strip()
             except Exception as e:  # template features llama-cpp-python's formatter lacks
                 print(f"chat completion failed ({e}); rendering the chat template directly from now on")
