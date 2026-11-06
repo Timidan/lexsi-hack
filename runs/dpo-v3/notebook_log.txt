@@ -72,3 +72,4 @@ Loading weights: 100%|██████████| 290/290 [00:07<00:00, 40.0
 [shard 1/2] 512/1245 steps, 54 pairs (4815s)
 [shard 0/2] 620/1222 steps, 38 pairs (5378s)
 [shard 1/2] 640/1245 steps, 64 pairs (6020s)
+[shard 0/2] 744/1222 steps, 49 pairs (6454s)
