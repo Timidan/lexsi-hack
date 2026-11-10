@@ -19,14 +19,17 @@ Fine-tuning**. Official rules (kickoff slides, hackathon.lexsi.ai/kickoff-slides
   available (FAQ). A free account cannot post HF articles, so since 2026-11-06 the repo's `README.md` is the
   write-up (user's choice; `docs/article.md` was folded into it). For the form's article field use
   https://github.com/Timidan/lexsi-hack#readme. Original work. A Space is **not** required ("if relevant").
-- **Submission form: sent by email a couple of days before the deadline** (not via Discord), open until
-  **end of day Nov 14, 2026, AoE (12:59 on Nov 15 in Lagos).** Aim for Nov 13. Needs an abstract under 500 words.
+- **Submitted 2026-11-10** through the form (Tally `o9E0Ve`, answers in `docs/HACKATHON.md`). The deadline moved to
+  **Nov 15, 2026, 11:59 PM AoE (12:59 on Nov 16 in Lagos)**; resubmitting before then replaces the entry. After it,
+  nothing is pushed to this repo, the Hugging Face repos or the Space (the form's "public and final" tick).
+- **Website post** (for sharing on X, not the submission's article): https://www.timidan.xyz/blog/oya-tiny-aya-wallet-agent-pidgin-yoruba,
+  published 2026-11-10 from the `port-x` repo (commit `2572e60`), with a 1200x630 cover as its link card.
   The form is already live at hackathon.lexsi.ai/submission (Tally `o9E0Ve`, read 2026-11-06): registered email,
   abstract, Discord username; collection, HF article (`huggingface.co/blog/…`) and GitHub links; repos used,
   models, track and problem statements; consents, and a tick that everything is public and final at the deadline.
 - Judging: validity check (public artifacts, write-up, checklist, no duplicates), then double-blind scores:
   write-up clarity /10, practical usefulness /10, code/notebook quality /10, overall /100. Up to 20 teams told
-  on Nov 16, prep Nov 16-21, live Demo Day Nov 22.
+  by Nov 16; they have until Nov 22, 11:59 PM AoE to submit a video presentation or slides for final judging.
 - Track 3 problem statements we match: **Reliable tool calling** (v2) and **Self-healing agents** ("detect failing
   runs, classify why they failed, generate corrective training examples, retrain, and gate redeployment on
   measured accuracy": exactly the v3 loop below). The SafeTune slide names "quantize 4-bit for serving" as a

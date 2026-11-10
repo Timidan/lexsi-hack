@@ -1,11 +1,11 @@
 # Submission pack and checklist
 
-Lexsi Labs AI Safety & Alignment Hackathon, Track 3: Agentic Fine-tuning. Checked 2026-11-08.
+Lexsi Labs AI Safety & Alignment Hackathon, Track 3: Agentic Fine-tuning. Checked 2026-11-08; submitted 2026-11-10.
 
 | | |
 |---|---|
 | Form | https://hackathon.lexsi.ai/submission (a Tally form; the link is also emailed before the deadline) |
-| Deadline | end of Nov 14, 2026 AoE = 12:59 on Sun Nov 15 in Lagos. Aim for Nov 13. |
+| Deadline | Nov 15, 2026, 11:59 PM AoE = 12:59 on Mon Nov 16 in Lagos (moved from Nov 14; the site and the form say Nov 15) |
 | Resubmitting | allowed: "only the final submission prior to the submission deadline will be considered" |
 | Rules read | hackathon.lexsi.ai (rules and FAQ), the kickoff slides, the form itself |
 
@@ -25,7 +25,7 @@ Lexsi Labs AI Safety & Alignment Hackathon, Track 3: Agentic Fine-tuning. Checke
 9. **Track:** Track 3: Agentic Fine-tuning.
 10. **Problem statements:** Reliable tool calling; Self-healing agents.
 11. **Consents:** sharing by Hugging Face and Cohere, and being tagged by the organisers, are your choice. The last
-    box ("All repos and collections are public and final as of Nov 14, 23:59 AoE") must be ticked, and it means no
+    box ("All repos and collections are public and final as of Nov 15, 11:59 PM AoE") must be ticked, and it means no
     pushes to GitHub and no uploads to the Hugging Face repos or the Space after the deadline.
 
 ## Requirements
@@ -43,8 +43,9 @@ Lexsi Labs AI Safety & Alignment Hackathon, Track 3: Agentic Fine-tuning. Checke
 | Preferred | ROI comparison against a closed model | done | README section 7, "ROI" |
 | If relevant | A Hugging Face Space | done: ZeroGPU demo | https://huggingface.co/spaces/timidan/oya |
 
-Not required: a demo video (the form has no field for one), screenshots, a deck (Demo Day prep comes later, for up
-to 20 teams told on Nov 16).
+Not required for round 1: a demo video (the form has no field for one), screenshots, a deck. Round 2: up to 20
+shortlisted teams, announced by Nov 16, get until Nov 22, 11:59 PM AoE to "prove their thesis and submit a video
+presentation or slides for final judging" (hackathon.lexsi.ai, read 2026-11-10).
 
 ## Final gate
 
@@ -54,9 +55,9 @@ to 20 teams told on Nov 16).
       demo then says how to carry on (log in, or the Before / after replay, which needs no GPU)
 - [x] Repo public, with the write-up, setup and licences in the README
 - [x] AgentTune and AuditKIT visible in the abstract and README section 2, not only in code
-- [ ] Form submitted by the user, with a day of buffer
-- [ ] Nothing pushed or uploaded after Nov 14, 23:59 AoE
+- [x] Form submitted by the user on 2026-11-10 (Tally showed "Submission received!"; a confirmation goes to the registered email)
+- [ ] Nothing pushed or uploaded after Nov 15, 11:59 PM AoE
 
 The Space sleeps after two days without visitors and wakes on the next visit in about a minute.
 
-**Verdict:** ready to submit; every mandatory item is met. What is left is the form itself.
+**Verdict:** submitted on 2026-11-10 with every mandatory item met. Resubmitting before the deadline replaces it.
