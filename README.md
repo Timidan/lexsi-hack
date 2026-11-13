@@ -305,7 +305,7 @@ Before fine-tuning, Tiny Aya already produced well-formed calls for simple, full
 
 #### AuditKIT: the second scorer
 
-- `auditkit.agent_eval` (AuditKIT v1.2): `AgentEvalRunner` on an `AgentEvalSpec` in recorded mode, so it
+- `auditkit.agent_eval` (the `auditkit` package from PyPI, unpinned): `AgentEvalRunner` on an `AgentEvalSpec` in recorded mode, so it
   scores saved trajectories without new model calls, with one trial per task.
 - Each task becomes an `AgentCase` with all seven tools allowed, the reference tool route as reference turns,
   and a `FinalStateAssertion` that the final ledger equals the expected one.
@@ -669,11 +669,11 @@ GPU (4 GB), Oya runs in 4-bit here, so the typed row is rerun in 4-bit too.
 
 No extra credits have been used yet, so the "after" column is a forecast, not a result. The "before" column is
 what this write-up already reports, and every "after" would be measured on new held-out requests, typed by several
-speakers, that no run has seen.
+speakers, that no run has seen, with the development set as a check that nothing got worse.
 
 | Plan | Before (now) | Expected after (forecast) |
 |---|---|---|
-| Train against the simulator on the model's own new mistakes (AgentTune's GRPO with tool rollouts), or more DPO rounds with thousands of pairs balanced across languages and mistake types plus replayed correct turns | two offline DPO rounds on 146-222 pairs: better follow-up questions, but routing and Yoruba regressions on the development set (section 7) | a round that passes the gate: task success with the right reply at 90% or more on held-out set 1 (v2: 83.3%), no wrong payments, and airtime to a contact at 90% or more on the development set (v2: 69%), with no other category falling |
+| Train against the simulator on the model's own new mistakes (AgentTune's GRPO with tool rollouts), or more DPO rounds with thousands of pairs balanced across languages and mistake types plus replayed correct turns | two offline DPO rounds on 146-222 pairs: better follow-up questions, but routing and Yoruba regressions on the development set (section 7) | a round that passes the gate: on the new requests, task success with the right reply at 90% or more (v2: 83.3% on held-out set 1) and no wrong payments; on the development set, airtime to a contact at 90% or more (v2: 69%), with no other category falling |
 | Collect a larger test set typed and spoken from scratch by several native speakers | 26 requests from one speaker, and 14 adapted from native-written text online | a few hundred requests from five or more speakers. We expect task success a little below today's 100% (30 of 30 is consistent with anything from 88%), with a 95% interval a few points wide instead of twelve |
 | Measure throughput and latency with AuditKIT's `LatencyStats` and `Throughput` for a full cost comparison (GPU hours, tokens per second) | seconds per request from whole runs, priced in section 7 ("ROI"); per-call latency and tokens per second not logged | per-call latency and tokens per second for each serving format, and a lower T4 cost per 1,000 requests than today's $0.92 once the model is served with continuous batching (vLLM) |
 
