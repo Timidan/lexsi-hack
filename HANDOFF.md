@@ -22,6 +22,9 @@ Fine-tuning**. Official rules (kickoff slides, hackathon.lexsi.ai/kickoff-slides
 - **Submitted 2026-11-10** through the form (Tally `o9E0Ve`, answers in `docs/HACKATHON.md`). The deadline moved to
   **Nov 15, 2026, 11:59 PM AoE (12:59 on Nov 16 in Lagos)**; resubmitting before then replaces the entry. After it,
   nothing is pushed to this repo, the Hugging Face repos or the Space (the form's "public and final" tick).
+- **Write-up layout (organisers' email, 2026-11-13):** `README.md` now has every item the layout on
+  hackathon.lexsi.ai/submit marks as required (see its Changelog); the form was not resubmitted (abstract unchanged).
+  Stage 2: 10-20 teams on 3 judges' average score, $200 of compute each, until Nov 22, 11:59 PM AoE.
 - **Website post** (for sharing on X, not the submission's article): https://www.timidan.xyz/blog/oya-tiny-aya-wallet-agent-pidgin-yoruba,
   published 2026-11-10 from the `port-x` repo (commit `2572e60`), with a 1200x630 cover as its link card.
   The form is already live at hackathon.lexsi.ai/submission (Tally `o9E0Ve`, read 2026-11-06): registered email,

@@ -55,6 +55,7 @@ presentation or slides for final judging" (hackathon.lexsi.ai, read 2026-11-10).
       demo then says how to carry on (log in, or the Before / after replay, which needs no GPU)
 - [x] Repo public, with the write-up, setup and licences in the README
 - [x] AgentTune and AuditKIT visible in the abstract and README section 2, not only in code
+- [x] README has every item marked required in the organisers' write-up layout (hackathon.lexsi.ai/submit, read 2026-11-13)
 - [x] Form submitted by the user on 2026-11-10 (Tally showed "Submission received!"; a confirmation goes to the registered email)
 - [ ] Nothing pushed or uploaded after Nov 15, 11:59 PM AoE
 
