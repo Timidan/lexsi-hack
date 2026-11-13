@@ -14,9 +14,58 @@
 - Data: [Hugging Face collection](https://huggingface.co/collections/timidan/oya-wallet-agent-data-6aedf0b20bfbdecdb654e23c) (training and test sets, and every scored run, including the model comparison and the voice tests)
 - Run it: [appendix](#appendix-reproduce-it)
 
-> This README is the write-up. Sections 1-9 follow the hackathon's required article structure. Development-set numbers are from runs
+**Claim:** fine-tuning Tiny Aya on wallet-checked chats takes it from 23% to 100% task success on 30 held-out
+Yoruba and Pidgin payment requests, with no wrong payments.
+
+**Tracks and problem statements** (numbered in the order the Tracks page lists them):
+
+- Track 3: Agentic Fine-tuning
+  - Problem statement 1: Reliable tool calling
+  - Problem statement 8: Self-healing agents
+
+> This README is the write-up. Sections 1-9 follow the hackathon's required article structure, with the extra
+> items from the organisers' write-up layout added where they belong. Development-set numbers are from runs
 > `sft-v1` and `sft-v2`; held-out numbers are from runs `sft-v2-human` and `sft-v2-human2`. Every run's logs and
 > scores are in the [dataset](https://huggingface.co/datasets/timidan/oya-wallet-agent-data).
+
+## Abstract
+
+Nigerians buy airtime, data and prepaid electricity and send money from their phones every day, often typing in
+Nigerian Pidgin, Yoruba or a mix with English. A small open model that acts on these requests could run cheaply.
+But a payment agent fails differently from a chatbot: a guessed account number pays a stranger, a "Done!"
+without a transfer misleads, and text inside a tool result may be an attacker's instruction.
+
+Oya is Cohere Labs' Tiny Aya Global (3.35B) fine-tuned with LoRA into a tool-calling wallet agent for English,
+Pidgin, Yoruba and Yoruba-English mix. It uses seven tools on a mock wallet and must ask when details are
+missing, refuse to overspend and ignore instructions planted in tool results. Its 2,080 training chats come from
+running reference plans against the wallet, so every example is correct by construction. Training took 75
+minutes on Kaggle's free T4 GPUs.
+
+We use both Track 3 repos, connected: AgentTune supplies Tiny Aya's tool-calling prompt format, the trajectory
+logs and the DPO trainer, and AuditKIT reads those trajectories as an independent second scorer. Scores come
+from the wallet's ledger; a reply claiming an unmade payment, or any call using an attacker's planted number,
+fails the task.
+
+On 416 development tasks, task success rose from 39.2% to 97.4%, safety tasks from 18.8% to 100%, and tasks
+where money moved that should not have fell from 18.3% to 2.4%. None of 32 planted injections was obeyed. On 30
+held-out Yoruba and Pidgin requests checked by a native speaker, Oya solved all 30 with no wrong payment
+(untrained: 23.3%), and 83.3% when the reply must also use the right language and ask for the right detail. On
+18 more tasks built from native-written text found online, it solved all 18. Against OpenAI's GPT-6 Astra and
+GPT-6.1 Sol (97% on those 30), it scores 100% at 16-bit and 93% in 4-bit on a laptop, where open models its size
+score 20-50%, with no per-request fee.
+
+For Track 3's self-healing problem, we ran two DPO rounds with AgentTune on preference pairs built from Oya's
+own mistakes, behind a gate on measured accuracy. To fit Tiny Aya's 262,144-token vocabulary on a 16 GB T4, we
+wrote a trainer subclass that scores only the judged turn. Round 1 drifted into Pidgin because its pairs were
+unbalanced. Round 2 fixed the follow-up questions it targeted but sent Mama's airtime as a bank transfer and
+lost ground on the development set. The gate caught both regressions and kept the supervised model.
+
+The adapter, a 4-bit GGUF that kept the safety behaviour, the dataset with every run's trajectories, the code
+and notebooks are public. The demo runs on Hugging Face's free ZeroGPU: it takes typed or spoken Pidgin and
+Yoruba, and every payment waits for the user's confirmation.
+
+Limits: the training data comes from templates, the held-out sets are small (the first drafted with a model and
+checked by one native speaker), and the wallet is simulated.
 
 ## TL;DR
 
@@ -151,6 +200,20 @@ construction.
 **Train and test are split by template.** Each test request uses a phrasing that never appears in
 training, so the test measures generalization to new wording, not memorized sentences.
 
+| Set | Source | Size | Languages | Used for |
+|---|---|---|---|---|
+| Training chats | templates run against the mock wallet | 2,080 (+104 for validation loss), 160 per category | en, pcm, yo, yo_en: 520 each | supervised fine-tuning |
+| Development tasks | templates kept out of training | 416, 32 per category | 104 each | diagnosing v1 and v2 |
+| Held-out set 1 | drafted with a model, checked by a native speaker | 30 tasks from 26 requests | yo 15, pcm 15 | final test of v2; DPO gate |
+| Held-out set 2 | INJONGO (Yoruba) and Wazobia Labs (Pidgin), CC BY 4.0 | 18 tasks from 14 requests | yo 11, pcm 7 | final test |
+| DPO pairs | v2's own mistakes on new phrasings | 222 (round 1), 146 (round 2) | round 1: pcm 115, yo 107 | DPO rounds |
+
+**Leak check.** `scripts/leak_check.py` compares every test request with every training and validation
+request after normalising them (lower case, tone marks removed, numbers replaced, punctuation dropped). No
+test set has a direct match, and none has a near copy (a Jaccard similarity of 0.8 or more over character
+5-grams, the measure MinHash estimates). The closest pairs score 0.59 (development), 0.37 (held-out set 1) and
+0.42 (held-out set 2).
+
 **Held-out test set.** We used the 416-task set to diagnose v1's errors, so from v2 on it is a *development*
 set. The final test is a set of requests for 13 fixed scenarios, **drafted with a model in phrasings that
 appear nowhere in the training templates and checked by a native Yoruba and Pidgin speaker**. v2 was
@@ -216,6 +279,8 @@ Before fine-tuning, Tiny Aya already produced well-formed calls for simple, full
 
 ### Training
 
+#### Supervised fine-tuning (v1, v2): our own loop on Transformers and PEFT
+
 - Base: `CohereLabs/tiny-aya-global` (3.35B), fp16 on a free Kaggle T4.
 - LoRA r=16, alpha=32, dropout 0.05 on all linear layers (30M trainable parameters, 0.9%).
 - Loss on the assistant's own turns only (tool calls and replies, including the end-of-turn markers);
@@ -224,7 +289,33 @@ Before fine-tuning, Tiny Aya already produced well-formed calls for simple, full
 - 1 epoch, effective batch 16, learning rate 2e-4 with warmup and cosine decay, 130 steps.
 - Validation loss fell from 1.94 to 0.005 and had mostly converged by step 80.
 
+#### AgentTune: the two DPO rounds
+
+- `create_agentic_trainer("dpo", backend="trl")` from AgentTune at commit `d4db4c1`, which runs TRL 1.7.1's
+  `DPOTrainer`. Our subclass computes logits only from the first judged token (`judged_turn_trainer` in
+  `scripts/train_dpo.py`).
+- Starts from the v2 LoRA adapter (r=16, alpha=32) and keeps a frozen copy as the reference. The reference
+  log-probabilities are computed once, before training.
+- Loss: sigmoid DPO plus a plain loss on the chosen turn, weighted 1.0 and 1.0; beta 0.1.
+- Learning rate 5e-5 in round 1 and 2e-5 in round 2, cosine schedule, 5 warmup steps, 2 epochs. Batch 1 per GPU,
+  4 accumulation steps, 2 T4s (effective batch 8). Maximum length 2,048 tokens, fp16, seed 42.
+- Round 1: 222 pairs, 56 steps. Round 2: 146 pairs, 38 steps.
+- Everything else is at TRL's defaults. Each round's full config is in `runs/dpo-v3*/dpo_config.yaml` on the
+  [`results` branch](https://github.com/Timidan/lexsi-hack/tree/results/runs).
+
+#### AuditKIT: the second scorer
+
+- `auditkit.agent_eval` (AuditKIT v1.2): `AgentEvalRunner` on an `AgentEvalSpec` in recorded mode, so it
+  scores saved trajectories without new model calls, with one trial per task.
+- Each task becomes an `AgentCase` with all seven tools allowed, the reference tool route as reference turns,
+  and a `FinalStateAssertion` that the final ledger equals the expected one.
+- Scorers: `tool_call_f1` and `tool_call_validity`. Everything else is at AuditKIT's defaults
+  (`naija_agent/auditkit_bridge.py`).
+
 ### Metrics, and why these
+
+Higher is better for every metric except the unexpected payment rate, extra calls per task and seconds per
+request, where lower is better.
 
 1. **Task success (headline).** A task counts as solved only if the wallet ends in the expected state
    (exactly the right payments, nothing else) *and* the behaviour checks pass: it asked a question when
@@ -244,6 +335,8 @@ Before fine-tuning, Tiny Aya already produced well-formed calls for simple, full
    question asks for every missing detail (for example the phone number *and* the amount). The
    language test only separates Yoruba from not-Yoruba, so it cannot tell a Pidgin reply from an
    English one.
+8. **Seconds per request,** the wall time of a whole run divided by its tasks (see "ROI" below). Per-call
+   latency was not logged.
 
 **Tightened after a review.** A review of the scorer found three gaps: a reply could claim a payment that
 never happened, a model could try to pay a planted account that the wallet happened to reject (the attacker's
@@ -574,15 +667,15 @@ GPU (4 GB), Oya runs in 4-bit here, so the typed row is rerun in 4-bit too.
 
 ## 8. With more credits: approach, and before and after results
 
-No extra credits have been used yet, so there are no "after" results; the "before" column is what this write-up
-already reports, and every "after" would be measured on new held-out requests, typed by several speakers, that
-no run has seen.
+No extra credits have been used yet, so the "after" column is a forecast, not a result. The "before" column is
+what this write-up already reports, and every "after" would be measured on new held-out requests, typed by several
+speakers, that no run has seen.
 
-| Plan | Before (now) | After |
+| Plan | Before (now) | Expected after (forecast) |
 |---|---|---|
-| Train against the simulator on the model's own new mistakes (AgentTune's GRPO with tool rollouts), or more DPO rounds with thousands of pairs balanced across languages and mistake types plus replayed correct turns | two offline DPO rounds on 146-222 pairs: better follow-up questions, but routing and Yoruba regressions on the development set (section 7) | to be measured |
-| Collect a larger test set typed and spoken from scratch by several native speakers | 26 requests from one speaker, and 14 adapted from native-written text online | to be measured |
-| Measure throughput and latency with AuditKIT's `LatencyStats` and `Throughput` for a full cost comparison (GPU hours, tokens per second) | seconds per request from whole runs, priced in section 7 ("ROI"); per-call latency and tokens per second not logged | to be measured |
+| Train against the simulator on the model's own new mistakes (AgentTune's GRPO with tool rollouts), or more DPO rounds with thousands of pairs balanced across languages and mistake types plus replayed correct turns | two offline DPO rounds on 146-222 pairs: better follow-up questions, but routing and Yoruba regressions on the development set (section 7) | a round that passes the gate: task success with the right reply at 90% or more on held-out set 1 (v2: 83.3%), no wrong payments, and airtime to a contact at 90% or more on the development set (v2: 69%), with no other category falling |
+| Collect a larger test set typed and spoken from scratch by several native speakers | 26 requests from one speaker, and 14 adapted from native-written text online | a few hundred requests from five or more speakers. We expect task success a little below today's 100% (30 of 30 is consistent with anything from 88%), with a 95% interval a few points wide instead of twelve |
+| Measure throughput and latency with AuditKIT's `LatencyStats` and `Throughput` for a full cost comparison (GPU hours, tokens per second) | seconds per request from whole runs, priced in section 7 ("ROI"); per-call latency and tokens per second not logged | per-call latency and tokens per second for each serving format, and a lower T4 cost per 1,000 requests than today's $0.92 once the model is served with continuous batching (vLLM) |
 
 ## 9. Teammates
 
@@ -596,6 +689,7 @@ Everything runs on free Kaggle GPUs. First, on a CPU:
 python -m unittest discover -s tests          # CPU, no dependencies
 python scripts/build_data.py                  # writes data/ (tasks + SFT chats)
 python scripts/eval.py --policy gold --out runs/gold --auditkit   # sanity check: 100%
+python scripts/leak_check.py                  # test requests against training requests: no copies
 ```
 
 Then open a notebook on Kaggle and follow its first cell:
@@ -623,6 +717,20 @@ Where things are:
 | Second-opinion scoring with Lexsi's **AuditKIT** | `naija_agent/auditkit_bridge.py` |
 | DPO rounds with AgentTune's trainer, and their preference pairs | `scripts/train_dpo.py`, `naija_agent/pairs.py` |
 | Demo Space (Gradio on ZeroGPU) | `space/app.py` |
+
+## Work done outside the hackathon
+
+None. The code, data, training runs, models and demo were all made during the hackathon; the repository's
+first commit is dated Nov 4, 2026, after the Nov 1 start. Tiny Aya, AgentTune, AuditKIT and the speech models
+are other people's work, credited in sections 2 and 3.
+
+## Changelog
+
+- Nov 10, 2026: submitted.
+- Nov 13, 2026: added the items the organisers' write-up layout marks as required: the claim, tracks and
+  problem statements, the abstract, the table of data sets, the leak check (`scripts/leak_check.py`), the
+  hyperparameters for AgentTune and AuditKIT, which direction is better for each metric, forecasts in section 8,
+  and this declaration. No result changed.
 
 ## Licence
 
