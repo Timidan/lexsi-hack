@@ -12,7 +12,7 @@
 - Demo: [timidan/oya](https://huggingface.co/spaces/timidan/oya) on Hugging Face's free ZeroGPU: type a request, or send a voice note in Pidgin or Yoruba
 - Models: [Hugging Face collection](https://huggingface.co/collections/timidan/oya-wallet-agent-models-6aedf0affb712ba373e3a17d) (the LoRA adapter, its GGUF, the demo and the two DPO rounds)
 - Data: [Hugging Face collection](https://huggingface.co/collections/timidan/oya-wallet-agent-data-6aedf0b20bfbdecdb654e23c) (training and test sets, and every scored run, including the model comparison and the voice tests)
-- Run it: [appendix](#appendix-reproduce-it)
+- Run it: [appendix](#reproduce-it)
 
 **Claim:** fine-tuning Tiny Aya on wallet-checked chats takes it from 23% to 100% task success on 30 held-out
 Yoruba and Pidgin payment requests, with no wrong payments.
@@ -23,8 +23,8 @@ Yoruba and Pidgin payment requests, with no wrong payments.
   - Problem statement 1: Reliable tool calling
   - Problem statement 8: Self-healing agents
 
-> This README is the write-up. Sections 1-9 follow the hackathon's required article structure, with the extra
-> items from the organisers' write-up layout added where they belong. Development-set numbers are from runs
+> This README is the write-up. Its sections follow the order of the organisers' write-up layout
+> (hackathon.lexsi.ai/submit). Development-set numbers are from runs
 > `sft-v1` and `sft-v2`; held-out numbers are from runs `sft-v2-human` and `sft-v2-human2`. Every run's logs and
 > scores are in the [dataset](https://huggingface.co/datasets/timidan/oya-wallet-agent-data).
 
@@ -104,7 +104,7 @@ payment each; the loop's accuracy gate caught them and kept v2 deployed, which i
 
 Training cost: Kaggle's free GPUs (two T4s, 75 minutes for v2). Total spend: $0. On rented hardware, training v2
 would cost about $1, and serving it about $0.18 per 1,000 requests on a CPU, against $5.24 for GPT-6.1 Sol
-(section 7, "ROI").
+(section 8).
 
 ## 1. Problem statement and approach
 
@@ -150,7 +150,7 @@ AuditKIT reads.
   `episodes_from_agenttune`, builds an `AgentCase` per task (allowed tools and the reference tool route), checks
   the final wallet ledger with `FinalStateAssertion`, and adds its `tool_call_f1` and `tool_call_validity`
   scorers, run by `AgentEvalRunner` in recorded mode. It showed why our own scorer needs behaviour checks
-  (section 7, "Metrics").
+  (section 5).
 
 Both toolkits are released under the Lexsi Labs Source Available License (AgentTune v1.1, AuditKIT v1.2),
 which allows research and evaluation use.
@@ -233,86 +233,7 @@ requests, so those are missing. Every line's source is in `human_eval/requests2.
 **Voice recordings.** The same native speaker read the 26 held-out requests aloud. The recording stays private;
 the speech models' transcripts are published.
 
-## 5. Model artifacts (public Hugging Face collection)
-
-[Oya: wallet agent models](https://huggingface.co/collections/timidan/oya-wallet-agent-models-6aedf0affb712ba373e3a17d), CC-BY-NC 4.0 (following Tiny Aya). It holds:
-
-- the LoRA adapter (`sft-v2`) with its training log and loss curve,
-- the merged model as a 4-bit GGUF (Q4_K_M), which runs on a CPU,
-- the demo Space: chat with Oya by text or voice, with every payment waiting for confirmation, plus a
-  before/after replay of every held-out task. It runs the adapter unquantized (16-bit) on Hugging Face's free
-  ZeroGPU,
-- the adapters from the two DPO rounds, which did not replace v2 (section 7).
-
-## 6. Data artifacts (public Hugging Face collection)
-
-[Oya: wallet agent data](https://huggingface.co/collections/timidan/oya-wallet-agent-data-6aedf0b20bfbdecdb654e23c): one dataset, [timidan/oya-wallet-agent-data](https://huggingface.co/datasets/timidan/oya-wallet-agent-data),
-CC-BY 4.0 (model outputs inside it stay under their providers' terms). It holds:
-
-- the training chats (2,080 training, 104 validation) and the task files (416 development tasks, 30 held-out
-  tasks), with the generator that rebuilds them,
-- the DPO pairs of both rounds (222 and 146),
-- `trajectories.jsonl` logs in AgentTune's format, with per-task scores, for every run in this write-up
-  (development runs of v1, v2 and the untrained model; held-out runs of v2 and the untrained model; the
-  comparison with other models; the GGUF scores; the DPO rounds; the voice test),
-- the held-out requests and the speech models' transcripts of the voice recordings (the audio itself stays
-  private).
-
-Code, notebooks and scorer: this repository ([appendix](#appendix-reproduce-it)).
-
-## 7. Experiments run, findings and what else was tested
-
-### What the untrained model does
-
-Before fine-tuning, Tiny Aya already produced well-formed calls for simple, fully specified requests
-(97% on "buy ₦500 MTN airtime for 0803…"). Everything that needs judgement failed:
-
-- **Fabricated recipients.** For "Fi 5000 ránṣẹ́ sí Tunde" (send 5,000 to Tunde) it skipped the contact
-  lookup and tried to send the money to an invented Opay account, `1234567890`. For "buy 1GB data for Chioma"
-  it charged a made-up number in **every** test case.
-- **Guessing instead of asking.** Given "Abeg load data for 0708…" (no plan, no network) it bought data
-  anyway and reported "Data load successful!".
-- **Fake success.** "Mo ti fi owó N16,000 ránṣẹ́" ("I have sent ₦16,000") with an empty ledger.
-- **Wrong tool.** An electricity payment became `buy_data` with the meter number as a phone number and
-  "Ikeja Electric" as the network.
-- **Weakest in Yoruba:** 14.4% task success, against 26.0% in English.
-
-### Training
-
-#### Supervised fine-tuning (v1, v2): our own loop on Transformers and PEFT
-
-- Base: `CohereLabs/tiny-aya-global` (3.35B), fp16 on a free Kaggle T4.
-- LoRA r=16, alpha=32, dropout 0.05 on all linear layers (30M trainable parameters, 0.9%).
-- Loss on the assistant's own turns only (tool calls and replies, including the end-of-turn markers);
-  system prompt, user messages and tool results are context only. Logits are computed only at trained
-  positions, which keeps Tiny Aya's 262,144-token vocabulary within a T4's memory.
-- 1 epoch, effective batch 16, learning rate 2e-4 with warmup and cosine decay, 130 steps.
-- Validation loss fell from 1.94 to 0.005 and had mostly converged by step 80.
-
-#### AgentTune: the two DPO rounds
-
-- `create_agentic_trainer("dpo", backend="trl")` from AgentTune at commit `d4db4c1`, which runs TRL 1.7.1's
-  `DPOTrainer`. Our subclass computes logits only from the first judged token (`judged_turn_trainer` in
-  `scripts/train_dpo.py`).
-- Starts from the v2 LoRA adapter (r=16, alpha=32) and keeps a frozen copy as the reference. The reference
-  log-probabilities are computed once, before training.
-- Loss: sigmoid DPO plus a plain loss on the chosen turn, weighted 1.0 and 1.0; beta 0.1.
-- Learning rate 5e-5 in round 1 and 2e-5 in round 2, cosine schedule, 5 warmup steps, 2 epochs. Batch 1 per GPU,
-  4 accumulation steps, 2 T4s (effective batch 8). Maximum length 2,048 tokens, fp16, seed 42.
-- Round 1: 222 pairs, 56 steps. Round 2: 146 pairs, 38 steps.
-- Everything else is at TRL's defaults. Each round's full config is in `runs/dpo-v3*/dpo_config.yaml` on the
-  [`results` branch](https://github.com/Timidan/lexsi-hack/tree/results/runs).
-
-#### AuditKIT: the second scorer
-
-- `auditkit.agent_eval` (the `auditkit` package from PyPI, unpinned): `AgentEvalRunner` on an `AgentEvalSpec` in recorded mode, so it
-  scores saved trajectories without new model calls, with one trial per task.
-- Each task becomes an `AgentCase` with all seven tools allowed, the reference tool route as reference turns,
-  and a `FinalStateAssertion` that the final ledger equals the expected one.
-- Scorers: `tool_call_f1` and `tool_call_validity`. Everything else is at AuditKIT's defaults
-  (`naija_agent/auditkit_bridge.py`).
-
-### Metrics, and why these
+## 5. Metrics, and why these
 
 Higher is better for every metric except the unexpected payment rate, extra calls per task and seconds per
 request, where lower is better.
@@ -335,7 +256,7 @@ request, where lower is better.
    question asks for every missing detail (for example the phone number *and* the amount). The
    language test only separates Yoruba from not-Yoruba, so it cannot tell a Pidgin reply from an
    English one.
-8. **Seconds per request,** the wall time of a whole run divided by its tasks (see "ROI" below). Per-call
+8. **Seconds per request,** the wall time of a whole run divided by its tasks (section 8). Per-call
    latency was not logged.
 
 **Tightened after a review.** A review of the scorer found three gaps: a reply could claim a payment that
@@ -352,6 +273,58 @@ verified final-state outcome plus its tool-call metrics, as an independent secon
 same verified ledger, and it showed why behaviour checks are needed: a state check alone gives
 a "do nothing" agent credit on every task where no money should move. On a 60-task sample our scorer
 passed such an agent on 17% of tasks; the state check alone passed it on 42%.
+
+## 6. Method: training setup and hyperparameters
+
+### Supervised fine-tuning (v1, v2): our own loop on Transformers and PEFT
+
+- Base: `CohereLabs/tiny-aya-global` (3.35B), fp16 on a free Kaggle T4.
+- LoRA r=16, alpha=32, dropout 0.05 on all linear layers (30M trainable parameters, 0.9%).
+- Loss on the assistant's own turns only (tool calls and replies, including the end-of-turn markers);
+  system prompt, user messages and tool results are context only. Logits are computed only at trained
+  positions, which keeps Tiny Aya's 262,144-token vocabulary within a T4's memory.
+- 1 epoch, effective batch 16, learning rate 2e-4 with warmup and cosine decay, 130 steps.
+- Validation loss fell from 1.94 to 0.005 and had mostly converged by step 80.
+
+### AgentTune: the two DPO rounds
+
+- `create_agentic_trainer("dpo", backend="trl")` from AgentTune at commit `d4db4c1`, which runs TRL 1.7.1's
+  `DPOTrainer`. Our subclass computes logits only from the first judged token (`judged_turn_trainer` in
+  `scripts/train_dpo.py`).
+- Starts from the v2 LoRA adapter (r=16, alpha=32) and keeps a frozen copy as the reference. The reference
+  log-probabilities are computed once, before training.
+- Loss: sigmoid DPO plus a plain loss on the chosen turn, weighted 1.0 and 1.0; beta 0.1.
+- Learning rate 5e-5 in round 1 and 2e-5 in round 2, cosine schedule, 5 warmup steps, 2 epochs. Batch 1 per GPU,
+  4 accumulation steps, 2 T4s (effective batch 8). Maximum length 2,048 tokens, fp16, seed 42.
+- Round 1: 222 pairs, 56 steps. Round 2: 146 pairs, 38 steps.
+- Everything else is at TRL's defaults. Each round's full config is in `runs/dpo-v3*/dpo_config.yaml` on the
+  [`results` branch](https://github.com/Timidan/lexsi-hack/tree/results/runs).
+
+### AuditKIT: the second scorer
+
+- `auditkit.agent_eval` (the `auditkit` package from PyPI, unpinned): `AgentEvalRunner` on an `AgentEvalSpec` in recorded mode, so it
+  scores saved trajectories without new model calls, with one trial per task.
+- Each task becomes an `AgentCase` with all seven tools allowed, the reference tool route as reference turns,
+  and a `FinalStateAssertion` that the final ledger equals the expected one.
+- Scorers: `tool_call_f1` and `tool_call_validity`. Everything else is at AuditKIT's defaults
+  (`naija_agent/auditkit_bridge.py`).
+
+## 7. Results
+
+### What the untrained model does
+
+Before fine-tuning, Tiny Aya already produced well-formed calls for simple, fully specified requests
+(97% on "buy ₦500 MTN airtime for 0803…"). Everything that needs judgement failed:
+
+- **Fabricated recipients.** For "Fi 5000 ránṣẹ́ sí Tunde" (send 5,000 to Tunde) it skipped the contact
+  lookup and tried to send the money to an invented Opay account, `1234567890`. For "buy 1GB data for Chioma"
+  it charged a made-up number in **every** test case.
+- **Guessing instead of asking.** Given "Abeg load data for 0708…" (no plan, no network) it bought data
+  anyway and reported "Data load successful!".
+- **Fake success.** "Mo ti fi owó N16,000 ránṣẹ́" ("I have sent ₦16,000") with an empty ledger.
+- **Wrong tool.** An electricity payment became `buy_data` with the meter number as a phone number and
+  "Ikeja Electric" as the network.
+- **Weakest in Yoruba:** 14.4% task success, against 26.0% in English.
 
 ### Development results: v1 and v2
 
@@ -503,7 +476,7 @@ the second held-out set, built after both rounds, is reported in its own section
   development set it lost ground on airtime to contacts (69% to 56%), on requests with missing details
   (100% to 88%) and on one planted injection.
 - **Why, as far as we can tell:** a few hundred pairs from one round of sampling are narrow, and DPO pushes a
-  rejected turn down well beyond the context it came from. Section 8 lists what we would try next.
+  rejected turn down well beyond the context it came from. Section 10 lists what we would try next.
 
 ### Compared with other models
 
@@ -546,34 +519,6 @@ calling). Oya also appears in its two serving formats: 16-bit (scored on Kaggle'
 - **Caveats:** 30 tasks; one run per model; open models in 4-bit (Oya scores 100% on this set at full
   precision, and as the Q4_K_M GGUF); the OpenAI models might do better with native function
   calling.
-
-### ROI: renting hardware against paying per token
-
-"$0, self-hosted" above means no API bill; the hardware still costs money. Here it is priced at
-[Hugging Face's hourly rates for Spaces hardware](https://huggingface.co/docs/hub/spaces-gpus) (read
-2026-11-06). A request is one task, which took the OpenAI models 2.2-2.3 model calls and 2,200-2,300 tokens.
-Seconds per request are the wall time of the 30-task held-out run divided by 30, with the model already loaded.
-
-| How it runs | Billed | Price | Seconds per request | Cost per 1,000 requests | Always on, per month | Task success |
-|---|---|---|---|---|---|---|
-| Oya, GGUF Q4_K_M on CPU Upgrade (8 vCPU) | by the hour | $0.03 an hour | 21.2, one at a time, measured on 4 CPUs | $0.18 | $22 | 100% |
-| Oya, 16-bit on a T4 small | by the hour | $0.40 an hour | 8.3, sixteen at a time | $0.92 | $292 | 100% |
-| Oya on ZeroGPU (the demo) | visitors' daily GPU allowance | free | about 17, 13 of them on the GPU | $0 within the allowance | $0 | not scored (bf16) |
-| GPT-6 Astra | by the token | $10 / $50 per 1M tokens in / out | – | $26.75 | – | 97% |
-| GPT-6.1 Sol | by the token | $2 / $10 | – | $5.24 | – | 97% |
-| GPT-6 Luna | by the token | $0.10 / $0.50 | – | $0.26 | – | 63% |
-
-- **Break-even.** Kept on all month, the CPU machine costs less than GPT-6.1 Sol from about 140 requests a day
-  and less than GPT-6 Astra from about 30; one at a time it can serve about 4,000 a day. GPT-6 Luna stays
-  cheaper below about 2,700 a day, but it solved 63% of the tasks. A T4 breaks even with GPT-6.1 Sol at about
-  1,800 requests a day.
-- **Training.** v2 took 2.5 T4-hours (75 minutes on two T4s): free on Kaggle, $1.00 at the T4 rate above, the
-  cost of about 190 GPT-6.1 Sol requests.
-- **Speed.** The CPU is the cheapest option and the slowest, at 21 seconds per request. The T4 number is
-  throughput with sixteen conversations at once, not the wait for a single request, which we did not time.
-- **Not measured.** Per-call latency and tokens per second were not logged (section 8). The API costs use list
-  prices for uncached input; any prompt-caching discount would lower them, because most of every request is
-  the same system prompt.
 
 ### Voice input (exploratory)
 
@@ -654,7 +599,35 @@ GPU (4 GB), Oya runs in 4-bit here, so the typed row is rerun in 4-bit too.
 - **Cancelling a payment in the demo** ends the exchange with "Cancelled. No money moved." instead of passing the
   cancellation back to the model, because it never saw a cancelled payment in training.
 
-### Limitations
+## 8. Cost and ROI: renting hardware against paying per token
+
+"$0, self-hosted" above means no API bill; the hardware still costs money. Here it is priced at
+[Hugging Face's hourly rates for Spaces hardware](https://huggingface.co/docs/hub/spaces-gpus) (read
+2026-11-06). A request is one task, which took the OpenAI models 2.2-2.3 model calls and 2,200-2,300 tokens.
+Seconds per request are the wall time of the 30-task held-out run divided by 30, with the model already loaded.
+
+| How it runs | Billed | Price | Seconds per request | Cost per 1,000 requests | Always on, per month | Task success |
+|---|---|---|---|---|---|---|
+| Oya, GGUF Q4_K_M on CPU Upgrade (8 vCPU) | by the hour | $0.03 an hour | 21.2, one at a time, measured on 4 CPUs | $0.18 | $22 | 100% |
+| Oya, 16-bit on a T4 small | by the hour | $0.40 an hour | 8.3, sixteen at a time | $0.92 | $292 | 100% |
+| Oya on ZeroGPU (the demo) | visitors' daily GPU allowance | free | about 17, 13 of them on the GPU | $0 within the allowance | $0 | not scored (bf16) |
+| GPT-6 Astra | by the token | $10 / $50 per 1M tokens in / out | – | $26.75 | – | 97% |
+| GPT-6.1 Sol | by the token | $2 / $10 | – | $5.24 | – | 97% |
+| GPT-6 Luna | by the token | $0.10 / $0.50 | – | $0.26 | – | 63% |
+
+- **Break-even.** Kept on all month, the CPU machine costs less than GPT-6.1 Sol from about 140 requests a day
+  and less than GPT-6 Astra from about 30; one at a time it can serve about 4,000 a day. GPT-6 Luna stays
+  cheaper below about 2,700 a day, but it solved 63% of the tasks. A T4 breaks even with GPT-6.1 Sol at about
+  1,800 requests a day.
+- **Training.** v2 took 2.5 T4-hours (75 minutes on two T4s): free on Kaggle, $1.00 at the T4 rate above, the
+  cost of about 190 GPT-6.1 Sol requests.
+- **Speed.** The CPU is the cheapest option and the slowest, at 21 seconds per request. The T4 number is
+  throughput with sixteen conversations at once, not the wait for a single request, which we did not time.
+- **Not measured.** Per-call latency and tokens per second were not logged (section 10). The API costs use list
+  prices for uncached input; any prompt-caching discount would lower them, because most of every request is
+  the same system prompt.
+
+## 9. Limitations
 
 - The requests come from templates. They cover real constructions in each language, but real users are
   messier; the held-out test set (new phrasings, checked by a native speaker) and the second set from native-written
@@ -665,7 +638,7 @@ GPU (4 GB), Oya runs in 4-bit here, so the typed row is rerun in 4-bit too.
   native speaker; the rest has not had a full native-speaker review (notes in
   [docs/language_review.md](docs/language_review.md)).
 
-## 8. With more credits: approach, and before and after results
+## 10. With more credits: approach, and expected before and after results
 
 No extra credits have been used yet, so the "after" column is a forecast, not a result. The "before" column is
 what this write-up already reports, and every "after" would be measured on new held-out requests, typed by several
@@ -675,13 +648,44 @@ speakers, that no run has seen, with the development set as a check that nothing
 |---|---|---|
 | Train against the simulator on the model's own new mistakes (AgentTune's GRPO with tool rollouts), or more DPO rounds with thousands of pairs balanced across languages and mistake types plus replayed correct turns | two offline DPO rounds on 146-222 pairs: better follow-up questions, but routing and Yoruba regressions on the development set (section 7) | a round that passes the gate: on the new requests, task success with the right reply at 90% or more (v2: 83.3% on held-out set 1) and no wrong payments; on the development set, airtime to a contact at 90% or more (v2: 69%), with no other category falling |
 | Collect a larger test set typed and spoken from scratch by several native speakers | 26 requests from one speaker, and 14 adapted from native-written text online | a few hundred requests from five or more speakers. We expect task success a little below today's 100% (30 of 30 is consistent with anything from 88%), with a 95% interval a few points wide instead of twelve |
-| Measure throughput and latency with AuditKIT's `LatencyStats` and `Throughput` for a full cost comparison (GPU hours, tokens per second) | seconds per request from whole runs, priced in section 7 ("ROI"); per-call latency and tokens per second not logged | per-call latency and tokens per second for each serving format, and a lower T4 cost per 1,000 requests than today's $0.92 once the model is served with continuous batching (vLLM) |
+| Measure throughput and latency with AuditKIT's `LatencyStats` and `Throughput` for a full cost comparison (GPU hours, tokens per second) | seconds per request from whole runs, priced in section 8; per-call latency and tokens per second not logged | per-call latency and tokens per second for each serving format, and a lower T4 cost per 1,000 requests than today's $0.92 once the model is served with continuous batching (vLLM) |
 
-## 9. Teammates
+## 11. Artifacts
 
-Hugging Face: [@timidan](https://huggingface.co/timidan). Code: [Timidan](https://github.com/Timidan).
+### Models (public Hugging Face collection)
 
-## Appendix: reproduce it
+[Oya: wallet agent models](https://huggingface.co/collections/timidan/oya-wallet-agent-models-6aedf0affb712ba373e3a17d), CC-BY-NC 4.0 (following Tiny Aya). It holds:
+
+- the LoRA adapter (`sft-v2`) with its training log and loss curve,
+- the merged model as a 4-bit GGUF (Q4_K_M), which runs on a CPU,
+- the demo Space: chat with Oya by text or voice, with every payment waiting for confirmation, plus a
+  before/after replay of every held-out task. It runs the adapter unquantized (16-bit) on Hugging Face's free
+  ZeroGPU,
+- the adapters from the two DPO rounds, which did not replace v2 (section 7).
+
+### Data (public Hugging Face collection)
+
+[Oya: wallet agent data](https://huggingface.co/collections/timidan/oya-wallet-agent-data-6aedf0b20bfbdecdb654e23c): one dataset, [timidan/oya-wallet-agent-data](https://huggingface.co/datasets/timidan/oya-wallet-agent-data),
+CC-BY 4.0 (model outputs inside it stay under their providers' terms). It holds:
+
+- the training chats (2,080 training, 104 validation) and the task files (416 development tasks, 30 held-out
+  tasks), with the generator that rebuilds them,
+- the DPO pairs of both rounds (222 and 146),
+- `trajectories.jsonl` logs in AgentTune's format, with per-task scores, for every run in this write-up
+  (development runs of v1, v2 and the untrained model; held-out runs of v2 and the untrained model; the
+  comparison with other models; the GGUF scores; the DPO rounds; the voice test),
+- the held-out requests and the speech models' transcripts of the voice recordings (the audio itself stays
+  private).
+
+
+### Code and demo
+
+- Code and notebooks: [Timidan/lexsi-hack](https://github.com/Timidan/lexsi-hack) (MIT); how to run them: [section 12](#12-documentation-and-reproduction).
+- Demo: [timidan/oya](https://huggingface.co/spaces/timidan/oya), a Hugging Face Space on free ZeroGPU.
+
+## 12. Documentation and reproduction
+
+### Reproduce it
 
 Everything runs on free Kaggle GPUs. First, on a CPU:
 
@@ -718,19 +722,21 @@ Where things are:
 | DPO rounds with AgentTune's trainer, and their preference pairs | `scripts/train_dpo.py`, `naija_agent/pairs.py` |
 | Demo Space (Gradio on ZeroGPU) | `space/app.py` |
 
-## Work done outside the hackathon
+### Work done outside the hackathon
 
 None. The code, data, training runs, models and demo were all made during the hackathon; the repository's
 first commit is dated Nov 4, 2026, after the Nov 1 start. Tiny Aya, AgentTune, AuditKIT and the speech models
 are other people's work, credited in sections 2 and 3.
 
-## Changelog
+## 13. Teammates
 
-- Nov 10, 2026: submitted.
-- Nov 13, 2026: added the items the organisers' write-up layout marks as required: the claim, tracks and
-  problem statements, the abstract, the table of data sets, the leak check (`scripts/leak_check.py`), the
-  hyperparameters for AgentTune and AuditKIT, which direction is better for each metric, forecasts in section 8,
-  and this declaration. No result changed.
+Hugging Face: [@timidan](https://huggingface.co/timidan). Code: [Timidan](https://github.com/Timidan).
+
+## Acknowledgements
+
+Tiny Aya by Cohere Labs (CC-BY-NC 4.0, subject to Cohere Labs' Acceptable Use Policy). AgentTune and
+AuditKIT by Lexsi Labs. Compute: Kaggle's free GPU tier, and Hugging Face's free ZeroGPU for the demo.
+
 
 ## Licence
 
@@ -739,7 +745,12 @@ are other people's work, credited in sections 2 and 3.
 - Models ([timidan/oya-tiny-aya-sft-v2](https://huggingface.co/timidan/oya-tiny-aya-sft-v2) and its GGUF): CC-BY-NC 4.0,
   following Tiny Aya. The demo Space is tagged CC-BY-NC 4.0 too, because it serves the model.
 
-## Acknowledgements
+## Changelog
 
-Tiny Aya by Cohere Labs (CC-BY-NC 4.0, subject to Cohere Labs' Acceptable Use Policy). AgentTune and
-AuditKIT by Lexsi Labs. Compute: Kaggle's free GPU tier, and Hugging Face's free ZeroGPU for the demo.
+- Nov 10, 2026: submitted.
+- Nov 13, 2026: added the items the organisers' write-up layout marks as required: the claim, tracks and
+  problem statements, the abstract, the table of data sets, the leak check (`scripts/leak_check.py`), the
+  hyperparameters for AgentTune and AuditKIT, which direction is better for each metric, forecasts in "With more credits",
+  and this declaration. No result changed.
+- Nov 14, 2026: reordered the sections to follow the organisers' write-up layout. No text or result changed
+  apart from the section numbers and cross-references.

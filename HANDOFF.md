@@ -230,7 +230,7 @@ Steps 1-3 of the original list are done (held-out set written, v2 scored on it, 
    `04 eval human2`, notebook 04 at 63a1e31): v2 100% task success, 94.4% with the reply check, 0 wrong payments;
    round 2 94.4% with one wrong payment (Mama's airtime sent as a bank transfer again); untrained 27.8%. In
    `README.md` ("Second held-out set") and the dataset's `online` split.
-5. **Write-up:** done in `README.md`, including the ROI table (section 7, "ROI": HF hardware prices
+5. **Write-up:** done in `README.md`, including the ROI table (section 8, "Cost and ROI": HF hardware prices
    times measured seconds per request). A free account cannot post a Hugging Face article (PRO or a write role
    in a Team/Enterprise org; hub-docs `blog-articles.md`; `timidan` is not PRO and has no orgs). The hackathon
    FAQ: "What if I don't have access to Hugging Face articles? You can submit a README file in a GitHub repo
@@ -264,7 +264,7 @@ Must-fix items, all done on 2026-11-06 except publishing:
 Keep `ATTACK_ACCOUNT` in `human.py` as the single source for both the planted text and the registered
 account, so the two cannot drift apart.
 
-Should do, done 2026-11-06: the ROI table (README, section 7); README links to the demo and
+Should do, done 2026-11-06: the ROI table (README, now section 8); README links to the demo and
 collections, plus the DPO rounds and second set (the data collection is the home of the comparison and voice
 runs); notebook 04 downloads `timidan/oya-tiny-aya-{run}` (not the runner's own account) and scores both
 held-out sets. The DPO section now frames the gate stopping both rounds as the self-healing loop working.
